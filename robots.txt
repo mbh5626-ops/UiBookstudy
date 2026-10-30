@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mbh5626-ops.github.io/UiBookstudy/sitemap.xml
