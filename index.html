@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ui Books – Fantasy Novels to Read by Lantern Light</title>
+<meta name="description" content="Ui Books is a free home for fantasy tales. Read short chapters, listen aloud, save favourites and stay focused with a study timer.">
+<meta name="theme-color" content="#04020d">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Ui Books – Fantasy Novels to Read by Lantern Light">
+<meta property="og:description" content="Free fantasy tales, a study timer and a moonlit reading room.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2314082e'/%3E%3Ctext x='32' y='43' font-size='30' text-anchor='middle' fill='%23e0b45a' font-family='serif'%3EUi%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--ink:#f4ead2;--mu:#a9a1c8;--ln:rgba(190,160,255,.18);--gold:#e0b45a;--em:#d9546e;--teal:#3fc6b8;--gl:rgba(12,7,32,.58);--fs:19px}
+*{box-sizing:border-box;margin:0}
+[hidden]{display:none!important}
+body{background:#04020d;color:var(--ink);font:17px/1.4 "Crimson Pro",Georgia,serif;min-height:100vh;overflow-x:hidden}
+a{color:inherit;text-decoration:none}button{font:inherit;color:inherit;cursor:pointer}
+/* moving abstract background */
+.bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:radial-gradient(ellipse at 50% 130%,#2a0f5c,transparent 60%),#04020d}
+.bg .aur{position:absolute;left:50%;top:50%;width:130vmax;height:130vmax;margin:-65vmax;background:conic-gradient(from 0deg,#7d55d7,#04020d 18%,#3fc6b8 32%,#04020d 48%,#e0b45a 62%,#04020d 76%,#d9546e 88%,#7d55d7);filter:blur(110px);opacity:.5;animation:spin 50s linear infinite}
+.bg i{position:absolute;border-radius:50%;filter:blur(60px);mix-blend-mode:screen;animation:drift 20s ease-in-out infinite alternate}
+.bg i:nth-of-type(1){width:46vmax;height:46vmax;left:-12vmax;top:-10vmax;background:#6a3be0;opacity:.55}
+.bg i:nth-of-type(2){width:38vmax;height:38vmax;right:-8vmax;bottom:-8vmax;background:#d9546e;opacity:.4;animation-duration:26s}
+.bg i:nth-of-type(3){width:26vmax;height:26vmax;right:20%;top:6%;background:#2a8cff;opacity:.4;animation-duration:17s}
+.bg i:nth-of-type(4){width:22vmax;height:22vmax;left:16%;bottom:2%;background:#e0b45a;opacity:.3;animation-duration:23s}
+.bg svg{position:absolute;inset:0;width:100%;height:100%}
+.bg path{fill:none;stroke-width:2;stroke-linecap:round;stroke-dasharray:240 360;animation:flow 12s linear infinite}
+.bg .rg{fill:none;stroke-width:1.2;transform-box:fill-box;transform-origin:center;animation:spin 55s linear infinite}
+.tw{animation:tw 3.5s ease-in-out infinite alternate}.tw:nth-child(2n){animation-delay:1.2s}.tw:nth-child(3n){animation-delay:2.2s}
+.ss{animation:ss 8s ease-out infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes drift{50%{transform:translate(12vmax,-6vmax) scale(1.25)}to{transform:translate(-8vmax,9vmax) scale(1.05)}}
+@keyframes flow{to{stroke-dashoffset:-1200}}
+@keyframes tw{from{opacity:.2}to{opacity:1}}
+@keyframes ss{0%{transform:translate(950px,30px);opacity:0}4%{opacity:1}26%,100%{transform:translate(500px,230px);opacity:0}}
+@keyframes fl{50%{transform:translateY(-12px) rotate(-1deg)}}
+@media(prefers-reduced-motion:reduce){.bg *,.ob{animation:none!important}}
+/* layout */
+.shell{position:relative;z-index:1;display:grid;grid-template-columns:84px 1fr;gap:18px;max-width:1240px;margin:0 auto;padding:20px}
+nav{position:sticky;top:20px;align-self:start;height:calc(100vh - 40px);background:var(--gl);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--ln);border-radius:42px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:20px 0}
+.logo{font:700 20px Cinzel,serif;color:var(--gold);text-shadow:0 0 14px var(--gold);margin-bottom:16px}
+nav a{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;color:var(--mu);transition:.2s}
+nav a:hover{color:#fff;background:rgba(255,255,255,.08)}
+nav a.on{background:linear-gradient(135deg,var(--em),#7a2a9a);color:#fff;box-shadow:0 0 20px rgba(217,84,110,.6)}
+.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+main{min-width:0;padding-bottom:90px}
+header{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:22px}
+.se{display:flex;gap:10px;align-items:center;flex:1;max-width:440px;background:var(--gl);border:1px solid var(--ln);border-radius:99px;padding:10px 18px;backdrop-filter:blur(12px)}
+.se input{background:none;border:0;outline:0;color:var(--ink);font:inherit;font-size:15px;width:100%}
+.us{display:flex;align-items:center;gap:10px;font-size:15px}
+.av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#a0642a);color:#2a1606;display:grid;place-items:center;font:700 12px Cinzel,serif;flex:none}
+.gl{background:var(--gl);border:1px solid var(--ln);border-radius:22px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding:22px}
+h1,h2,h3,h4{font-family:Cinzel,serif;font-weight:500}
+h1{font-size:40px;line-height:1.15;background:linear-gradient(90deg,#fff,var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+h2{font-size:22px;color:var(--gold);margin-bottom:14px;display:flex;justify-content:space-between}
+.sub{color:var(--mu)}
+.btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:10px;padding:12px 22px;font:700 12px Cinzel,serif;letter-spacing:.08em;background:linear-gradient(135deg,var(--gold),#b9822f);color:#2a1606;box-shadow:0 6px 22px rgba(224,180,90,.35)}
+.btn.t{background:linear-gradient(135deg,var(--teal),#1f7f9a);color:#04201e;box-shadow:0 6px 22px rgba(63,198,184,.3)}
+.btn.g{background:rgba(255,255,255,.06);color:var(--ink);box-shadow:none;border:1px solid var(--ln)}
+.hero{display:grid;grid-template-columns:1fr 1.15fr .8fr;gap:22px;align-items:center;margin-bottom:22px}
+.hero p{color:var(--mu);margin:14px 0 20px;font-size:18px;max-width:340px}
+.ob{display:grid;grid-template-columns:1fr 1fr;aspect-ratio:1.5;border-radius:6px 14px 14px 6px;overflow:hidden;box-shadow:0 30px 60px #000c,0 0 70px rgba(125,85,215,.5);animation:fl 7s ease-in-out infinite;transform:perspective(900px) rotateY(-8deg)}
+.pg{background:#f1e6c8;color:#2b2113;padding:16px;font-size:12.5px;line-height:1.45;position:relative;overflow:hidden}
+.pg h4{font-size:11px;letter-spacing:.2em;color:#8b6a2e;margin-bottom:8px;text-align:center}
+.pg.r{padding:0;box-shadow:inset 8px 0 14px -6px rgba(0,0,0,.35)}.pg.r svg,.cv svg{width:100%;height:100%;display:block;position:absolute;inset:0}
+.cur h3{font-size:24px;margin-bottom:8px}.cur b{color:var(--em);font-weight:600}
+.bar{height:5px;border-radius:9px;background:rgba(255,255,255,.12);margin:8px 0 14px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--gold))}
+.two{display:grid;grid-template-columns:1.2fr 1fr;gap:22px}
+.row{display:flex;gap:20px;overflow-x:auto;scrollbar-width:none;padding:8px 4px 4px}
+.it{flex:none;width:112px;background:none;border:0;text-align:left}
+.cv{position:relative;aspect-ratio:3/4.2;border-radius:3px 8px 8px 3px;overflow:hidden;box-shadow:inset 4px 0 0 rgba(0,0,0,.3),0 16px 26px -8px #000d,0 0 0 1px rgba(255,235,180,.15);color:#fff6e0;padding:10px;display:flex;flex-direction:column;justify-content:space-between;transition:transform .25s}
+.it:hover .cv,.ln:hover .cv{transform:translateY(-6px) rotate(-1.5deg)}
+.cv::before{content:"";position:absolute;inset:5px;border:1px solid rgba(255,225,160,.5);border-radius:3px;pointer-events:none;z-index:2}
+.cv small,.cv .tt{position:relative;z-index:3}
+.cv small{font:500 7px Cinzel,serif;letter-spacing:.16em;text-transform:uppercase;text-align:center;margin-top:4px}
+.cv strong{display:block;font:500 14px/1.1 Cinzel,serif;text-shadow:0 2px 8px #000a;text-align:center}
+.cv .au{display:block;font:7px Cinzel,serif;letter-spacing:.14em;text-transform:uppercase;text-align:center;margin:5px 0 3px;opacity:.85}
+.cp{font-size:14px;margin-top:10px;color:var(--mu);line-height:1.25}.cp b{display:block;font:500 12px Cinzel,serif;color:var(--ink)}
+.wk{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center}
+.wk button{background:none;border:0;border-radius:14px;padding:10px 0;font:500 15px Cinzel,serif}.wk small{display:block;color:var(--mu);font:12px "Crimson Pro"}
+.wk .on{background:rgba(224,180,90,.2);box-shadow:0 0 0 1px var(--gold)}.wk .td small{color:var(--em)}
+.fr{display:flex;gap:12px;margin-bottom:14px}.fr:last-child{margin:0}.fr em{display:block;color:var(--mu);font-size:15px;margin-top:2px}.fr b{font:500 14px Cinzel,serif}
+.ch{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 20px}
+.chip{border:1px solid var(--ln);background:rgba(255,255,255,.04);border-radius:99px;padding:6px 15px;font:500 12px Cinzel,serif;color:var(--mu)}.chip.on{background:var(--gold);color:#2a1606;border-color:var(--gold)}
+.ln{display:grid;grid-template-columns:64px 1fr auto;gap:18px;align-items:center;padding:12px 4px;border-bottom:1px solid var(--ln);cursor:pointer}
+.ln .cv{width:64px;padding:4px}.ln .cv *{display:none}.ln .cv svg{display:block}
+.ln h3{font-size:17px}.st{color:var(--gold);letter-spacing:2px;font-size:14px}.st s{color:#5a4f86;text-decoration:none}.ln small{color:var(--mu);font-size:14px}
+.hr{background:none;border:1px solid var(--ln);width:38px;height:38px;border-radius:50%;color:var(--mu)}.hr.on{color:var(--em);border-color:var(--em)}
+.det{display:grid;grid-template-columns:.85fr 1.2fr;padding:0;overflow:hidden;min-height:520px}
+.dl{background:linear-gradient(160deg,rgba(63,198,184,.28),rgba(60,30,140,.55));display:grid;place-items:center;padding:30px;position:relative}
+.dl .cv{width:min(240px,100%);box-shadow:0 30px 50px #000c,0 0 60px rgba(125,85,215,.6);animation:fl 7s ease-in-out infinite}
+.dr{padding:28px 30px;position:relative}
+.tb{display:flex;gap:22px;border-bottom:1px solid var(--ln);margin-bottom:18px}.tb button{background:none;border:0;padding:6px 0;font:500 12px Cinzel,serif;letter-spacing:.1em;color:var(--mu);border-bottom:2px solid transparent}.tb .on{color:var(--gold);border-color:var(--gold)}
+.dr h1{font-size:38px}.dr .a{color:var(--mu);font:italic 20px "Crimson Pro";margin:2px 0 8px}
+.dr p{font-size:18px;color:#d6cfe8;margin:14px 0 20px;max-width:480px}
+.ac{position:absolute;right:20px;top:70px;display:flex;flex-direction:column;gap:10px}
+.sm{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:420px}
+.pgx{max-width:640px;margin:0 auto}.pgx p{font-size:var(--fs);line-height:1.75;margin-bottom:18px;color:#f1e8d0}.pgx p:first-of-type::first-letter{font:700 3.2em/.8 Cinzel,serif;float:left;color:var(--gold);padding:6px 10px 0 0}
+.bx{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:14px 0 22px}
+.rnd{width:38px;height:38px;border-radius:50%;border:1px solid var(--ln);background:rgba(255,255,255,.05)}
+.qt p{font:500 24px/1.4 Cinzel,serif;color:var(--gold);margin-bottom:18px}
+.tm{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:20px 0}#tt{font:700 48px Cinzel,serif;min-width:160px}
+.tips{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}.tip{color:var(--mu);font-size:16px}.tip b{display:block;font:500 13px Cinzel,serif;color:var(--ink);margin-bottom:4px}
+#pl{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:5;width:min(520px,calc(100% - 24px));display:flex;gap:14px;align-items:center;padding:10px 16px}
+#pl .bar{flex:1;margin:0}#pl small{color:var(--mu);font-size:13px;white-space:nowrap}
+.emp{color:var(--mu);padding:20px 0}
+.sk{position:absolute;left:-999px;top:8px;z-index:20;background:var(--gold);color:#2a1606;padding:8px 14px;border-radius:8px}.sk:focus{left:8px}
+:focus-visible{outline:2px solid var(--teal);outline-offset:3px}main:focus{outline:0}
+.fm input,.fm textarea{width:100%;background:rgba(255,255,255,.06);border:1px solid var(--ln);border-radius:10px;padding:10px 14px;color:var(--ink);font:inherit;margin-bottom:10px}
+.cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px}
+.cd{border:1px solid var(--ln);border-radius:16px;padding:18px;background:rgba(255,255,255,.04);cursor:pointer;transition:.2s}.cd:hover{border-color:var(--gold);transform:translateY(-4px)}.cd h3{font-size:16px;margin:10px 0 2px}.cd p{font-size:15px;color:var(--mu);margin-top:8px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px}.tile{border:1px solid var(--ln);border-radius:14px;padding:16px;text-align:left;background:linear-gradient(135deg,rgba(125,85,215,.3),rgba(63,198,184,.12))}.tile b{display:block;font:500 15px Cinzel,serif}.tile small{color:var(--mu)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:14px}.stat{border:1px solid var(--ln);border-radius:14px;padding:16px;color:var(--mu);background:rgba(255,255,255,.04)}.stat b{display:block;font:700 28px Cinzel,serif;color:var(--gold)}
+.ab p{color:#d6cfe8;font-size:18px;margin-bottom:14px;max-width:680px}details{border-bottom:1px solid var(--ln);padding:12px 0;max-width:680px}summary{cursor:pointer;font:500 14px Cinzel,serif}details p{margin:10px 0 0;color:var(--mu);font-size:16px}
+.ft{margin-top:22px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--mu);font-size:15px;padding:16px 22px}.ft a{margin-right:16px}.ft a:hover{color:var(--gold)}
+.av{overflow:hidden}.av img{width:100%;height:100%;object-fit:cover;display:block}
+.us .btn{padding:9px 18px}
+.rw .sb{background:none;border:0;font-size:28px;line-height:1;color:#5a4f86;padding:0 2px}.rw .sb.on{color:var(--gold)}.rw .sb:hover{color:var(--gold)}
+.dist{max-width:340px}.dist div{display:grid;grid-template-columns:34px 1fr 40px;gap:8px;align-items:center;font-size:14px;color:var(--mu)}.dist i{display:block;height:6px;border-radius:9px;background:rgba(255,255,255,.12);overflow:hidden}.dist i b{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--gold))}
+.srt{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:14px 0}.fm textarea{resize:vertical}
+.fr em[dir]{white-space:pre-wrap;color:var(--ink);overflow-wrap:anywhere}.act{margin-top:4px;font-size:14px}.act .lk,.fr .lk{font-size:14px}.slot .fm{margin-top:8px}
+
+@media(max-width:860px){.two>*,.hero>*,.det>*{min-width:0}}
+.ft>span:first-child{display:flex;flex-wrap:wrap;gap:6px 16px}.ft a{margin-right:0}
+.mo{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:16px;background:rgba(2,1,8,.72);backdrop-filter:blur(6px)}
+.mo .box{width:min(420px,100%);max-height:92vh;overflow:auto;position:relative}
+.mo .x{position:absolute;right:14px;top:10px;background:none;border:0;font-size:26px;line-height:1;color:var(--mu)}
+.btn.oa{width:100%;justify-content:center;margin-bottom:10px;font:600 15px "Crimson Pro",serif;letter-spacing:0;border:1px solid var(--ln);background:rgba(255,255,255,.07);color:var(--ink);box-shadow:none}
+.or{display:flex;align-items:center;gap:10px;color:var(--mu);margin:14px 0;font-size:14px}.or:before,.or:after{content:"";flex:1;height:1px;background:var(--ln)}
+.msg{min-height:22px;font-size:15px;margin:2px 0 10px;color:var(--mu)}.msg.er{color:#ff8a9a}.msg.ok{color:var(--teal)}
+.lk{background:none;border:0;color:var(--gold);text-decoration:underline;font:inherit;padding:0;cursor:pointer}
+#toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);z-index:60;max-width:min(92vw,420px);padding:12px 18px;border-radius:14px;font-size:16px}
+@media(max-width:860px){nav a{width:36px;height:36px}}
+@media(max-width:860px){
+ .shell{grid-template-columns:1fr;padding:12px;gap:10px}
+ nav{position:fixed;top:auto;bottom:10px;left:10px;right:10px;height:auto;flex-direction:row;justify-content:space-around;padding:6px;border-radius:30px;z-index:6}.logo{display:none}
+ main{padding-bottom:150px}.hero,.two,.det{grid-template-columns:1fr}h1{font-size:30px}.us span{display:none}.ac{position:static;flex-direction:row;margin-top:16px}#pl{bottom:80px}
+ .dr h1{font-size:30px}
+}
+:root[data-theme="light"]{color-scheme:light;--ink:#30233f;--mu:#665c74;--ln:rgba(93,62,122,.22);--gold:#94600d;--em:#ad3554;--teal:#087f78;--gl:rgba(255,250,239,.84)}
+:root[data-theme="light"] body{background:#f4efe6;color:var(--ink)}
+:root[data-theme="light"] .bg{background:radial-gradient(ellipse at 50% 130%,#e4d9f5,transparent 60%),#f4efe6}
+:root[data-theme="light"] .bg .aur{background:conic-gradient(from 0deg,#c9b7f0,#f4efe6 18%,#a9e3dc 32%,#f4efe6 48%,#f1dba5 62%,#f4efe6 76%,#f3bdca 88%,#c9b7f0);opacity:.32}
+:root[data-theme="light"] .bg i:nth-of-type(n){opacity:.15}
+:root[data-theme="light"] .bg svg{opacity:.3}
+:root[data-theme="light"] h1{background:linear-gradient(90deg,#443052,#94600d);-webkit-background-clip:text;background-clip:text}
+:root[data-theme="light"] .dr p,:root[data-theme="light"] .ab p{color:#51445f}
+:root[data-theme="light"] .pgx p{color:#403348}
+:root[data-theme="light"] .st s{color:#c6b9d1}
+:root[data-theme="light"] .cd,:root[data-theme="light"] .stat{background:rgba(255,255,255,.48)}
+:root[data-theme="light"] .tile{background:linear-gradient(135deg,rgba(125,85,215,.12),rgba(63,198,184,.1))}
+.theme-toggle{position:fixed;right:20px;bottom:18px;z-index:15;display:inline-flex;align-items:center;gap:8px;border:1px solid var(--gold);border-radius:99px;padding:11px 18px;background:var(--gl);color:var(--ink);font:700 13px Cinzel,serif;white-space:nowrap;box-shadow:0 8px 28px rgba(0,0,0,.35);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.theme-toggle:hover{border-color:var(--gold);color:var(--gold);transform:translateY(-2px)}
+.theme-toggle:focus-visible{outline:3px solid var(--teal);outline-offset:3px}
+.ft .theme-toggle{margin-left:auto}
+@media(max-width:860px){.theme-toggle{right:16px;bottom:78px}}
+</style>
+</head>
+<body>
+<a class="sk" href="#main">Skip to content</a><noscript><p style="position:relative;z-index:2;padding:20px">Ui Books needs JavaScript. Please turn it on to read.</p></noscript>
+<div class="bg" aria-hidden="true"><b class="aur"></b><i></i><i></i><i></i><i></i>
+<svg viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice"><defs>
+<linearGradient id="a" x1="0" x2="1"><stop offset="0" stop-color="#7d55d7" stop-opacity="0"/><stop offset=".5" stop-color="#ffd98a"/><stop offset="1" stop-color="#d9546e" stop-opacity="0"/></linearGradient>
+<linearGradient id="b" x1="0" x2="1"><stop offset="0" stop-color="#3fc6b8" stop-opacity="0"/><stop offset=".5" stop-color="#a98bff"/><stop offset="1" stop-color="#5fa8ff" stop-opacity="0"/></linearGradient>
+<mask id="m"><rect width="1200" height="800" fill="#fff"/><circle cx="1046" cy="112" r="40" fill="#000"/></mask></defs>
+<path d="M-60 600C220 420 420 780 700 560S1080 340 1280 500" stroke="url(#a)"/><path d="M-60 650C240 480 440 800 720 600S1100 400 1280 550" stroke="url(#b)"/>
+<path d="M-40 130C200 270 380 40 640 190S980 310 1260 160" stroke="url(#b)"/><path d="M-40 180C220 320 400 100 660 240S1000 360 1260 210" stroke="url(#a)"/>
+<circle class="rg" cx="250" cy="300" r="160" stroke="#a98bff" stroke-opacity=".5" stroke-dasharray="3 12"/><circle class="rg" cx="250" cy="300" r="115" stroke="#e0b45a" stroke-opacity=".4"/>
+<circle class="rg" cx="950" cy="640" r="200" stroke="#3fc6b8" stroke-opacity=".45" stroke-dasharray="4 14"/><circle class="rg" cx="950" cy="640" r="140" stroke="#d9546e" stroke-opacity=".4"/>
+<circle cx="1020" cy="120" r="80" fill="#e0b45a" opacity=".16"/><circle cx="1020" cy="120" r="40" fill="#fff2cf" mask="url(#m)"/>
+<g fill="#fff6dc"><circle class="tw" cx="90" cy="80" r="1.8"/><circle class="tw" cx="210" cy="190" r="1.2"/><circle class="tw" cx="380" cy="60" r="2"/><circle class="tw" cx="540" cy="140" r="1.3"/><circle class="tw" cx="690" cy="50" r="1.6"/><circle class="tw" cx="820" cy="210" r="1.2"/><circle class="tw" cx="1120" cy="280" r="1.8"/><circle class="tw" cx="150" cy="520" r="1.4"/><circle class="tw" cx="430" cy="720" r="1.8"/><circle class="tw" cx="620" cy="690" r="1.2"/><circle class="tw" cx="880" cy="760" r="1.6"/><circle class="tw" cx="1090" cy="560" r="1.4"/><circle class="tw" cx="40" cy="380" r="1.6"/><circle class="tw" cx="760" cy="420" r="1.1"/></g>
+<line class="ss" x1="0" y1="0" x2="90" y2="-40" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+
+<div class="shell">
+<nav>
+ <div class="logo">Ui</div>
+ <a href="#home" data-r="home" aria-label="Home"><svg class="i" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg></a>
+ <a href="#library" data-r="library" aria-label="Library"><svg class="i" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 4v16"/></svg></a>
+ <a href="#reader" data-r="reader" aria-label="Reader"><svg class="i" viewBox="0 0 24 24"><path d="M3 5c3-1 6-1 9 1 3-2 6-2 9-1v14c-3-1-6-1-9 1-3-2-6-2-9-1z"/><path d="M12 6v14"/></svg></a>
+ <a href="#authors" data-r="authors" aria-label="Authors"><svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-4 3-6 7-6s7 2 7 6M16 4.5a3.5 3.5 0 0 1 0 7M18 14c2.5.6 4 2.4 4 6"/></svg></a>
+ <a href="#series" data-r="series" aria-label="Collections"><svg class="i" viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5zM3 13l9 5 9-5M3 17.5l9 5 9-5"/></svg></a>
+ <a href="#study" data-r="study" aria-label="Study"><svg class="i" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10c1 1 1 2 1 3h6c0-1 0-2 1-3a6 6 0 0 0-4-10z"/></svg></a>
+ <a href="#saved" data-r="saved" aria-label="Saved"><svg class="i" viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4z"/></svg></a>
+ <a href="#profile" data-r="profile" aria-label="Profile"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.5 3.6-7 8-7s8 2.5 8 7"/></svg></a>
+</nav>
+<main id="main" tabindex="-1">
+ <header><label class="se"><svg class="i" viewBox="0 0 24 24" style="width:16px"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" placeholder="Search books…"></label><div class="us" id="us"></div></header>
+
+ <section class="v" id="v-home">
+  <div class="hero">
+   <div><h1 id="hh">Happy reading, reader</h1><p>Your quest awaits. Pick up where you stopped and slip back into the tale.</p><a class="btn" href="#reader">START READING ✦</a></div>
+   <div class="ob"><div class="pg"><h4>CHAPTER ONE</h4><span id="ol"></span></div><div class="pg r" id="or"></div></div>
+   <div class="gl cur"><h3 id="ct"></h3><small class="sub" id="ca"></small><p style="margin:12px 0 0;font-size:16px;color:var(--mu)"><b id="cp"></b> pages read</p><div class="bar"><i id="cb"></i></div><a class="btn t" id="cd" href="#book">DETAILS</a></div>
+  </div>
+  <div class="two">
+   <div class="gl"><h2>Popular Now</h2><div class="row" id="pop"></div></div>
+   <div class="gl"><h2>Schedule Reading</h2><div class="wk" id="wk"></div><p class="sub" id="wm" style="margin-top:14px;font-size:16px"></p></div>
+  </div>
+  <div class="gl" style="margin-top:22px"><h2>Reader Friends</h2><div id="rf"><p class="sub">Loading…</p></div></div>
+  <div class="gl" style="margin-top:22px"><h2>New Series Collection</h2><div class="row" id="hs"></div></div>
+  <div class="gl" style="margin-top:22px"><h2>Explore Realms</h2><div class="tiles" id="rl"></div></div>
+ </section>
+
+ <section class="v" id="v-library" hidden><div class="gl"><h2>Most Popular Picks</h2><div class="ch" id="ch"></div><div id="lib"></div></div></section>
+
+ <section class="v" id="v-book" hidden><div class="gl det" id="dt"></div></section>
+
+ <section class="v" id="v-reader" hidden><div class="gl pgx" id="rd"></div></section>
+
+ <section class="v" id="v-study" hidden>
+  <div class="gl qt"><h2>Study Motivation</h2><p id="qt"></p><button class="btn g" id="nq">NEW QUOTE ✦</button>
+   <div class="tm"><div id="tt">25:00</div><button class="btn" id="ts">START FOCUS</button><button class="btn g" id="tr">RESET</button></div>
+   <div class="tips"><div class="tip"><b>25 + 5</b>Focus 25 minutes, rest 5.</div><div class="tip"><b>Phone away</b>Every quest needs full attention.</div><div class="tip"><b>Night review</b>Sleep locks memory in.</div></div></div>
+ </section>
+
+ <section class="v" id="v-authors" hidden><div class="gl"><h2>Authors</h2><p class="sub" style="margin-bottom:16px">Tap an author to see their books.</p><div class="cg" id="au"></div></div></section>
+
+ <section class="v" id="v-series" hidden><div id="se2"></div></section>
+
+ <section class="v" id="v-profile" hidden><div class="gl"><div style="display:flex;gap:16px;align-items:center;margin-bottom:20px"><div id="pav"></div><div><h2 style="margin:0" id="pnm">Reader</h2><span class="sub" id="psub">Not signed in</span></div></div><div id="pf"></div><div id="acct"></div></div></section>
+
+ <section class="v" id="v-about" hidden><div class="gl ab"><h2>About Ui Books</h2><p>Ui Books is a free home for fantasy tales. Pick a book, read by lantern light, save your favourites and keep your streak alive.</p><div class="tips" style="margin:20px 0"><div class="tip"><b>Read</b>Short chapters made for quick quests.</div><div class="tip"><b>Listen</b>A built-in player for audio chapters.</div><div class="tip"><b>Focus</b>A study timer and daily motivation.</div></div><h3 style="margin-bottom:6px">Questions</h3><details><summary>Is Ui Books free?</summary><p>Yes. Every book here is free to read.</p></details><details><summary>Are my saved books kept?</summary><p>Yes, on this device, until you clear your browser data.</p></details><details><summary>Do you track me?</summary><p>No ads and no analytics. Without an account, everything stays in your browser. With an account, we store your name, email and activity securely. See the <a href="privacy.html" style="color:var(--gold)">privacy policy</a>.</p></details><details><summary>Are the books real?</summary><p>All titles, covers and chapters are original samples written for this site.</p></details><h3 style="margin:24px 0 10px">Contact</h3><form class="fm" id="cf" style="max-width:480px"><input id="cn" placeholder="Your name" aria-label="Your name" required><input id="ce" type="email" placeholder="Your email" aria-label="Your email" required><textarea id="cm" rows="4" placeholder="Your message" aria-label="Your message" required></textarea><button class="btn" type="submit">SEND ✦</button></form></div></section>
+
+ <section class="v" id="v-saved" hidden><div class="gl"><h2>Your Saved Books</h2><div id="sv"></div></div></section>
+<footer class="gl ft"><span><a href="#home">Home</a><a href="#library">Library</a><a href="#authors">Authors</a><a href="#series">Collections</a><a href="#about">About</a><a href="privacy.html">Privacy</a></span><button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to light theme">☼ Light mode</button><span>© 2026 Ui Books · Read by lantern light</span></footer>
+</main>
+</div>
+<div id="mo" class="mo" hidden></div>
+<div id="toast" class="gl" role="status" aria-live="polite" hidden></div>
+<div id="pl" class="gl" hidden><button class="rnd" id="pp" aria-label="Play">❚❚</button><div><b style="font:500 13px Cinzel,serif" id="pt"></b><small style="display:block">Reading aloud</small></div><div class="bar"><i id="pb" style="width:0"></i></div><small id="pm">0:00</small></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+var B=[
+{t:"The Glass Orchard",a:"Elena Voss",g:"Fantasy",c:["#1a2f6e","#0b1640","#7fd6ff"],x:70,y:34,r:13,d:"A hidden orchard grows beneath glass, and every fruit holds a memory.",p:["The first apple fell in silence, and Wren knew the orchard was listening. Beneath the glass, every tree kept a memory, and tonight one of them was bleeding light.","She pressed her palm to the pane. Somewhere in the rows, a branch snapped, and a voice almost her own whispered her name."],q:["Wren followed the glow to the oldest tree. Inside its trunk, a memory waited: her mother, young, laughing in the orchard.","The glass cracked. Wren had one choice: save the orchard, or save the memory."]},
+{t:"Ashes & Crowns",a:"Marcus Hale",g:"Epic",c:["#5a0f1c","#2a0610","#ff9a5a"],x:30,y:38,r:15,d:"Three houses claim one throne, and a crown is won and burned in turn.",p:["The old king died at dusk, and by dawn three houses claimed his crown. Ilsa watched the smoke climb over the capital and understood her family had been chosen as the kindling.","Her brother wanted war. Her mother wanted a wedding. Ilsa wanted only to learn who had poisoned the wine."],q:["Ilsa met her brother at the war table. “The poison came from our own cellar,” she said.","He drew his sword. She drew a letter. One of them would rule by morning."]},
+{t:"The Lantern Road",a:"Iris Kandel",g:"Adventure",c:["#1b1f4d","#0a0d2b","#ffc861"],x:72,y:30,r:10,d:"A courier follows a road lit by lanterns, each marking a broken promise.",p:["Every lantern on the road marked a promise somebody had broken. Mara carried a satchel of letters and one rule: never blow out a flame that is not yours.","By the ninth lantern the wind began to speak, and by the tenth she understood what it wanted."],q:["At the tenth lantern sat an old woman with an empty lamp. “Light it,” she said. “I’ve waited forty years.”","Mara hesitated. Her one rule had never faced a request like this."]},
+{t:"Moonbound Vow",a:"Selene Archer",g:"Romance",c:["#4c1a58","#1f0a35","#ffd6f0"],x:50,y:32,r:16,d:"The moon swore to guard the sea. A stranger on the tide changes everything.",p:["The moon had sworn to guard the sea, and the sea had sworn never to ask for more. Neither kept their vow for long once the stranger arrived on the tide.","He gave no name, only a silver ring and a promise to return before the next full moon."],q:["The stranger returned with the moon, a silver ring on his finger. The sea rose to greet him.","“Choose,” whispered the tide. “Me, or the sky.” He chose neither, and kept them both."]},
+{t:"Fern & Fable",a:"Lucía Ortega",g:"Folklore",c:["#0e4a38","#052a1f","#d9f27a"],x:28,y:30,r:11,d:"Tales from a forest village where animals trade stories for kindness.",p:["In Thistledown, the foxes kept the old stories and the owls kept the ledger. Pay with a kindness, they said, and the forest will give you back a tale.","Pip had only a crust of bread and a crooked smile. It turned out to be enough."],q:["Pip carried the crooked tale to the owls. They weighed it, blinked, and wrote it in the ledger.","“Paid in full,” said the oldest owl. “The forest owes you one more.”"]},
+{t:"The Ninth Bell",a:"Tobias Wren",g:"Mystery",c:["#2e2f66","#10113a","#b6b8ff"],x:68,y:36,r:9,d:"A tower bell rings itself and the town’s clockmakers begin to vanish.",p:["The ninth bell of the tower had never been rung, until the night it rang itself. By morning, three clockmakers were missing and the town had begun to count.","Inspector Fell climbed the stairs alone. At the top, every clock in the room had stopped at the same minute."],q:["Inspector Fell wound the stopped clocks. Each one chimed a name, and the ninth chimed hers.","Below, the great bell rang again. The town stopped counting."]},
+{t:"Dragon of Saltmere",a:"Noor Rahim",g:"Epic",c:["#6b2a0b","#2a0f05","#ffb347"],x:74,y:40,r:14,d:"A seaside town remembers its dragon, and a child hears it answer.",p:["Saltmere remembered the dragon in its tides, in its songs, and in the scars on its cliffs. Tarn was the first child in a century to hear it answer.","It spoke from the deep water, slow and warm as a banked fire: “You are late, little one.”"],q:["Tarn dove into the cold water. The dragon’s eye opened, gold as a sunrise.","“Climb,” it said. Saltmere’s cliffs shrank below as they rose into the storm."]},
+{t:"Starless Atlas",a:"Kai Mercer",g:"Adventure",c:["#3a1d8a","#150b45","#e0b45a"],x:40,y:28,r:12,d:"The stars go out, and a mapmaker redraws the sky from memory.",p:["The stars had gone out one by one, and the mapmakers were the first to notice. Kai unrolled a blank chart and began to draw the sky from memory.","Each point of ink glowed faintly when it dried. Somewhere above, something noticed."],q:["Kai’s inked stars brightened one by one. A thin line of light stretched across the dark.","Something old woke and began to draw back. Together, they finished the sky."]},
+{t:"The Crowned Raven",a:"Edda Frost",g:"Epic",c:["#2a1a40","#0e0820","#c9b6ff"],x:60,y:30,r:11,d:"A raven crowns a thief, and a kingdom forgets its king.",p:["The raven landed on Kaz’s shoulder at midnight and spoke one word: “Rise.” By dawn, the city bells were ringing his name.","He had stolen many things. A crown had never been one of them."],q:["The council called it a curse. The people called it a miracle. Kaz called it a debt, and he knew who would collect.","On the tower, the raven waited, patient as a coming storm."]},
+{t:"Silver Tide Letters",a:"Maren Holt",g:"Romance",c:["#133a5c","#071a30","#aef0ff"],x:30,y:34,r:12,d:"Letters in bottles link two lighthouse keepers across the sea.",p:["The first bottle washed ashore at dawn, sealed with silver wax. Inside, a single line: “Is anyone there?”","Nell answered before she had finished her tea."],q:["By the tenth letter, they no longer talked of weather. They talked of stars, regrets, and the ships that never returned.","The eleventh bottle came back empty. Nell decided to sail."]},
+{t:"Mapmaker’s Gate",a:"Orin Vale",g:"Adventure",c:["#4a2d0e","#1d1005","#ffe08a"],x:72,y:36,r:10,d:"A gate drawn on a map opens into a land no one has named.",p:["Tessa drew the gate as a joke, in the corner of a tavern map. In the morning, it was warm to the touch.","Beyond it lay a valley the sun had forgotten."],q:["The valley had no names yet, so Tessa gave them out like gifts: River Soft, Hill Brave, Lake Almost.","The land listened. Then it began to name her back."]},
+{t:"Hollow Crown Hymn",a:"Zara Quill",g:"Fantasy",c:["#2f0f3f","#12061f","#ff8fb8"],x:45,y:30,r:13,d:"A song hidden in a broken crown can wake the sleeping stars.",p:["The crown was cracked down the middle, and when the wind passed through it, it sang. Only Liv could hear the words.","They were in a language the stars used when no one was listening."],q:["Liv carried the crown to the mountain where the sky is thinnest. There, she sang the missing verse.","One by one, the sleeping stars opened their eyes."]}
+];
+var IDS=["glass-orchard","ashes-and-crowns","lantern-road","moonbound-vow","fern-and-fable","ninth-bell","dragon-of-saltmere","starless-atlas","crowned-raven","silver-tide-letters","mapmakers-gate","hollow-crown-hymn"];B.forEach(function(b,i){b.id=IDS[i]});
+var QS=["One chapter a day builds a whole library.","Small steps, taken daily, cross whole kingdoms.","Focus is the sword. Time is the shield.","Every expert once read page one.","Rest, then return. Heroes need sleep too."];
+var S=[["Dragons & Crowns","Fire, thrones and the price of power.",[1,6,8]],["Moonlit Tales","Romance and wonder under silver skies.",[3,9,11]],["Roads & Maps","Journeys across lost lands and empty skies.",[2,7,10]]],goal=+(function(){try{return localStorage.getItem("uigoal")}catch(e){}})()||12,cur=1,chap=0,tab=0,gen="All",saved=[],day=new Date().getDay(),qi=0,tL=1500,tI=null,pI=null,pos=0,play=false,$=function(i){return document.getElementById(i)};
+try{saved=JSON.parse(localStorage.getItem("uibooks")||"[]")}catch(e){}
+function sv(){try{localStorage.setItem("uibooks",JSON.stringify(saved))}catch(e){}}
+function ini(n){return n.split(" ").map(function(w){return w[0]}).join("")}
+function scene(b){var c=b.c;return '<svg viewBox="0 0 100 140" preserveAspectRatio="xMidYMid slice"><rect width="100" height="140" fill="'+c[0]+'"/><circle cx="'+b.x+'" cy="'+b.y+'" r="'+b.r*1.8+'" fill="'+c[2]+'" opacity=".2"/><circle cx="'+b.x+'" cy="'+b.y+'" r="'+b.r+'" fill="'+c[2]+'"/><path d="M0 105L22 75 40 98 66 62 100 100V140H0Z" fill="'+c[1]+'" opacity=".9"/><path d="M0 122L30 96 55 116 82 90 100 108V140H0Z" fill="#000" opacity=".45"/><g fill="#fff" opacity=".85"><circle cx="14" cy="18" r="1"/><circle cx="40" cy="10" r="1.2"/><circle cx="84" cy="22" r="1"/><circle cx="60" cy="26" r=".8"/></g></svg>'}
+function cover(b){return '<div class="cv">'+scene(b)+'<small>'+b.g+'</small><div class="tt"><strong>'+b.t+'</strong><span class="au">'+b.a+'</span></div></div>'}
+function stars(n){return '<span class="st">'+"★".repeat(n)+'<s>'+"★".repeat(5-n)+'</s></span>'}
+function pgs(i){return hist.filter(function(k){return k.split(":")[0]==i}).length*150}
+function render(){
+ var b=B[cur];
+ $("ol").textContent=b.p[0];$("or").innerHTML=scene(b);
+ $("ct").textContent=b.t;$("ca").textContent="by "+b.a;$("cp").textContent=pgs(cur)+" / 300";$("cb").style.width=(pgs(cur)/3)+"%";
+ $("pop").innerHTML=B.slice(0,6).map(function(x,i){return '<button class="it" data-o="'+i+'">'+cover(x)+'<div class="cp"><b>'+x.t+'</b>'+x.a+'</div></button>'}).join("");
+ var d=new Date(),sun=new Date(d.getFullYear(),d.getMonth(),d.getDate()-d.getDay()),n=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+ $("wk").innerHTML=n.map(function(x,i){var dd=new Date(sun.getFullYear(),sun.getMonth(),sun.getDate()+i);return '<button class="'+(i===day?'on ':'')+(i===d.getDay()?'td':'')+'" data-d="'+i+'"><small>'+x+'</small>'+dd.getDate()+'</button>'}).join("");
+ $("wm").textContent=day===d.getDay()?"Today: read 20 pages of “"+b.t+"”.":"Planned: one chapter of “"+b.t+"”.";
+ var gs=["All"];B.forEach(function(x){if(gs.indexOf(x.g)<0)gs.push(x.g)});
+ $("ch").innerHTML=gs.map(function(g){return '<button class="chip'+(g===gen?' on':'')+'" data-g="'+g+'">'+g+'</button>'}).join("");
+ var f=$("q").value.toLowerCase();
+ function line(i){var x=B[i];return '<div class="ln" tabindex="0" role="link" data-o="'+i+'">'+cover(x)+'<div><h3>'+x.t+'</h3><small>'+x.a+' · '+x.g+'</small><div>'+starsFor(i)+'</div></div><button class="hr'+(saved.indexOf(i)>-1?' on':'')+'" data-s="'+i+'" aria-label="Save">♥</button></div>'}
+ var l="";B.forEach(function(x,i){if((gen==="All"||x.g===gen)&&(!f||(x.t+x.a+x.g).toLowerCase().indexOf(f)>-1))l+=line(i)});
+ $("lib").innerHTML=l||'<p class="emp">No books found.</p>';
+ $("sv").innerHTML=saved.map(line).join("")||'<p class="emp">Nothing saved yet. Tap ♥ on any book.</p>';
+ var sim=B.map(function(x,i){return i}).filter(function(i){return i!==cur}).slice(0,3).map(function(i){return '<button class="it" style="width:auto" data-o="'+i+'">'+cover(B[i])+'</button>'}).join("");
+ var tx=[infoTab(b),'<div id="rvbox"></div>','<div id="cmbox"></div>','<div class="sm">'+sim+'</div>'][tab];
+ $("dt").innerHTML='<div class="dl">'+cover(b)+'</div><div class="dr"><div class="tb">'+["INFO","REVIEWS ("+sc(b,"reviews_count")+")","DISCUSSION ("+sc(b,"comments_count")+")","SIMILAR"].map(function(x,i){return '<button class="'+(i===tab?'on':'')+'" data-t="'+i+'">'+x+'</button>'}).join("")+'</div><h1>'+b.t+'</h1><div class="a">'+b.a+'</div>'+starsFor(cur)+'<div style="min-height:110px">'+tx+'</div><a class="btn" href="#reader">READ</a> <button class="btn t" data-l="1">♫ LISTEN</button> <button class="btn g" data-s="'+cur+'">'+(saved.indexOf(cur)>-1?'♥ SAVED':'♡ SAVE')+'</button></div>';
+ $("rd").innerHTML='<h2 style="margin:0">'+b.t+'</h2><div class="sub">by '+b.a+'</div><div class="bx"><button class="chip'+(chap?'':' on')+'" data-c="0">Chapter 1</button><button class="chip'+(chap?' on':'')+'" data-c="1">Chapter 2</button><button class="rnd" data-f="-1" aria-label="Smaller">A−</button><button class="rnd" data-f="1" aria-label="Larger">A+</button><button class="btn g" data-s="'+cur+'">'+(saved.indexOf(cur)>-1?'♥ SAVED':'♡ SAVE')+'</button></div>'+(chap?b.q:b.p).map(function(x){return '<p>'+x+'</p>'}).join("")+'<p class="sub">More chapters soon…</p>';
+ $("pt").textContent=b.t;paintRating();paintReviews();paintComments();render2();acctUi();
+}
+var MAIL="hello@uibooks.example";
+var hist=[],days=[];try{hist=JSON.parse(localStorage.getItem("uihist")||"[]");days=JSON.parse(localStorage.getItem("uidays")||"[]")}catch(e){}
+function bk(){var s={};hist.forEach(function(k){s[k.split(":")[0]]=1});return Object.keys(s).length}
+function streak(){var n=0,d=new Date();while(days.indexOf(d.toISOString().slice(0,10))>-1){n++;d.setDate(d.getDate()-1)}return n}
+function track(){var k=cur+":"+chap,t=new Date().toISOString().slice(0,10),ch=0;if(hist.indexOf(k)<0){hist.push(k);ch=1}if(days.indexOf(t)<0){days.push(t);ch=1}if(ch)try{localStorage.setItem("uihist",JSON.stringify(hist));localStorage.setItem("uidays",JSON.stringify(days))}catch(e){}}
+function bd(n,c){return '<span class="chip'+(c?' on':'')+'">'+n+'</span>'}
+function speak(){if(!window.speechSynthesis){alert("Audio isn’t supported in this browser.");return}speechSynthesis.cancel();var b=B[cur],u=new SpeechSynthesisUtterance(b.t+". Chapter "+(chap+1)+". "+(chap?b.q:b.p).join(" "));u.rate=.95;u.onend=function(){play=false;$("pp").textContent="▶";$("pb").style.width="100%"};u.onboundary=function(e){$("pb").style.width=Math.min(100,e.charIndex*100/u.text.length)+"%"};$("pl").hidden=false;$("pt").textContent=b.t;$("pm").textContent="Ch. "+(chap+1);play=true;$("pp").textContent="❚❚";speechSynthesis.speak(u)}
+$("cf").onsubmit=function(e){e.preventDefault();location.href="mailto:"+MAIL+"?subject="+encodeURIComponent("Ui Books message from "+$("cn").value)+"&body="+encodeURIComponent($("cm").value+" — "+$("ce").value)};
+document.addEventListener("keydown",function(e){var d=e.target.dataset;if(e.key==="Enter"&&d&&(d.o||d.a)&&e.target.tagName==="DIV")e.target.click()});
+function render2(){
+ var au={},G={};B.forEach(function(x,i){(au[x.a]=au[x.a]||[]).push(i);G[x.g]=(G[x.g]||0)+1});
+ function rw(a){return a.map(function(i){return '<button class="it" data-o="'+i+'">'+cover(B[i])+'<div class="cp"><b>'+B[i].t+'</b>'+B[i].a+'</div></button>'}).join("")}
+ $("au").innerHTML=Object.keys(au).map(function(n){var x=B[au[n][0]];return '<div class="cd" tabindex="0" role="link" data-a="'+n+'"><div class="av" style="width:48px;height:48px">'+ini(n)+'</div><h3>'+n+'</h3><small class="sub">'+x.g+' · '+au[n].length+' book</small><p>'+x.d+'</p></div>'}).join("");
+ $("hs").innerHTML=rw(S[0][2]);
+ $("se2").innerHTML=S.map(function(s){return '<div class="gl" style="margin-bottom:18px"><h2>'+s[0]+'<small class="sub" style="font:16px Crimson Pro">'+s[2].length+' vol · 2 chapters each</small></h2><p class="sub" style="margin-bottom:10px">'+s[1]+'</p><div class="row">'+rw(s[2])+'</div></div>'}).join("");
+ $("rl").innerHTML=Object.keys(G).map(function(g){return '<button class="tile" data-gh="'+g+'"><b>'+g+'</b><small>'+G[g]+' books</small></button>'}).join("");
+ $("pf").innerHTML='<div class="stats">'+[[bk(),"Books started"],[hist.length,"Chapters read"],[streak(),"Day streak"],[saved.length,"Saved"]].map(function(s){return '<div class="stat"><b>'+s[0]+'</b>'+s[1]+'</div>'}).join("")+'</div><h3 style="margin:22px 0 8px">Goal: '+goal+' books this year</h3><div class="bar"><i style="width:'+Math.min(100,bk()*100/goal)+'%"></i></div><p class="sub">'+bk()+' of '+goal+' done. <button class="chip" data-gl="-1">−</button> <button class="chip" data-gl="1">+</button></p><h3 style="margin:22px 0 10px">Badges</h3><div class="ch">'+bd("🐉 Dragon Slayer",hist.some(function(k){return B[+k.split(":")[0]].g==="Epic"}))+bd("🌙 Night Owl",streak()>=3)+bd("📚 Bookworm",bk()>=3)+bd("⭐ Early Reader",hist.length>0)+'</div>';
+}
+function route(){var r=(location.hash||"#home").slice(1);if(!/^(home|library|book|reader|study|saved|authors|series|profile|about)$/.test(r))r="home";
+ document.querySelectorAll(".v").forEach(function(v){v.hidden=v.id!=="v-"+r});
+ var nr=r==="book"?"library":r;document.querySelectorAll("nav [data-r]").forEach(function(n){n.classList.toggle("on",n.dataset.r===nr)});
+ if(r==="reader")track();render();window.scrollTo(0,0);document.title=(r==="home"?"":r[0].toUpperCase()+r.slice(1)+" · ")+"Ui Books"}
+function fmt(s){return Math.floor(s/60)+":"+("0"+s%60).slice(-2)}
+function tick(){if(!play)return;pos=(pos+1)%600;$("pb").style.width=pos/6+"%";$("pm").textContent=fmt(pos)}
+document.addEventListener("click",function(e){var t=e.target,x;
+ if(x=t.closest("[data-s]")){var i=+x.dataset.s,k=saved.indexOf(i);k>-1?saved.splice(k,1):saved.push(i);sv();render();return}
+ if(x=t.closest("[data-l]")){speak();return}
+ if(x=t.closest("[data-gh]")){gen=x.dataset.gh;location.hash="#library";render();return}
+ if(x=t.closest("[data-a]")){$("q").value=x.dataset.a;gen="All";location.hash="#library";render();return}
+ if(x=t.closest("[data-gl]")){goal=Math.max(1,goal+(+x.dataset.gl));try{localStorage.setItem("uigoal",goal)}catch(e){}render();return}
+ if(x=t.closest("[data-c]")){chap=+x.dataset.c;track();render();return}
+ if(x=t.closest("[data-t]")){tab=+x.dataset.t;if(tab===1)loadReviews();if(tab===2)loadComments();render();return}
+ if(x=t.closest("[data-g]")){gen=x.dataset.g;render();return}
+ if(x=t.closest("[data-d]")){day=+x.dataset.d;render();return}
+ if(x=t.closest("[data-f]")){var fs=parseInt(getComputedStyle(document.documentElement).getPropertyValue("--fs"))+2*x.dataset.f;document.documentElement.style.setProperty("--fs",Math.max(15,Math.min(30,fs))+"px");return}
+ if(x=t.closest("[data-o]")){cur=+x.dataset.o;chap=0;tab=0;location.hash="#book"}
+});
+$("pp").onclick=function(){if(!window.speechSynthesis)return;play=!play;this.textContent=play?"❚❚":"▶";play?speechSynthesis.resume():speechSynthesis.pause()};
+$("cd").onclick=function(){chap=0;tab=0};
+$("q").addEventListener("input",function(){if(location.hash!=="#library")location.hash="#library";else render()});
+function nq(){$("qt").textContent="“"+QS[qi]+"”";qi=(qi+1)%QS.length}
+function fm(){$("tt").textContent=("0"+Math.floor(tL/60)).slice(-2)+":"+("0"+tL%60).slice(-2)}
+$("nq").onclick=nq;
+$("ts").onclick=function(){if(tI){clearInterval(tI);tI=null;this.textContent="RESUME";return}this.textContent="PAUSE";tI=setInterval(function(){tL--;fm();if(tL<=0){clearInterval(tI);tI=null;tL=1500;fm();$("ts").textContent="START FOCUS";$("qt").textContent="Well done, hero! Rest 5 minutes."}},1000)};
+$("tr").onclick=function(){clearInterval(tI);tI=null;tL=1500;fm();$("ts").textContent="START FOCUS"};
+// ===== Accounts (Supabase Auth). The key below is the PUBLIC publishable key; security is enforced by database policies. =====
+var SB_URL="https://cqamtbmrlkkerwpnypdh.supabase.co",SB_KEY="sb_publishable_KGq6gw1-ItPA-VBDXgKoNA_cv2LWxil";
+var sb=null,me=null,prof=null,REDIR=location.origin+location.pathname,hadCode=/[?&]code=/.test(location.search);
+try{if(window.supabase)sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{flowType:"pkce",persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})}catch(e){sb=null}
+function toast(m,bad){var t=$("toast");t.textContent=m;t.style.borderColor=bad?"#ff8a9a":"";t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(function(){t.hidden=true},4500)}
+function meta(k){return me&&me.user_metadata&&me.user_metadata[k]}
+function uname(){return(prof&&prof.display_name)||meta("full_name")||meta("name")||(me&&me.email&&me.email.split("@")[0])||"Reader"}
+function avEl(sz){var d=document.createElement("div");d.className="av";if(sz){d.style.width=d.style.height=sz+"px";d.style.fontSize=Math.round(sz/3)+"px"}
+ var u=(prof&&prof.avatar_url)||meta("avatar_url")||meta("picture");
+ if(typeof u==="string"&&/^https:\/\//.test(u)){var i=document.createElement("img");i.alt="";i.referrerPolicy="no-referrer";i.src=u;d.appendChild(i)}else d.textContent=ini(uname()).slice(0,2).toUpperCase();return d}
+function authUi(){
+ var u=$("us");u.textContent="";u.onclick=null;u.style.cursor="";
+ if(me){u.appendChild(avEl());var s=document.createElement("span");s.textContent=uname();u.appendChild(s);u.style.cursor="pointer";u.onclick=function(){location.hash="#profile"}}
+ else{var b=document.createElement("button");b.className="btn";b.textContent="SIGN IN";b.onclick=function(){openAuth("signin")};u.appendChild(b)}
+ $("hh").textContent="Happy reading, "+(me?uname():"reader");
+ var pa=$("pav");pa.textContent="";pa.appendChild(avEl(60));$("pnm").textContent=me?uname():"Reader";
+ $("psub").textContent=me&&prof&&prof.created_at?"Member since "+new Date(prof.created_at).toLocaleDateString():(me?"Signed in":"Not signed in")}
+function acctUi(){var a=$("acct");if(!a)return;
+ if(!me){a.innerHTML='<h3 style="margin:22px 0 8px">Account</h3><p class="sub">Sign in to rate books, join the discussion and keep your library on every device.</p><button class="btn" id="ai">SIGN IN</button>';$("ai").onclick=function(){openAuth("signin")};return}
+ a.innerHTML='<h3 style="margin:22px 0 8px">Account</h3><form class="fm" id="pfm" style="max-width:420px"><label class="sub" for="dn">Display name (public)</label><input id="dn" maxlength="40" required><p class="sub" style="font-size:15px;margin-bottom:12px">Your email is private and is never shown to other readers.</p><button class="btn" type="submit">SAVE NAME</button> <button class="btn g" type="button" id="so">SIGN OUT</button> <button class="btn g" type="button" id="da">DELETE ACCOUNT</button></form><p class="sub" style="margin-top:12px;font-size:15px">Deleting your account removes your ratings and library. Your reviews and comments stay but show as \u201cDeleted reader\u201d.</p>';
+ $("dn").value=uname();
+ $("pfm").onsubmit=function(e){e.preventDefault();var v=$("dn").value.trim();if(v.length<2||v.length>40){toast("Name must be 2 to 40 characters.",true);return}
+  sb.from("profiles").update({display_name:v}).eq("id",me.id).then(function(r){if(r.error){toast("Couldn\u2019t save your name. Please try again.",true);return}if(prof)prof.display_name=v;else prof={display_name:v};authUi();toast("Name saved.")}).catch(function(){toast("Network problem. Please try again.",true)})};
+ $("so").onclick=function(){sb.auth.signOut()};
+ $("da").onclick=function(){if(!confirm("Delete your account? This cannot be undone."))return;sb.rpc("delete_my_account").then(function(r){if(r.error){toast("Couldn\u2019t delete the account. Please try again.",true);return}sb.auth.signOut();toast("Your account was deleted.")}).catch(function(){toast("Network problem. Please try again.",true)})}}
+function setMsg(t,c){var e=$("am");if(e){e.textContent=t;e.className="msg "+(c||"")}}
+function friendly(e){var m=((e&&e.message)||"").toLowerCase();
+ if(m.indexOf("invalid login")>-1)return"Wrong email or password.";
+ if(m.indexOf("not confirmed")>-1)return"Please confirm your email first. Check your inbox.";
+ if(m.indexOf("already")>-1)return"This email already has an account. Try signing in.";
+ if(m.indexOf("rate limit")>-1||m.indexOf("too many")>-1||m.indexOf("seconds")>-1)return"Too many attempts. Please wait a bit and try again.";
+ if(m.indexOf("password")>-1)return"That password is too short or too weak.";
+ if(m.indexOf("fetch")>-1||m.indexOf("network")>-1)return"Network problem. Check your connection.";
+ return"Something went wrong. Please try again."}
+function call(p,ok){var b=$("af")&&$("af").querySelector("[type=submit]");p.then(function(r){if(b)b.disabled=false;if(r.error)setMsg(friendly(r.error),"er");else ok(r)}).catch(function(){if(b)b.disabled=false;setMsg("Network problem. Please try again.","er")})}
+function closeAuth(){var m=$("mo");m.hidden=true;m.innerHTML=""}
+function openAuth(mode){
+ var m=$("mo"),ti={signin:"Sign in",signup:"Create account",forgot:"Reset password",newpw:"New password"}[mode];
+ var h='<div class="box gl" role="dialog" aria-modal="true" aria-labelledby="mt"><button class="x" id="mx" aria-label="Close">\u00d7</button><h2 id="mt">'+ti+'</h2>';
+ if(!sb){m.innerHTML=h+'<p class="sub">Accounts are unavailable right now. You can still read everything.</p></div>';m.hidden=false;$("mx").onclick=closeAuth;return}
+ if(mode==="signin"||mode==="signup")h+='<button class="btn oa" data-p="google">Continue with Google</button><button class="btn oa" data-p="facebook">Continue with Facebook</button><div class="or">or use email</div>';
+ h+='<form class="fm" id="af">';
+ if(mode==="signup")h+='<input id="an2" placeholder="Display name" aria-label="Display name" maxlength="40" minlength="2" required autocomplete="nickname">';
+ if(mode!=="newpw")h+='<input id="ae" type="email" placeholder="Email" aria-label="Email" required autocomplete="email">';
+ if(mode!=="forgot")h+='<input id="ap" type="password" placeholder="Password (8+ characters)" aria-label="Password" minlength="8" required autocomplete="'+(mode==="signin"?"current-password":"new-password")+'">';
+ h+='<div class="msg" id="am" role="status" aria-live="polite"></div><button class="btn" type="submit" style="width:100%;justify-content:center">'+{signin:"SIGN IN",signup:"CREATE ACCOUNT",forgot:"SEND RESET LINK",newpw:"SAVE PASSWORD"}[mode]+'</button></form><p class="sub" style="margin-top:14px;font-size:15px">';
+ if(mode==="signin")h+='<button class="lk" data-m="forgot">Forgot password?</button> \u00b7 <button class="lk" data-m="signup">Create account</button>';
+ else if(mode==="signup")h+='Have an account? <button class="lk" data-m="signin">Sign in</button><br>By joining you accept the <a class="lk" href="privacy.html" target="_blank" rel="noopener">privacy policy</a>.';
+ else h+='<button class="lk" data-m="signin">Back to sign in</button>';
+ m.innerHTML=h+'</p></div>';m.hidden=false;
+ m.onclick=function(e){if(e.target===m){closeAuth();return}var x=e.target.closest("[data-p]");if(x){oauth(x.dataset.p);return}x=e.target.closest("[data-m]");if(x)openAuth(x.dataset.m)};
+ $("mx").onclick=closeAuth;
+ $("af").onsubmit=function(e){e.preventDefault();submitAuth(mode)};
+ (m.querySelector("input")||$("mx")).focus()}
+function oauth(p){setMsg("Opening "+p+"\u2026");sb.auth.signInWithOAuth({provider:p,options:{redirectTo:REDIR}}).then(function(r){if(r.error)setMsg(friendly(r.error),"er")}).catch(function(){setMsg("Network problem. Please try again.","er")})}
+function submitAuth(mode){
+ var em=$("ae")?$("ae").value.trim():"",pw=$("ap")?$("ap").value:"";$("af").querySelector("[type=submit]").disabled=true;setMsg("Please wait\u2026");
+ if(mode==="signin")call(sb.auth.signInWithPassword({email:em,password:pw}),function(){closeAuth();toast("Welcome back!")});
+ else if(mode==="signup")call(sb.auth.signUp({email:em,password:pw,options:{data:{full_name:$("an2").value.trim()},emailRedirectTo:REDIR}}),function(r){if(r.data&&r.data.session){closeAuth();toast("Account created!")}else setMsg("Check your email to confirm your account.","ok")});
+ else if(mode==="forgot")call(sb.auth.resetPasswordForEmail(em,{redirectTo:REDIR}),function(){setMsg("If that email has an account, a reset link is on its way.","ok")});
+ else call(sb.auth.updateUser({password:pw}),function(){closeAuth();toast("Password updated.")})}
+function loadProf(){MINE={};if(!me){RV={};CM={}}if(!sb||!me){prof=null;authUi();acctUi();paintRating();paintReviews();paintComments();return}loadMine();if(isBook()){if(tab===1)loadReviews();if(tab===2)loadComments()}
+ sb.from("profiles").select("display_name,avatar_url,created_at").eq("id",me.id).maybeSingle().then(function(r){prof=r.data||null;authUi();acctUi()}).catch(function(){prof=null;authUi();acctUi()})}
+(function(){var q=new URLSearchParams(location.search),h2=new URLSearchParams(location.hash.replace(/^#/,"")),e=q.get("error_description")||h2.get("error_description");
+ if(e){var den=q.get("error")==="access_denied"||h2.get("error")==="access_denied";toast(den?"Sign-in was canceled.":"Sign-in problem: "+e.replace(/\+/g," ").slice(0,120),true);history.replaceState(null,"",REDIR)}})();
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!$("mo").hidden)closeAuth()});
+authUi();acctUi();
+if(sb){
+ sb.auth.getSession().then(function(r){me=r.data&&r.data.session?r.data.session.user:null;loadProf()}).catch(function(){});
+ sb.auth.onAuthStateChange(function(ev,s){var was=me;me=s?s.user:null;
+  if(ev==="PASSWORD_RECOVERY")setTimeout(function(){openAuth("newpw")},0);
+  if(ev==="SIGNED_OUT"&&was)toast("You\u2019re signed out.");
+  if(ev==="SIGNED_IN"&&hadCode){hadCode=false;toast("Signed in!")}
+  setTimeout(loadProf,0)})}
+// ===== Ratings, reviews, comments (Supabase tables + policies) =====
+var STATS={},MINE={},RV={},CM={},rvSort="new",CMN=10;
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function nm(p){return p&&p.display_name?p.display_name:"Deleted reader"}
+function dtf(x){try{return new Date(x).toLocaleDateString()}catch(e){return""}}
+function avH(p,n){var u=p&&p.avatar_url;if(typeof u==="string"&&/^https:\/\//.test(u))return'<div class="av"><img src="'+esc(u)+'" alt="" referrerpolicy="no-referrer" loading="lazy"></div>';return'<div class="av">'+esc(ini(n||"Reader").slice(0,2).toUpperCase())+'</div>'}
+function sc(b,k){var s=STATS[b.id];return s?s[k]:0}
+function starsFor(i){var s=STATS[B[i].id];return s&&s.ratings_count?stars(Math.round(s.average))+' <small>'+Number(s.average).toFixed(1)+' ('+s.ratings_count+')</small>':'<small class="sub">No ratings yet</small>'}
+function isBook(){return(location.hash||"").slice(1)==="book"}
+function netErr(){toast("Network problem. Please try again.",true)}
+function infoTab(b){return'<p>'+b.d+' A story of '+b.g.toLowerCase()+', moonlight and courage, told in two short chapters.</p><div id="rwbox"></div>'}
+function loadStats(){if(!sb)return;sb.from("book_stats").select("*").then(function(r){if(r.data){STATS={};r.data.forEach(function(s){STATS[s.book_id]=s});if(isBook()){paintRating();var t=document.querySelectorAll(".tb button");if(t[1])t[1].textContent="REVIEWS ("+sc(B[cur],"reviews_count")+")";if(t[2])t[2].textContent="DISCUSSION ("+sc(B[cur],"comments_count")+")"}else render()}}).catch(function(){})}
+function loadMine(){if(!sb||!me)return;sb.from("ratings").select("book_id,rating").eq("user_id",me.id).then(function(r){MINE={};(r.data||[]).forEach(function(x){MINE[x.book_id]=x.rating});paintRating()}).catch(function(){})}
+function paintRating(){var box=$("rwbox");if(!box)return;var b=B[cur],s=STATS[b.id]||{ratings_count:0},mine=MINE[b.id]||0,h='<div class="rw"><span class="sub">Your rating:</span> ';
+ for(var i=1;i<=5;i++)h+='<button class="sb'+(i<=mine?' on':'')+'" data-star="'+i+'" aria-label="Rate '+i+(i>1?' stars':' star')+'">\u2605</button>';
+ if(mine)h+=' <button class="lk" data-unrate="1">Remove</button>';
+ h+='</div>';
+ if(!sb)h+='<p class="sub" style="margin:8px 0">Ratings are unavailable right now.</p>';
+ else if(!s.ratings_count)h+='<p class="sub" style="margin:8px 0">No ratings yet. Be the first to rate this book.</p>';
+ else{h+='<p style="margin:10px 0 6px"><b style="color:var(--gold);font:700 24px Cinzel,serif">'+Number(s.average).toFixed(1)+'</b> <span class="sub">/ 5 \u00b7 '+s.ratings_count+(s.ratings_count>1?' ratings':' rating')+'</span></p><div class="dist">';
+  for(var k=5;k>=1;k--){var c=s["stars_"+k]||0,pc=Math.round(c*100/s.ratings_count);h+='<div><span>'+k+'\u2605</span><i><b style="width:'+pc+'%"></b></i><span>'+pc+'%</span></div>'}h+='</div>'}
+ box.innerHTML=h}
+function loadReviews(){var id=B[cur].id;if(!sb){paintReviews();return}
+ var q=sb.from("review_feed").select("id,user_id,body,created_at,edited_at,rating,display_name,avatar_url").eq("book_id",id);
+ q=rvSort==="old"?q.order("created_at",{ascending:true}):rvSort==="rating"?q.order("rating",{ascending:false,nullsFirst:false}).order("created_at",{ascending:false}):q.order("created_at",{ascending:false});
+ Promise.all([q.limit(50),me?sb.from("reviews").select("id,body,status").eq("book_id",id).eq("user_id",me.id).maybeSingle():Promise.resolve({data:null})]).then(function(a){RV[id]={rows:a[0].data||[],err:!!a[0].error,mine:a[1].data||null};paintReviews()}).catch(function(){RV[id]={rows:[],err:true,mine:null};paintReviews()})}
+function paintReviews(){var box=$("rvbox");if(!box)return;var id=B[cur].id,d=RV[id];
+ if(!sb){box.innerHTML='<p class="sub">Reviews are unavailable right now.</p>';return}
+ if(!d){box.innerHTML='<p class="sub">Loading\u2026</p>';return}
+ var h='';
+ if(!me)h+='<p class="sub" style="margin:0 0 10px">Sign in to write a review.</p><button class="btn g" data-signin="1">SIGN IN</button>';
+ else{var m=d.mine;h+='<form class="fm" id="rvf"><textarea id="rvt" rows="4" maxlength="5000" dir="auto" aria-label="Your review" placeholder="What did you think? (10+ characters)"></textarea>'+(m&&m.status==="hidden"?'<p class="msg er">A moderator hid your review.</p>':'')+'<button class="btn" type="submit">'+(m?"UPDATE REVIEW":"POST REVIEW")+'</button>'+(m?' <button class="btn g" type="button" data-delrv="'+esc(m.id)+'">DELETE</button>':'')+'</form>'}
+ h+='<div class="srt"><span class="sub">Sort:</span>'+[["new","Newest"],["old","Oldest"],["rating","Rating"]].map(function(s){return'<button class="chip'+(rvSort===s[0]?' on':'')+'" data-sort="'+s[0]+'">'+s[1]+'</button>'}).join("")+'</div>';
+ if(d.err)h+='<p class="msg er">Couldn\u2019t load reviews. Please try again later.</p>';
+ else if(!d.rows.length)h+='<p class="sub">No reviews yet. Be the first.</p>';
+ else h+=d.rows.map(function(r){return'<div class="fr">'+avH({avatar_url:r.avatar_url},r.display_name)+'<div style="flex:1;min-width:0"><b>'+esc(nm({display_name:r.display_name}))+'</b> <small class="sub">'+dtf(r.created_at)+(r.edited_at?" \u00b7 edited":"")+'</small>'+(r.rating?'<div>'+stars(r.rating)+'</div>':'')+'<em dir="auto">'+esc(r.body)+'</em>'+(me&&r.user_id===me.id?'':'<div class="act"><button class="lk" data-rep="review:'+esc(r.id)+'">Report</button></div>')+'</div></div>'}).join("");
+ box.innerHTML=h;
+ if(me&&d.mine&&$("rvt"))$("rvt").value=d.mine.body}
+function saveReview(){var id=B[cur].id,v=$("rvt").value.trim(),m=RV[id]&&RV[id].mine;
+ if(v.length<10){toast("Please write at least 10 characters.",true);return}
+ (m?sb.from("reviews").update({body:v}).eq("id",m.id):sb.from("reviews").insert({book_id:id,body:v})).then(function(r){
+  if(r.error){toast(r.error.code==="23505"?"You already reviewed this book.":(r.error.message||"").indexOf("Too many")===0?r.error.message:"Couldn\u2019t save your review.",true);return}
+  toast(m?"Review updated.":"Review posted.");loadReviews();loadStats()}).catch(netErr)}
+function loadComments(more){var id=B[cur].id;if(!sb){paintComments();return}var c=CM[id]||(CM[id]={n:CMN});if(more)c.n+=CMN;
+ var F="id,user_id,parent_id,body,created_at,edited_at,status,profiles(display_name,avatar_url)";
+ sb.from("comments").select(F).eq("book_id",id).is("parent_id",null).order("created_at",{ascending:false}).range(0,c.n).then(function(r){
+  if(r.error){c.err=true;c.rows=[];paintComments();return}
+  var rows=r.data||[];c.err=false;c.more=rows.length>c.n;c.rows=rows.slice(0,c.n);c.reps={};
+  var ids=c.rows.map(function(x){return x.id});if(!ids.length){paintComments();return}
+  return sb.from("comments").select(F).in("parent_id",ids).order("created_at",{ascending:true}).then(function(q){(q.data||[]).forEach(function(x){(c.reps[x.parent_id]=c.reps[x.parent_id]||[]).push(x)});paintComments()})}).catch(function(){c.err=true;paintComments()})}
+function cmH(x,rep){var p=x.profiles,own=me&&x.user_id===me.id;
+ return'<div class="fr" data-cid="'+esc(x.id)+'">'+avH(p,nm(p))+'<div style="flex:1;min-width:0"><b>'+esc(nm(p))+'</b> <small class="sub">'+dtf(x.created_at)+(x.edited_at?" \u00b7 edited":"")+'</small>'+(x.status==="hidden"?'<div class="msg er">Hidden by a moderator.</div>':'')+'<em dir="auto">'+esc(x.body)+'</em><div class="act">'+(rep?"":'<button class="lk" data-reply="'+esc(x.id)+'">Reply</button> ')+(own?'<button class="lk" data-edit="'+esc(x.id)+'">Edit</button> <button class="lk" data-delc="'+esc(x.id)+'">Delete</button>':'<button class="lk" data-rep="comment:'+esc(x.id)+'">Report</button>')+'</div><div class="slot"></div></div></div>'}
+function paintComments(){var box=$("cmbox");if(!box)return;var id=B[cur].id,c=CM[id];
+ if(!sb){box.innerHTML='<p class="sub">Discussion is unavailable right now.</p>';return}
+ var h=me?'<form class="fm" id="cmf"><textarea id="cmt" rows="3" maxlength="2000" dir="auto" aria-label="Write a comment" placeholder="Join the discussion\u2026"></textarea><button class="btn" type="submit">POST COMMENT</button></form>':'<p class="sub" style="margin:0 0 10px">Sign in to join the discussion.</p><button class="btn g" data-signin="1">SIGN IN</button>';
+ if(!c||!c.rows&&!c.err)h+='<p class="sub" style="margin-top:14px">Loading\u2026</p>';
+ else if(c.err)h+='<p class="msg er" style="margin-top:14px">Couldn\u2019t load comments. Please try again later.</p>';
+ else if(!c.rows.length)h+='<p class="sub" style="margin-top:14px">No comments yet. Start the conversation.</p>';
+ else{h+='<div style="margin-top:16px">'+c.rows.map(function(x){return cmH(x,false)+(c.reps[x.id]||[]).map(function(y){return'<div style="margin-left:34px">'+cmH(y,true)+'</div>'}).join("")}).join("")+'</div>';if(c.more)h+='<button class="btn g" data-more="1">LOAD MORE</button>'}
+ box.innerHTML=h}
+function findC(cid){var c=CM[B[cur].id],all=[];if(!c||!c.rows)return null;c.rows.forEach(function(x){all.push(x);(c.reps[x.id]||[]).forEach(function(y){all.push(y)})});return all.filter(function(x){return x.id===cid})[0]||null}
+function slotForm(cid,kind,val){var row=document.querySelector('[data-cid="'+cid+'"] .slot');if(!row)return;row.innerHTML='<form class="fm" data-form="'+kind+':'+esc(cid)+'"><textarea rows="2" maxlength="2000" dir="auto" aria-label="'+kind+'" required></textarea><button class="btn" type="submit">'+(kind==="edit"?"SAVE":"REPLY")+'</button> <button class="lk" type="button" data-cancel="1">Cancel</button></form>';var ta=row.querySelector("textarea");ta.value=val||"";ta.focus()}
+function postComment(f,parent){var ta=f.querySelector("textarea"),v=ta.value.trim();if(!v){toast("Please write something first.",true);return}
+ sb.from("comments").insert({book_id:B[cur].id,parent_id:parent,body:v}).then(function(r){if(r.error){toast((r.error.message||"").indexOf("Too many")===0?r.error.message:(r.error.message||"").indexOf("Invalid reply")===0?"That comment is no longer available.":"Couldn\u2019t post your comment.",true);return}ta.value="";toast("Comment posted.");loadComments();loadStats();loadFriends()}).catch(netErr)}
+function editComment(f,cid){var v=f.querySelector("textarea").value.trim();if(!v){toast("Comment can\u2019t be empty.",true);return}
+ sb.from("comments").update({body:v}).eq("id",cid).then(function(r){if(r.error){toast("Couldn\u2019t save your changes.",true);return}toast("Comment updated.");loadComments();loadFriends()}).catch(netErr)}
+function openReport(key){if(!me){toast("Sign in to report content.");openAuth("signin");return}
+ var m=$("mo");m.innerHTML='<div class="box gl" role="dialog" aria-modal="true" aria-labelledby="mt"><button class="x" id="mx" aria-label="Close">\u00d7</button><h2 id="mt">Report</h2><form class="fm" id="rpf" data-k="'+esc(key)+'"><textarea id="rpt" rows="3" maxlength="500" placeholder="What is wrong with this content?" aria-label="Reason" required></textarea><div class="msg" id="am" role="status" aria-live="polite"></div><button class="btn" type="submit">SEND REPORT</button></form></div>';
+ m.hidden=false;m.onclick=function(e){if(e.target===m)closeAuth()};$("mx").onclick=closeAuth;$("rpt").focus()}
+function sendReport(f){var p=f.dataset.k.split(":"),v=$("rpt").value.trim();if(v.length<3){setMsg("Please give a short reason.","er");return}
+ sb.from("reports").insert({target_type:p[0],target_id:p[1],reason:v}).then(function(r){if(r.error){setMsg(r.error.code==="23505"?"You already reported this.":(r.error.message||"").indexOf("Too many")===0?r.error.message:"Couldn\u2019t send the report.","er");return}closeAuth();toast("Thanks. A moderator will review it.")}).catch(function(){setMsg("Network problem. Please try again.","er")})}
+function loadFriends(){var b=$("rf");if(!b)return;if(!sb){b.innerHTML='<p class="sub">Comments will appear here.</p>';return}
+ sb.from("comments").select("body,created_at,book_id,profiles(display_name,avatar_url)").order("created_at",{ascending:false}).limit(3).then(function(r){var rows=r.data||[];
+  b.innerHTML=r.error?'<p class="sub">Couldn\u2019t load comments right now.</p>':rows.length?rows.map(function(x){var bk=B.filter(function(y){return y.id===x.book_id})[0];return'<div class="fr">'+avH(x.profiles,nm(x.profiles))+'<div style="min-width:0"><b>'+esc(nm(x.profiles))+'</b>'+(bk?' <small class="sub">on '+esc(bk.t)+'</small>':'')+'<em dir="auto">'+esc(x.body.length>140?x.body.slice(0,140)+"\u2026":x.body)+'</em></div></div>'}).join(""):'<p class="sub">No comments yet. Open a book and start the conversation.</p>'}).catch(function(){b.innerHTML='<p class="sub">Couldn\u2019t load comments right now.</p>'})}
+document.addEventListener("click",function(e){var t=e.target,x;
+ if(x=t.closest("[data-star]")){if(!me){toast("Sign in to rate this book.");openAuth("signin");return}var n=+x.dataset.star,id=B[cur].id;sb.rpc("rate_book",{p_book:id,p_rating:n}).then(function(r){if(r.error){toast((r.error.message||"").indexOf("Too many")===0?r.error.message:"Couldn\u2019t save your rating.",true);return}MINE[id]=n;paintRating();loadStats();toast("Rating saved.")}).catch(netErr);return}
+ if(x=t.closest("[data-unrate]")){var i2=B[cur].id;sb.from("ratings").delete().eq("book_id",i2).eq("user_id",me.id).then(function(r){if(r.error){toast("Couldn\u2019t remove your rating.",true);return}delete MINE[i2];paintRating();loadStats();toast("Rating removed.")}).catch(netErr);return}
+ if(x=t.closest("[data-signin]")){openAuth("signin");return}
+ if(x=t.closest("[data-sort]")){rvSort=x.dataset.sort;loadReviews();return}
+ if(x=t.closest("[data-delrv]")){if(confirm("Delete your review?"))sb.from("reviews").delete().eq("id",x.dataset.delrv).then(function(r){if(r.error){toast("Couldn\u2019t delete the review.",true);return}toast("Review deleted.");loadReviews();loadStats()}).catch(netErr);return}
+ if(x=t.closest("[data-reply]")){if(!me){openAuth("signin");return}slotForm(x.dataset.reply,"reply","");return}
+ if(x=t.closest("[data-edit]")){var c=findC(x.dataset.edit);slotForm(x.dataset.edit,"edit",c?c.body:"");return}
+ if(x=t.closest("[data-cancel]")){var s=x.closest(".slot");if(s)s.innerHTML="";return}
+ if(x=t.closest("[data-delc]")){if(confirm("Delete this comment?"))sb.from("comments").delete().eq("id",x.dataset.delc).then(function(r){if(r.error){toast("Couldn\u2019t delete the comment.",true);return}toast("Comment deleted.");loadComments();loadStats();loadFriends()}).catch(netErr);return}
+ if(x=t.closest("[data-more]")){loadComments(true);return}
+ if(x=t.closest("[data-rep]")){openReport(x.dataset.rep)}
+});
+document.addEventListener("submit",function(e){var f=e.target,k=(f.dataset&&f.dataset.form)||f.id;
+ if(k==="rvf"){e.preventDefault();saveReview()}
+ else if(k==="cmf"){e.preventDefault();postComment(f,null)}
+ else if(k&&k.indexOf("reply:")===0){e.preventDefault();postComment(f,k.slice(6))}
+ else if(k&&k.indexOf("edit:")===0){e.preventDefault();editComment(f,k.slice(5))}
+ else if(k==="rpf"){e.preventDefault();sendReport(f)}});
+loadStats();loadFriends();
+window.addEventListener("hashchange",route);
+(function(){var root=document.documentElement,button=$("themeToggle"),theme="dark";try{theme=localStorage.getItem("ui-theme")==="light"?"light":"dark"}catch(e){}
+ function apply(next){theme=next;if(theme==="light")root.setAttribute("data-theme","light");else root.removeAttribute("data-theme");button.textContent=theme==="light"?"☾ Dark mode":"☼ Light mode";button.setAttribute("aria-label","Switch to "+(theme==="light"?"dark":"light")+" theme")}
+ apply(theme);button.addEventListener("click",function(){apply(theme==="light"?"dark":"light");try{localStorage.setItem("ui-theme",theme)}catch(e){}})
+})();
+nq();fm();route();
+</script>
+</body>
+</html>
