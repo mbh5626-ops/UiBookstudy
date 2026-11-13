@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#04020d">
+<title>Ui Books · Admin</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2314082e'/%3E%3Ctext x='32' y='43' font-size='30' text-anchor='middle' fill='%23e0b45a' font-family='serif'%3EUi%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--ink:#f4ead2;--mu:#a9a1c8;--ln:rgba(190,160,255,.18);--gold:#e0b45a;--em:#d9546e;--teal:#3fc6b8;--gl:rgba(12,7,32,.72)}
+*{box-sizing:border-box;margin:0}
+[hidden]{display:none!important}
+body{background:#04020d;color:var(--ink);font:17px/1.4 "Crimson Pro",Georgia,serif;min-height:100vh;overflow-x:hidden}
+a{color:inherit;text-decoration:none}button{font:inherit;color:inherit;cursor:pointer}
+.bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:radial-gradient(ellipse at 50% 130%,#2a0f5c,transparent 60%),#04020d}
+.bg .aur{position:absolute;left:50%;top:50%;width:130vmax;height:130vmax;margin:-65vmax;background:conic-gradient(from 0deg,#7d55d7,#04020d 18%,#3fc6b8 32%,#04020d 48%,#e0b45a 62%,#04020d 76%,#d9546e 88%,#7d55d7);filter:blur(110px);opacity:.4;animation:spin 60s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.bg .aur{animation:none}}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:14px 14px 110px}
+.gl{background:var(--gl);border:1px solid var(--ln);border-radius:20px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding:18px}
+h1,h2,h3{font-family:Cinzel,serif;font-weight:500}
+h1{font-size:28px;color:var(--gold)}h2{font-size:18px;color:var(--gold);margin-bottom:12px}h3{font-size:15px;margin-bottom:6px}
+.sub{color:var(--mu)}.center{text-align:center;padding:30px 0}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;padding:12px 16px}
+.brand{font:700 20px Cinzel,serif;color:var(--gold);text-shadow:0 0 14px var(--gold)}.brand span{color:var(--ink);font-size:14px;letter-spacing:.14em;margin-left:6px}
+.who{flex:1;min-width:120px;color:var(--mu);font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:10px;padding:11px 18px;font:700 12px Cinzel,serif;letter-spacing:.08em;background:linear-gradient(135deg,var(--gold),#b9822f);color:#2a1606;box-shadow:0 6px 22px rgba(224,180,90,.3)}
+.btn.t{background:linear-gradient(135deg,var(--teal),#1f7f9a);color:#04201e;box-shadow:none}
+.btn.g{background:rgba(255,255,255,.06);color:var(--ink);box-shadow:none;border:1px solid var(--ln)}
+.btn.dg{background:linear-gradient(135deg,#d9546e,#9a2142);color:#fff;box-shadow:none}
+.btn.sm{padding:8px 12px;font-size:11px}
+.btn:disabled{opacity:.5;cursor:default}
+.lk{background:none;border:0;color:var(--gold);text-decoration:underline;font:inherit;padding:0;cursor:pointer}
+.chip{border:1px solid var(--ln);background:rgba(255,255,255,.04);border-radius:99px;padding:6px 14px;font:500 12px Cinzel,serif;color:var(--mu)}.chip.on{background:var(--gold);color:#2a1606;border-color:var(--gold)}
+.badge{display:inline-block;border-radius:99px;padding:2px 10px;font:700 10px Cinzel,serif;letter-spacing:.08em;border:1px solid var(--ln);color:var(--mu)}
+.badge.pub{color:#04201e;background:var(--teal);border-color:var(--teal)}.badge.hid{color:#fff;background:var(--em);border-color:var(--em)}
+.stats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.stats .chip b{color:var(--gold);margin-right:4px}
+label.l{display:block;color:var(--mu);font-size:14px;margin:10px 0 4px}
+input,textarea,select{width:100%;background:rgba(255,255,255,.06);border:1px solid var(--ln);border-radius:10px;padding:10px 14px;color:var(--ink);font:inherit;font-size:16px}
+select option{background:#14082e;color:var(--ink)}
+input:disabled,textarea:disabled,select:disabled{opacity:.6}
+textarea{resize:vertical;min-height:90px}
+input[type=checkbox]{width:20px;height:20px;accent-color:var(--gold)}
+.sw{display:flex;align-items:center;gap:12px;margin:10px 0}.sw span{flex:1}
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:560px){.row2{grid-template-columns:1fr}}
+.bar2{display:flex;gap:10px;margin-bottom:12px}.bar2 input{flex:1}
+.card{display:flex;gap:14px;align-items:center;padding:12px;border:1px solid var(--ln);border-radius:16px;background:rgba(255,255,255,.04);margin-bottom:10px;cursor:pointer;width:100%;text-align:left}
+.card:hover{border-color:var(--gold)}
+.th{flex:none;width:46px;height:64px;border-radius:3px 8px 8px 3px;overflow:hidden;background:linear-gradient(160deg,#3a1d8a,#150b45);display:grid;place-items:center;font:700 20px Cinzel,serif;color:var(--gold);box-shadow:0 8px 16px -6px #000}
+.th img{width:100%;height:100%;object-fit:cover;display:block}
+.card .t{flex:1;min-width:0}.card b{display:block;font:500 15px Cinzel,serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sec{margin-bottom:14px}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.cov{width:130px;aspect-ratio:3/4.2;border-radius:3px 8px 8px 3px;overflow:hidden;background:linear-gradient(160deg,#3a1d8a,#150b45);display:grid;place-items:center;color:var(--mu);font-size:13px;text-align:center;box-shadow:0 14px 24px -8px #000}.cov img{width:100%;height:100%;object-fit:cover}
+.cvrow{display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap}
+.chr{display:flex;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--ln)}.chr:last-child{border:0}.chr .n{flex:none;width:30px;color:var(--gold);font:700 14px Cinzel,serif}.chr .tt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ib{width:36px;height:36px;border-radius:10px;border:1px solid var(--ln);background:rgba(255,255,255,.05);font-size:16px;line-height:1}.ib:disabled{opacity:.35}
+.item{border:1px solid var(--ln);border-radius:14px;padding:12px 14px;margin-bottom:10px;background:rgba(255,255,255,.04)}
+.item .meta{font-size:14px;margin-bottom:4px}.item .meta b{font:500 13px Cinzel,serif}
+.item p.bd{white-space:pre-wrap;overflow-wrap:anywhere;font-size:16px}
+.item .why{color:#ff8a9a;font-size:15px;margin-bottom:4px}
+.sub2{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.flt{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}@media(max-width:560px){.flt{grid-template-columns:1fr}}
+.msg{min-height:22px;font-size:15px;margin:4px 0;color:var(--mu)}.msg.er{color:#ff8a9a}
+.err{color:#ff8a9a;padding:14px 0}
+.login{max-width:420px;margin:12vh auto 0}.login h1{margin-bottom:6px}.login form{margin:14px 0}.login input{margin-bottom:10px}
+.tabs{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:6;display:flex;gap:4px;padding:6px;background:var(--gl);border:1px solid var(--ln);border-radius:30px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);width:min(520px,calc(100% - 20px));justify-content:space-around}
+.tabs button{flex:1;background:none;border:0;border-radius:24px;padding:10px 6px;font:700 11px Cinzel,serif;letter-spacing:.06em;color:var(--mu)}
+.tabs button.on{background:linear-gradient(135deg,var(--em),#7a2a9a);color:#fff}
+.mo{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:14px;background:rgba(2,1,8,.78);backdrop-filter:blur(6px)}
+.mo .box{width:min(640px,100%);max-height:94vh;overflow:auto;position:relative;background:#120a2a}
+.mo .x{position:absolute;right:12px;top:8px;background:none;border:0;font-size:26px;line-height:1;color:var(--mu)}
+#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);z-index:60;max-width:min(92vw,440px);padding:12px 18px;border-radius:14px;font-size:16px}
+.cnt{color:var(--mu);font-size:14px;text-align:right}
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true"><b class="aur"></b></div>
+<noscript><p style="position:relative;z-index:2;padding:20px">The admin page needs JavaScript.</p></noscript>
+<div class="wrap" id="app"><p class="center sub">Loading…</p></div>
+<div id="mo" class="mo" hidden></div>
+<div id="toast" class="gl" role="status" aria-live="polite" hidden></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+(function(){
+"use strict";
+var SB_URL="https://cqamtbmrlkkerwpnypdh.supabase.co",SB_KEY="sb_publishable_KGq6gw1-ItPA-VBDXgKoNA_cv2LWxil";
+var app=document.getElementById("app"),sb=null;
+try{if(window.supabase)sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{flowType:"pkce",persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}})}catch(e){sb=null}
+
+var BOOKP=["books.create","books.edit","books.publish","books.delete","chapters.create","chapters.edit","chapters.delete","covers.upload"];
+var BCOLS="id,title,author,genre,description,cover_url,cover_path,published,comments_enabled,sort_order,created_at,updated_at";
+var S={me:null,owner:false,perms:{},tab:"books",books:[],q:"",bookId:null,chapters:[],stats:null,
+  cm:{sub:"reports",book:"",status:"",n:30},log:{n:50}};
+
+/* ---------- helpers ---------- */
+function $(i){return document.getElementById(i)}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function can(p){return S.owner||!!S.perms[p]}
+function canAny(a){return a.some(can)}
+function ck(r){if(r.error)throw r.error;return r.data}
+function one(r){if(r.error)throw r.error;if(!r.data||!r.data.length)throw{message:"That wasn\u2019t allowed, or the item no longer exists.",code:"42501"};return r.data[0]}
+function fe(e){var m=(e&&e.message)||"",c=e&&e.code;
+ if(c==="42501")return/permission|allowed/i.test(m)&&m.length<90?m:"You don\u2019t have permission to do that.";
+ if(c==="23505")return"That already exists. Try a different ID or number.";
+ if(c==="23514")return"One of the values is not allowed. Check the text lengths.";
+ if(c==="23503")return"That item is linked to something that no longer exists.";
+ if(/Failed to fetch|NetworkError|network/i.test(m))return"Network problem. Please try again.";
+ return m||"Something went wrong. Please try again."}
+function toast(m,bad){var t=$("toast");t.textContent=m;t.style.borderColor=bad?"#ff8a9a":"";t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(function(){t.hidden=true},4800)}
+async function run(btn,fn,ok){if(btn)btn.disabled=true;try{var r=await fn();if(ok)toast(ok);return r}catch(e){toast(fe(e),true)}finally{if(btn)btn.disabled=false}}
+function dt(x){try{return new Date(x).toLocaleString()}catch(e){return""}}
+function safeUrl(u){return typeof u==="string"&&/^https:\/\//.test(u)?u:""}
+function slug(t){var s=String(t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,60).replace(/-+$/,"");return s.length>=3?s:""}
+function bookById(id){return S.books.filter(function(b){return b.id===id})[0]}
+function bTitle(id){var b=bookById(id);return b?b.title:id}
+function errBox(m){return'<p class="err">'+esc(m)+'</p>'}
+function openModal(h){var m=$("mo");m.innerHTML='<div class="box gl" role="dialog" aria-modal="true"><button class="x" data-act="mclose" aria-label="Close">\u00d7</button>'+h+'</div>';m.hidden=false}
+function closeModal(){var m=$("mo");m.hidden=true;m.innerHTML=""}
+
+/* ---------- sign in / access ---------- */
+function showLogin(msg){
+ app.innerHTML='<div class="login gl"><h1>Ui Books Admin</h1><p class="sub">Sign in with the account that has admin access.</p><form id="lf"><input id="le" type="email" placeholder="Email" aria-label="Email" required autocomplete="email"><input id="lp" type="password" placeholder="Password" aria-label="Password" required autocomplete="current-password"><div class="msg er" id="lm" role="status" aria-live="polite">'+esc(msg||"")+'</div><button class="btn" type="submit" style="width:100%">SIGN IN</button></form><p class="sub" style="font-size:15px">Signed in with Google or Facebook on the main site? <a class="lk" href="index.html">Open the site</a>, check you are signed in there, then come back and refresh this page. Both pages share the same sign-in.</p></div>'}
+function showNoAccess(){
+ app.innerHTML='<div class="login gl"><h1>No admin access</h1><p class="sub" style="margin:8px 0 14px">This account has no admin permissions, or it is suspended. Ask the site owner to grant access.</p><button class="btn g" data-act="signout">SIGN OUT</button> <a class="btn g" href="index.html">BACK TO SITE</a></div>'}
+async function start(){
+ if(!sb){app.innerHTML='<div class="login gl"><h1>Can\u2019t connect</h1><p class="sub">The database library didn\u2019t load. Check your connection and refresh.</p></div>';return}
+ if(!S.me){showLogin();return}
+ app.innerHTML='<p class="center sub">Loading…</p>';
+ var r=await sb.rpc("admin_me");
+ if(r.error){app.innerHTML='<div class="login gl"><h1>Setup needed</h1><p class="sub">Couldn\u2019t check your access ('+esc(fe(r.error))+'). The database setup (phase 1 SQL) may not have been run.</p><button class="btn g" data-act="signout" style="margin-top:12px">SIGN OUT</button></div>';return}
+ var m=r.data||{};S.owner=!!m.owner;S.perms={};(m.permissions||[]).forEach(function(p){S.perms[p]=1});
+ if(m.suspended||(!S.owner&&!(m.permissions||[]).length)){showNoAccess();return}
+ var st=await sb.rpc("admin_stats");S.stats=st.error?null:st.data;
+ var t=tabsAvail();if(t.indexOf(S.tab)<0)S.tab=t[0];
+ shell();go(S.tab)}
+function tabsAvail(){var t=[];if(canAny(BOOKP))t.push("books");if(can("comments.view"))t.push("comments");if(can("settings.manage"))t.push("settings");if(can("logs.view"))t.push("log");return t}
+var TL={books:"BOOKS",comments:"COMMUNITY",settings:"SETTINGS",log:"ACTIVITY"};
+function shell(){
+ var s=S.stats,chips=s?[["users","Readers"],["reviews","Reviews"],["comments","Comments"],["open_reports","Open reports"]].map(function(k){return'<span class="chip"><b>'+esc(s[k[0]])+'</b>'+k[1]+'</span>'}).join(""):"";
+ app.innerHTML='<header class="top gl"><div class="brand">Ui<span>ADMIN</span></div><div class="who">'+esc((S.me&&S.me.email)||"")+' \u00b7 '+(S.owner?"Owner":"Staff")+'</div><a class="btn g sm" href="index.html">VIEW SITE</a><button class="btn g sm" data-act="signout">SIGN OUT</button></header><div class="stats">'+chips+'</div><main id="view"></main><nav class="tabs" aria-label="Sections">'+tabsAvail().map(function(t){return'<button data-act="go" data-tab="'+t+'" id="tab-'+t+'">'+TL[t]+'</button>'}).join("")+'</nav>'}
+function go(t){S.tab=t;S.bookId=null;document.querySelectorAll(".tabs button").forEach(function(b){b.classList.toggle("on",b.dataset.tab===t)});
+ ({books:viewBooks,comments:viewComments,settings:viewSettings,log:viewLog})[t]()}
+
+/* ---------- books: list ---------- */
+async function loadBooks(){S.books=ck(await sb.from("books").select(BCOLS).order("sort_order",{ascending:true}).order("created_at",{ascending:true}))||[]}
+function thumb(b){var u=safeUrl(b.cover_url);return u?'<img src="'+esc(u)+'" alt="">':'<span>'+esc((b.title||"?").trim().charAt(0).toUpperCase())+'</span>'}
+async function viewBooks(){
+ var v=$("view");v.innerHTML='<p class="sub">Loading…</p>';
+ try{await loadBooks()}catch(e){v.innerHTML=errBox(fe(e));return}
+ v.innerHTML='<div class="bar2"><input id="bq" type="search" placeholder="Search books…" aria-label="Search books" dir="auto" value="'+esc(S.q)+'">'+(can("books.create")?'<button class="btn" data-act="newbook">+ NEW</button>':'')+'</div><div id="blist"></div>';
+ paintBookList()}
+function paintBookList(){
+ var q=S.q.trim().toLowerCase(),l=S.books.filter(function(b){return!q||(b.title+" "+b.author+" "+b.genre).toLowerCase().indexOf(q)>-1});
+ $("blist").innerHTML=l.length?l.map(function(b){return'<button class="card" data-act="openbook" data-id="'+esc(b.id)+'"><div class="th">'+thumb(b)+'</div><div class="t"><b>'+esc(b.title)+'</b><span class="sub">'+esc(b.author)+' \u00b7 '+esc(b.genre)+'</span><br><span class="badge '+(b.published?'pub':'')+'">'+(b.published?"PUBLISHED":"DRAFT")+'</span>'+(b.comments_enabled?'':' <span class="badge hid">COMMENTS CLOSED</span>')+'</div></button>'}).join(""):'<p class="sub">No books found.</p>'}
+
+/* ---------- books: create ---------- */
+function openNew(){
+ openModal('<h2>New book</h2><p class="sub" style="margin-bottom:6px">It starts as a draft. Nobody sees it until you publish it.</p><form id="nbf"><label class="l" for="nt">Title</label><input id="nt" maxlength="120" dir="auto" required><label class="l" for="na">Author</label><input id="na" maxlength="80" dir="auto" required><label class="l" for="ng">Genre</label><input id="ng" maxlength="40" dir="auto" list="gl1" required><datalist id="gl1">'+genres().map(function(g){return'<option value="'+esc(g)+'">'}).join("")+'</datalist><label class="l" for="nd">Description</label><textarea id="nd" maxlength="4000" dir="auto"></textarea><label class="l" for="ni">Web ID (letters, numbers, dashes; can\u2019t be changed later)</label><input id="ni" maxlength="60" pattern="[a-z0-9\\-]{3,60}" placeholder="auto"><div class="msg er" id="nm" role="status"></div><button class="btn" type="submit" style="width:100%">CREATE DRAFT</button></form>');
+ var touched=false;$("ni").oninput=function(){touched=true};$("nt").oninput=function(){if(!touched)$("ni").value=slug($("nt").value)};$("nt").focus()}
+function genres(){var g={};S.books.forEach(function(b){g[b.genre]=1});return Object.keys(g)}
+async function createBook(f){
+ var btn=f.querySelector("[type=submit]"),t=$("nt").value.trim(),a=$("na").value.trim(),g=$("ng").value.trim(),id=$("ni").value.trim()||slug(t)||("book-"+Math.random().toString(36).slice(2,8));
+ if(!t||!a||!g){$("nm").textContent="Title, author and genre are required.";return}
+ if(!/^[a-z0-9-]{3,60}$/.test(id)){$("nm").textContent="The ID needs 3 to 60 lowercase letters, numbers or dashes.";return}
+ var max=S.books.reduce(function(m,b){return Math.max(m,+b.sort_order||0)},0);
+ var r=await run(btn,async function(){return one(await sb.from("books").insert({id:id,title:t,author:a,genre:g,description:$("nd").value.trim(),sort_order:max+1,published:false}).select(BCOLS))},"Draft created.");
+ if(r){closeModal();S.books.push(r);openBook(r.id)}}
+
+/* ---------- books: editor ---------- */
+async function openBook(id){
+ S.bookId=id;var v=$("view");v.innerHTML='<p class="sub">Loading…</p>';
+ try{if(!bookById(id))await loadBooks();S.chapters=ck(await sb.from("book_chapters").select("id,chapter_number,title").eq("book_id",id).order("chapter_number",{ascending:true}))||[]}catch(e){v.innerHTML=errBox(fe(e));return}
+ if(!bookById(id)){v.innerHTML=errBox("That book no longer exists.");return}
+ paintEditor()}
+function paintEditor(){
+ var b=bookById(S.bookId),ed=can("books.edit"),cu=safeUrl(b.cover_url),n=S.chapters.length,v=$("view");
+ v.innerHTML='<button class="btn g sm" data-act="back" style="margin-bottom:12px">\u2039 ALL BOOKS</button>'+
+ '<div class="gl sec"><h2>'+esc(b.title)+'</h2><span class="badge '+(b.published?'pub':'')+'">'+(b.published?"PUBLISHED":"DRAFT")+'</span> <span class="sub" style="font-size:14px">ID: '+esc(b.id)+'</span>'+
+  '<div class="acts">'+(can("books.publish")?'<button class="btn '+(b.published?'g':'t')+'" data-act="publish">'+(b.published?"UNPUBLISH":"PUBLISH")+'</button>':'')+'<a class="btn g" target="_blank" rel="noopener" href="index.html?preview='+encodeURIComponent(b.id)+'">PREVIEW</a></div>'+
+  '<div class="sw"><span>Comments on this book</span><input type="checkbox" id="cmt-on" data-act-change="bookcomments" '+(b.comments_enabled?'checked ':'')+(can("comments.moderate")?'':'disabled ')+'aria-label="Comments open"></div></div>'+
+ '<form class="gl sec" id="bf"><h2>Details</h2><label class="l" for="f-t">Title</label><input id="f-t" maxlength="120" dir="auto" value="'+esc(b.title)+'" '+(ed?'':'disabled ')+'required><div class="row2"><div><label class="l" for="f-a">Author</label><input id="f-a" maxlength="80" dir="auto" value="'+esc(b.author)+'" '+(ed?'':'disabled ')+'required></div><div><label class="l" for="f-g">Genre</label><input id="f-g" maxlength="40" dir="auto" list="gl2" value="'+esc(b.genre)+'" '+(ed?'':'disabled ')+'required><datalist id="gl2">'+genres().map(function(g){return'<option value="'+esc(g)+'">'}).join("")+'</datalist></div></div><label class="l" for="f-d">Description</label><textarea id="f-d" maxlength="4000" dir="auto" '+(ed?'':'disabled')+'>'+esc(b.description)+'</textarea><label class="l" for="f-o">Position in the library (smaller = earlier)</label><input id="f-o" type="number" step="1" value="'+esc(b.sort_order)+'" '+(ed?'':'disabled ')+'>'+(ed?'<div class="acts"><button class="btn" type="submit">SAVE DETAILS</button></div>':'')+'</form>'+
+ '<div class="gl sec"><h2>Cover</h2><div class="cvrow"><div class="cov">'+(cu?'<img src="'+esc(cu)+'" alt="Cover of '+esc(b.title)+'">':'No cover<br>(artwork is used)')+'</div>'+(can("covers.upload")?'<div class="acts" style="margin:0"><label class="btn t" style="cursor:pointer">'+(cu?"REPLACE COVER":"UPLOAD COVER")+'<input type="file" accept="image/jpeg,image/png,image/webp" data-cover="1" hidden></label>'+(cu?'<button class="btn g" data-act="coverdel">REMOVE</button>':'')+'</div>':'')+'</div><p class="sub" style="font-size:14px;margin-top:8px">Best: a portrait picture (about 3:4). Large pictures are shrunk automatically.</p></div>'+
+ '<div class="gl sec"><h2>Chapters ('+n+')</h2>'+(n?S.chapters.map(function(c,i){return'<div class="chr"><span class="n">'+esc(c.chapter_number)+'</span><span class="tt" dir="auto">'+esc(c.title)+'</span>'+(can("chapters.edit")?'<button class="ib" data-act="chup" data-id="'+esc(c.id)+'" aria-label="Move up"'+(i===0?' disabled':'')+'>\u2191</button><button class="ib" data-act="chdn" data-id="'+esc(c.id)+'" aria-label="Move down"'+(i===n-1?' disabled':'')+'>\u2193</button><button class="ib" data-act="chedit" data-id="'+esc(c.id)+'" aria-label="Edit">\u270e</button>':'')+(can("chapters.delete")?'<button class="ib" data-act="chdel" data-id="'+esc(c.id)+'" aria-label="Delete">\u2715</button>':'')+'</div>'}).join(""):'<p class="sub">No chapters yet.</p>')+(can("chapters.create")?'<div class="acts"><button class="btn" data-act="chadd">+ ADD CHAPTER</button></div>':'')+'</div>'+
+ (can("books.delete")?'<div class="gl sec"><h2 style="color:var(--em)">Danger zone</h2><p class="sub">Deleting removes the book with its chapters, comments, reviews and ratings. It cannot be undone.</p><div class="acts"><button class="btn dg" data-act="bookdel">DELETE THIS BOOK</button></div></div>':'')}
+async function saveDetails(f){
+ var b=bookById(S.bookId),btn=f.querySelector("[type=submit]"),p={},t=$("f-t").value.trim(),a=$("f-a").value.trim(),g=$("f-g").value.trim(),d=$("f-d").value.trim(),o=parseInt($("f-o").value,10);
+ if(!t||!a||!g){toast("Title, author and genre are required.",true);return}
+ if(t!==b.title)p.title=t;if(a!==b.author)p.author=a;if(g!==b.genre)p.genre=g;if(d!==b.description)p.description=d;if(isFinite(o)&&o!==b.sort_order)p.sort_order=o;
+ if(!Object.keys(p).length){toast("Nothing changed.");return}
+ var r=await run(btn,async function(){return one(await sb.from("books").update(p).eq("id",b.id).select(BCOLS))},"Saved.");
+ if(r){Object.assign(b,r);paintEditor()}}
+async function setPublished(btn){
+ var b=bookById(S.bookId),to=!b.published;
+ if(to&&!S.chapters.length&&!confirm("This book has no chapters yet. Publish it anyway?"))return;
+ if(!to&&!confirm("Hide this book from all visitors?"))return;
+ var r=await run(btn,async function(){return one(await sb.from("books").update({published:to}).eq("id",b.id).select(BCOLS))},to?"Published.":"Unpublished.");
+ if(r){Object.assign(b,r);paintEditor()}}
+async function setBookComments(box){
+ var b=bookById(S.bookId),to=box.checked;box.disabled=true;
+ try{var r=await sb.rpc("admin_set_book_comments",{p_book:b.id,p_enabled:to});if(r.error)throw r.error;b.comments_enabled=to;toast(to?"Comments opened.":"Comments closed.")}
+ catch(e){box.checked=!to;toast(fe(e),true)}finally{box.disabled=!can("comments.moderate")}}
+
+/* ---------- covers ---------- */
+function loadImg(file){return new Promise(function(res,rej){var u=URL.createObjectURL(file),i=new Image();i.onload=function(){URL.revokeObjectURL(u);res(i)};i.onerror=function(){URL.revokeObjectURL(u);rej({message:"That file is not a picture we can read."})};i.src=u})}
+async function toCover(file){
+ var img=await loadImg(file),w=img.naturalWidth||1,h=img.naturalHeight||1,k=Math.min(1,900/w,1260/h),c=document.createElement("canvas");
+ c.width=Math.max(1,Math.round(w*k));c.height=Math.max(1,Math.round(h*k));c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+ function blob(t,q){return new Promise(function(r){c.toBlob(r,t,q)})}
+ var types=["image/webp","image/jpeg"],qs=[.86,.74,.6,.5];
+ for(var i=0;i<types.length;i++)for(var j=0;j<qs.length;j++){var b=await blob(types[i],qs[j]);if(b&&b.type===types[i]&&b.size<=2900000)return b}
+ throw{message:"That picture is too large. Try a smaller one."}}
+async function uploadCover(file){
+ var b=bookById(S.bookId);if(!file)return;
+ if(!/^image\//.test(file.type)){toast("Please choose a picture.",true);return}
+ toast("Uploading cover\u2026");
+ var r=await run(null,async function(){
+  var blob=await toCover(file),ext=blob.type==="image/webp"?"webp":"jpg",path=b.id+"/"+Date.now()+"."+ext,st=sb.storage.from("book-covers");
+  var up=await st.upload(path,blob,{contentType:blob.type,cacheControl:"31536000",upsert:false});if(up.error)throw up.error;
+  var url=st.getPublicUrl(path).data.publicUrl,row;
+  try{row=one(await sb.from("books").update({cover_url:url,cover_path:path}).eq("id",b.id).select(BCOLS))}catch(e){await st.remove([path]);throw e}
+  if(b.cover_path&&b.cover_path!==path)await st.remove([b.cover_path]);
+  return row},"Cover saved.");
+ if(r){Object.assign(b,r);paintEditor()}}
+async function removeCover(btn){
+ var b=bookById(S.bookId);if(!confirm("Remove this cover? The generated artwork will be used instead."))return;
+ var r=await run(btn,async function(){var row=one(await sb.from("books").update({cover_url:null,cover_path:null}).eq("id",b.id).select(BCOLS));if(b.cover_path)await sb.storage.from("book-covers").remove([b.cover_path]);return row},"Cover removed.");
+ if(r){Object.assign(b,r);paintEditor()}}
+
+/* ---------- chapters ---------- */
+function chapModal(c,isNew){
+ openModal('<h2>'+(isNew?"New chapter":"Edit chapter")+'</h2><form id="cf"><label class="l" for="ct">Chapter title</label><input id="ct" maxlength="120" dir="auto" value="'+esc(c.title)+'" required><label class="l" for="cc">Text (leave a blank line between paragraphs)</label><textarea id="cc" dir="auto" style="min-height:48vh" maxlength="200000">'+esc(c.content||"")+'</textarea><div class="cnt" id="cw"></div><div class="acts"><button class="btn" type="submit">SAVE CHAPTER</button><button class="btn g" type="button" data-act="mclose">CANCEL</button></div></form>');
+ var cc=$("cc");function w(){var n=(cc.value.trim().match(/\S+/g)||[]).length;$("cw").textContent=n+" words"}cc.oninput=w;w();
+ $("cf").dataset.id=isNew?"":c.id}
+async function openChapter(id){
+ var r=await run(null,async function(){return one(await sb.from("book_chapters").select("id,chapter_number,title,content").eq("id",id))});
+ if(r)chapModal(r,false)}
+async function saveChapter(f){
+ var btn=f.querySelector("[type=submit]"),id=f.dataset.id,t=$("ct").value.trim(),c=$("cc").value;
+ if(!t){toast("Give the chapter a title.",true);return}
+ var bid=S.bookId,max=S.chapters.reduce(function(m,x){return Math.max(m,x.chapter_number)},0);
+ var r=await run(btn,async function(){
+  if(id)return one(await sb.from("book_chapters").update({title:t,content:c}).eq("id",id).select("id"));
+  return one(await sb.from("book_chapters").insert({book_id:bid,chapter_number:max+1,title:t,content:c}).select("id"))},id?"Chapter saved.":"Chapter added.");
+ if(r){closeModal();await openBook(bid)}}
+async function reorder(id,dir){
+ var ids=S.chapters.map(function(c){return c.id}),i=ids.indexOf(id),j=i+dir;if(i<0||j<0||j>=ids.length)return;
+ ids.splice(j,0,ids.splice(i,1)[0]);
+ var r=await run(null,async function(){var x=await sb.rpc("admin_reorder_chapters",{p_book:S.bookId,p_ids:ids});if(x.error)throw x.error;return true});
+ if(r)await openBook(S.bookId)}
+async function delChapter(id){
+ var c=S.chapters.filter(function(x){return x.id===id})[0];if(!c||!confirm("Delete chapter "+c.chapter_number+" \u201c"+c.title+"\u201d? This cannot be undone."))return;
+ var r=await run(null,async function(){return one(await sb.from("book_chapters").delete().eq("id",id).select("id"))},"Chapter deleted.");
+ if(r)await openBook(S.bookId)}
+
+/* ---------- delete book ---------- */
+function delBookModal(){
+ var b=bookById(S.bookId);
+ openModal('<h2 style="color:var(--em)">Delete \u201c'+esc(b.title)+'\u201d?</h2><p class="sub">This permanently deletes the book, its '+S.chapters.length+' chapter(s), and all its comments, reviews and ratings. To confirm, type the book title below.</p><input id="dc" dir="auto" placeholder="Type the title" aria-label="Type the book title to confirm" style="margin:12px 0"><div class="acts"><button class="btn dg" id="dgo" data-act="bookdelgo" disabled>DELETE FOREVER</button><button class="btn g" data-act="mclose">CANCEL</button></div>');
+ $("dc").oninput=function(){$("dgo").disabled=this.value.trim().toLowerCase()!==b.title.trim().toLowerCase()}}
+async function delBook(btn){
+ var b=bookById(S.bookId);
+ var r=await run(btn,async function(){one(await sb.from("books").delete().eq("id",b.id).select("id"));if(b.cover_path)await sb.storage.from("book-covers").remove([b.cover_path]);return true},"Book deleted.");
+ if(r){closeModal();S.books=S.books.filter(function(x){return x.id!==b.id});S.bookId=null;viewBooks()}}
+
+/* ---------- community: comments, reviews, reports ---------- */
+async function viewComments(){
+ var v=$("view");v.innerHTML='<p class="sub">Loading…</p>';
+ try{await loadBooks()}catch(e){}
+ var c=S.cm;
+ v.innerHTML='<div class="sub2">'+[["reports","Reports"],["comments","Comments"],["reviews","Reviews"]].map(function(s){return'<button class="chip'+(c.sub===s[0]?' on':'')+'" data-act="cmsub" data-sub="'+s[0]+'">'+s[1]+'</button>'}).join("")+'</div>'+
+  (c.sub==="reports"?'':'<div class="flt"><select id="cmbook" aria-label="Filter by book"><option value="">All books</option>'+S.books.map(function(b){return'<option value="'+esc(b.id)+'"'+(c.book===b.id?' selected':'')+'>'+esc(b.title)+'</option>'}).join("")+'</select><select id="cmstat" aria-label="Filter by status"><option value="">Any status</option><option value="visible"'+(c.status==="visible"?' selected':'')+'>Visible</option><option value="hidden"'+(c.status==="hidden"?' selected':'')+'>Hidden</option></select></div>')+'<div id="cmlist"><p class="sub">Loading…</p></div>';
+ paintCommunity()}
+function who(r){return r.profiles&&r.profiles.display_name?r.profiles.display_name:"Deleted reader"}
+function mbtn(kind,r){
+ var h="";
+ if(can("comments.moderate"))h+='<button class="btn g sm" data-act="mod" data-kind="'+kind+'" data-id="'+esc(r.id)+'" data-do="'+(r.status==="hidden"?"show":"hide")+'">'+(r.status==="hidden"?"RESTORE":"HIDE")+'</button>';
+ if(can("comments.delete"))h+='<button class="btn dg sm" data-act="mod" data-kind="'+kind+'" data-id="'+esc(r.id)+'" data-do="delete">DELETE</button>';
+ return h}
+async function paintCommunity(){
+ var c=S.cm,box=$("cmlist"),h="";
+ try{
+  if(c.sub==="reports"){
+   var rp=ck(await sb.from("reports").select("id,target_type,target_id,reason,status,created_at").eq("status","open").order("created_at",{ascending:false}).range(0,c.n-1))||[];
+   var ci=rp.filter(function(x){return x.target_type==="comment"}).map(function(x){return x.target_id}),ri=rp.filter(function(x){return x.target_type==="review"}).map(function(x){return x.target_id}),T={};
+   if(ci.length)(ck(await sb.from("comments").select("id,book_id,body,status").in("id",ci))||[]).forEach(function(x){T["comment:"+x.id]=x});
+   if(ri.length)(ck(await sb.from("reviews").select("id,book_id,body,status").in("id",ri))||[]).forEach(function(x){T["review:"+x.id]=x});
+   h=rp.length?rp.map(function(x){var t=T[x.target_type+":"+x.target_id];
+    return'<div class="item"><div class="why">Reported '+esc(x.target_type)+': '+esc(x.reason)+'</div><div class="meta sub">'+esc(dt(x.created_at))+(t?' \u00b7 on '+esc(bTitle(t.book_id))+(t.status==="hidden"?' \u00b7 <span class="badge hid">HIDDEN</span>':''):'')+'</div>'+(t?'<p class="bd" dir="auto">'+esc(t.body)+'</p>':'<p class="sub">The reported item was already deleted.</p>')+'<div class="acts">'+(t?mbtn(x.target_type,t):'')+(can("comments.moderate")?'<button class="btn t sm" data-act="rp" data-id="'+esc(x.id)+'" data-do="resolved">MARK RESOLVED</button><button class="btn g sm" data-act="rp" data-id="'+esc(x.id)+'" data-do="dismissed">DISMISS</button>':'')+'</div></div>'}).join(""):'<p class="sub">No open reports. \u2728</p>';
+   if(rp.length>=c.n)h+='<button class="btn g" data-act="cmmore" style="width:100%">LOAD MORE</button>'
+  }else{
+   var tb=c.sub==="comments"?"comments":"reviews",q=sb.from(tb).select("id,book_id,body,status,created_at,profiles(display_name)").order("created_at",{ascending:false}).range(0,c.n-1);
+   if(c.book)q=q.eq("book_id",c.book);if(c.status)q=q.eq("status",c.status);
+   var rows=ck(await q)||[],kind=c.sub==="comments"?"comment":"review";
+   h=(c.book&&can("comments.moderate")?'<div class="acts" style="margin:0 0 12px"><button class="btn g sm" data-act="cmtoggle">'+((bookById(c.book)||{}).comments_enabled?"CLOSE COMMENTS ON THIS BOOK":"REOPEN COMMENTS ON THIS BOOK")+'</button></div>':'')+(rows.length?rows.map(function(r){return'<div class="item"><div class="meta"><b>'+esc(who(r))+'</b> <span class="sub">\u00b7 '+esc(bTitle(r.book_id))+' \u00b7 '+esc(dt(r.created_at))+'</span> '+(r.status==="hidden"?'<span class="badge hid">HIDDEN</span>':'')+'</div><p class="bd" dir="auto">'+esc(r.body)+'</p><div class="acts">'+mbtn(kind,r)+'</div></div>'}).join(""):'<p class="sub">Nothing here.</p>');
+   if(rows.length>=c.n)h+='<button class="btn g" data-act="cmmore" style="width:100%">LOAD MORE</button>'}
+ }catch(e){h=errBox(fe(e))}
+ box.innerHTML=h}
+async function moderate(btn){
+ var d=btn.dataset;if(d["do"]==="delete"&&!confirm("Delete this "+d.kind+" permanently?"))return;
+ var r=await run(btn,async function(){var x=await sb.rpc("moderate_content",{p_kind:d.kind,p_id:d.id,p_action:d["do"]});if(x.error)throw x.error;return true},d["do"]==="delete"?"Deleted.":d["do"]==="hide"?"Hidden.":"Restored.");
+ if(r)paintCommunity()}
+async function reportDo(btn){
+ var d=btn.dataset;
+ var r=await run(btn,async function(){var x=await sb.rpc("resolve_report",{p_id:d.id,p_status:d["do"]});if(x.error)throw x.error;return true},"Report closed.");
+ if(r)paintCommunity()}
+async function toggleBookComments(btn){
+ var b=bookById(S.cm.book);if(!b)return;var to=!b.comments_enabled;
+ var r=await run(btn,async function(){var x=await sb.rpc("admin_set_book_comments",{p_book:b.id,p_enabled:to});if(x.error)throw x.error;b.comments_enabled=to;return true},to?"Comments reopened.":"Comments closed.");
+ if(r)paintCommunity()}
+
+/* ---------- settings ---------- */
+async function viewSettings(){
+ var v=$("view");v.innerHTML='<p class="sub">Loading…</p>';
+ var m={};
+ try{(ck(await sb.from("site_settings").select("key,value"))||[]).forEach(function(r){m[r.key]=r.value})}catch(e){v.innerHTML=errBox(fe(e));return}
+ var f=m.features||{},tt=m.theme_toggle||{},w=m.floating_widget||{};
+ function sw(id,label,on){return'<div class="sw"><span>'+label+'</span><input type="checkbox" id="'+id+'" '+(on?'checked':'')+' aria-label="'+esc(label)+'"></div>'}
+ v.innerHTML='<div class="gl sec"><h2>Community features</h2><p class="sub">Switch these off to stop new comments or reviews on the whole site. Existing ones stay visible.</p>'+sw("s-cm","Comments allowed",f.comments!==false)+sw("s-rv","Reviews allowed",f.reviews!==false)+'<div class="acts"><button class="btn" data-act="setfeat">SAVE</button></div></div>'+
+ '<div class="gl sec"><h2>Light / dark button</h2><p class="sub">The floating button that switches the website theme.</p>'+sw("s-tt","Show the theme button",tt.enabled!==false)+'<div class="acts"><button class="btn" data-act="settheme">SAVE</button></div></div>'+
+ '<div class="gl sec"><h2>Floating widget</h2><p class="sub">A small button that floats on every page (for example, a Discord invite or a donation link).</p>'+sw("w-on","Show the widget",w.enabled===true)+'<label class="l" for="w-l">Button text (up to 40 characters)</label><input id="w-l" maxlength="40" dir="auto" value="'+esc(w.label||"")+'"><label class="l" for="w-u">Link (starts with https://)</label><input id="w-u" type="url" maxlength="300" value="'+esc(w.url||"")+'" placeholder="https://"><div class="row2"><div><label class="l" for="w-p">Position</label><select id="w-p"><option value="left"'+(w.position==="right"?'':' selected')+'>Bottom left</option><option value="right"'+(w.position==="right"?' selected':'')+'>Bottom right</option></select></div><div><label class="l" for="w-s">Colour</label><select id="w-s">'+["gold","teal","crimson"].map(function(c){return'<option value="'+c+'"'+((w.style||"gold")===c?' selected':'')+'>'+c[0].toUpperCase()+c.slice(1)+'</option>'}).join("")+'</select></div></div><div class="msg er" id="w-m" role="status"></div><div class="acts"><button class="btn" data-act="setwidget">SAVE WIDGET</button></div></div>'}
+async function putSetting(btn,key,val,ok){
+ return run(btn,async function(){var x=await sb.rpc("admin_set_setting",{p_key:key,p_value:val});if(x.error)throw x.error;return true},ok)}
+function setWidget(btn){
+ var on=$("w-on").checked,l=$("w-l").value.trim(),u=$("w-u").value.trim(),m=$("w-m");m.textContent="";
+ if(on&&!l){m.textContent="Enter the button text first.";return}
+ if(u&&!/^https:\/\//.test(u)){m.textContent="The link must start with https://";return}
+ putSetting(btn,"floating_widget",{enabled:on,label:l,url:u,position:$("w-p").value,style:$("w-s").value},"Widget saved.")}
+
+/* ---------- activity log ---------- */
+var AL={"book.create":"Created book","book.update":"Edited book","book.publish":"Published book","book.unpublish":"Unpublished book","book.cover":"Changed cover","book.comments":"Changed comments setting","book.delete":"Deleted book","chapter.create":"Added chapter","chapter.update":"Edited chapter","chapter.delete":"Deleted chapter","chapter.reorder":"Reordered chapters","comment.hide":"Hid comment","comment.show":"Restored comment","comment.delete":"Deleted comment","review.hide":"Hid review","review.show":"Restored review","review.delete":"Deleted review","report.resolved":"Resolved report","report.dismissed":"Dismissed report","settings.update":"Changed setting"};
+async function viewLog(){
+ var v=$("view");v.innerHTML='<p class="sub">Loading…</p>';
+ try{await loadBooks()}catch(e){}
+ var rows;try{rows=ck(await sb.from("admin_audit_log").select("id,at,actor_id,actor_name,action,target_type,target_id,details").order("at",{ascending:false}).range(0,S.log.n-1))||[]}catch(e){v.innerHTML=errBox(fe(e));return}
+ v.innerHTML=rows.length?rows.map(function(r){var d=r.details||{},what=d.title||(r.target_type==="book"?bTitle(r.target_id):"")||(d.book_id?bTitle(d.book_id):"")||r.target_id||"",ex=Array.isArray(d.changed)&&d.changed.length?" ("+d.changed.join(", ")+")":"";
+  return'<div class="item"><div class="meta"><b>'+esc(AL[r.action]||r.action)+'</b> <span class="sub">\u00b7 '+esc(dt(r.at))+'</span></div><p>'+esc(what)+esc(ex)+'</p><span class="sub" style="font-size:14px">by '+esc(r.actor_name||(r.actor_id?String(r.actor_id).slice(0,8):"system"))+'</span></div>'}).join("")+(rows.length>=S.log.n?'<button class="btn g" data-act="logmore" style="width:100%">LOAD MORE</button>':''):'<p class="sub">No activity recorded yet.</p>'}
+
+/* ---------- events ---------- */
+document.addEventListener("click",function(e){
+ var x=e.target.closest&&e.target.closest("[data-act]");if(!x)return;var a=x.dataset.act;
+ if(a==="go")go(x.dataset.tab);
+ else if(a==="signout"){sb.auth.signOut().then(function(){S.me=null;S.owner=false;S.perms={};showLogin()})}
+ else if(a==="mclose")closeModal();
+ else if(a==="newbook")openNew();
+ else if(a==="openbook")openBook(x.dataset.id);
+ else if(a==="back")viewBooks();
+ else if(a==="publish")setPublished(x);
+ else if(a==="coverdel")removeCover(x);
+ else if(a==="chadd")chapModal({title:"Chapter "+(S.chapters.reduce(function(m,c){return Math.max(m,c.chapter_number)},0)+1),content:""},true);
+ else if(a==="chedit")openChapter(x.dataset.id);
+ else if(a==="chup")reorder(x.dataset.id,-1);
+ else if(a==="chdn")reorder(x.dataset.id,1);
+ else if(a==="chdel")delChapter(x.dataset.id);
+ else if(a==="bookdel")delBookModal();
+ else if(a==="bookdelgo")delBook(x);
+ else if(a==="cmsub"){S.cm.sub=x.dataset.sub;S.cm.n=30;viewComments()}
+ else if(a==="cmmore"){S.cm.n+=30;paintCommunity()}
+ else if(a==="cmtoggle")toggleBookComments(x);
+ else if(a==="mod")moderate(x);
+ else if(a==="rp")reportDo(x);
+ else if(a==="setfeat")putSetting(x,"features",{comments:$("s-cm").checked,reviews:$("s-rv").checked},"Saved.");
+ else if(a==="settheme")putSetting(x,"theme_toggle",{enabled:$("s-tt").checked},"Saved.");
+ else if(a==="setwidget")setWidget(x);
+ else if(a==="logmore"){S.log.n+=50;viewLog()}
+});
+document.addEventListener("submit",function(e){var f=e.target;
+ if(f.id==="lf"){e.preventDefault();var b=f.querySelector("[type=submit]");b.disabled=true;$("lm").textContent="";
+  sb.auth.signInWithPassword({email:$("le").value.trim(),password:$("lp").value}).then(function(r){b.disabled=false;if(r.error)$("lm").textContent=/invalid/i.test(r.error.message||"")?"Wrong email or password.":fe(r.error)}).catch(function(){b.disabled=false;$("lm").textContent="Network problem. Please try again."})}
+ else if(f.id==="nbf"){e.preventDefault();createBook(f)}
+ else if(f.id==="bf"){e.preventDefault();saveDetails(f)}
+ else if(f.id==="cf"){e.preventDefault();saveChapter(f)}});
+document.addEventListener("change",function(e){var t=e.target;
+ if(t.dataset&&t.dataset.cover){var f=t.files&&t.files[0];t.value="";uploadCover(f)}
+ else if(t.dataset&&t.dataset.actChange==="bookcomments")setBookComments(t);
+ else if(t.id==="cmbook"){S.cm.book=t.value;S.cm.n=30;paintCommunity()}
+ else if(t.id==="cmstat"){S.cm.status=t.value;S.cm.n=30;paintCommunity()}});
+document.addEventListener("input",function(e){if(e.target.id==="bq"){S.q=e.target.value;paintBookList()}});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!$("mo").hidden)closeModal()});
+
+/* ---------- boot ---------- */
+(async function(){
+ if(!sb){start();return}
+ try{var r=await sb.auth.getSession();S.me=r.data&&r.data.session?r.data.session.user:null}catch(e){S.me=null}
+ sb.auth.onAuthStateChange(function(ev,s){var u=s?s.user:null;if((u&&u.id)!==(S.me&&S.me.id)){S.me=u;setTimeout(start,0)}});
+ start()})();
+})();
+</script>
+</body>
+</html>
