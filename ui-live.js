@@ -296,6 +296,16 @@ function merge(rows, preview) {
   saved = list; merged = true; sv();
   return byId[preview] || null;
 }
+function openParam() {
+  var id = null;
+  try { id = new URLSearchParams(location.search).get("book"); } catch (e) { id = null; }
+  if (!id) { return; }
+  var k = -1;
+  B.forEach(function (b, i) { if (b.id === id && !b.off) { k = i; } });
+  if (k < 0) { return; }
+  cur = k; chap = 0; tab = 0;
+  if (location.hash !== "#book") { location.hash = "#book"; }
+}
 function load() {
   if (!W.sb) { return; }
   var pv = null;
@@ -306,13 +316,13 @@ function load() {
   ]).then(function (a) {
     if (!a[1].error && a[1].data) { applySettings(a[1].data); }
     var r = a[0];
-    if (r.error || !r.data || !r.data.length) { W.render(); return; }
+    if (r.error || !r.data || !r.data.length) { openParam(); W.render(); return; }
     var pb = merge(r.data, pv);
     if (pb && pb.draft) {
       cur = B.indexOf(pb); chap = 0; tab = 0;
       if (location.hash !== "#book") { location.hash = "#book"; }
       toast("Preview: this book is not published yet.");
-    }
+    } else { openParam(); }
     W.render();
   }).catch(function () { /* keep the built-in books */ });
 }
@@ -328,6 +338,8 @@ st.textContent =
   ".ui-widget[data-style=teal]{border-color:var(--teal)}.ui-widget[data-style=crimson]{border-color:var(--em)}" +
   "@media(max-width:860px){.ui-widget{left:16px;right:auto}.ui-widget[data-pos=right]{left:auto;right:16px;bottom:130px}}";
 D.head.appendChild(st);
+var ftl = D.querySelector(".ft span");
+if (ftl && !ftl.querySelector('a[href="books/"]')) { ftl.insertAdjacentHTML("beforeend", '<a href="books/">All books</a>'); }
 W.cover = cvr; W.infoTab = infoTab; W.render = render; W.render2 = render2; W.speak = speak; W.sv = sv;
 W.paintReviews = paintReviews; W.paintComments = paintComments;
 D.addEventListener("click", function (e) {
