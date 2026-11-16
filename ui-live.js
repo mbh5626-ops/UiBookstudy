@@ -23,6 +23,7 @@ var PALS = [["#1a2f6e", "#0b1640", "#7fd6ff"], ["#5a0f1c", "#2a0610", "#ff9a5a"]
 var FEAT = { comments: true, reviews: true };
 var DBSRC = false;      // true once the owner has confirmed the migration (chapters come only from the database)
 var merged = false;
+var GEN = null;         // book ids that have a generated page (from books/manifest.json)
 
 /* ---------- small helpers ---------- */
 function art(b, a) {
@@ -310,11 +311,16 @@ function load() {
   if (!W.sb) { return; }
   var pv = null;
   try { pv = new URLSearchParams(location.search).get("preview"); } catch (e) { pv = null; }
+  var manifest = typeof fetch === "function"
+    ? fetch(new URL("books/manifest.json", location.href).href, { cache: "no-cache" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+    : Promise.resolve(null);
   Promise.all([
     W.sb.from("books").select("id,title,author,genre,description,cover_url,comments_enabled,sort_order,art,published,created_at").order("created_at", { ascending: true }),
-    W.sb.from("site_settings").select("key,value")
+    W.sb.from("site_settings").select("key,value"),
+    manifest
   ]).then(function (a) {
     if (!a[1].error && a[1].data) { applySettings(a[1].data); }
+    if (a[2] && a[2].books && typeof a[2].books === "object") { GEN = a[2].books; }
     var r = a[0];
     if (r.error || !r.data || !r.data.length) { openParam(); W.render(); return; }
     var pb = merge(r.data, pv);
@@ -325,6 +331,28 @@ function load() {
     } else { openParam(); }
     W.render();
   }).catch(function () { /* keep the built-in books */ });
+}
+
+/* ---------- open the generated page for a book ---------- */
+/* A book card opens its own page (books/<id>/) only when the book is published in the database
+   AND the site build has generated that page (listed in books/manifest.json).
+   Otherwise the old in-page view is used, so nothing ever leads to a missing page. */
+function pageFor(i) {
+  var b = B[i];
+  if (!GEN || !merged || !b || b.off || b.draft) { return null; }
+  if (!/^[a-z0-9-]{3,60}$/.test(b.id) || !Object.prototype.hasOwnProperty.call(GEN, b.id)) { return null; }
+  try { return new URL("books/" + b.id + "/", location.href).href; } catch (e) { return null; }
+}
+function onCardClick(e) {
+  var t = e.target;
+  if (!t || !t.closest) { return; }
+  if (t.closest("[data-s],[data-l],[data-nx]")) { return; }   // save heart and other controls keep their own behaviour
+  var card = t.closest("[data-o]");
+  if (!card) { return; }
+  var url = pageFor(+card.getAttribute("data-o"));
+  if (!url) { return; }
+  e.preventDefault(); e.stopPropagation();
+  if (e.ctrlKey || e.metaKey) { W.open(url, "_blank", "noopener"); } else { W.location.assign(url); }
 }
 
 /* ---------- install ---------- */
@@ -342,6 +370,7 @@ var ftl = D.querySelector(".ft span");
 if (ftl && !ftl.querySelector('a[href="books/"]')) { ftl.insertAdjacentHTML("beforeend", '<a href="books/">All books</a>'); }
 W.cover = cvr; W.infoTab = infoTab; W.render = render; W.render2 = render2; W.speak = speak; W.sv = sv;
 W.paintReviews = paintReviews; W.paintComments = paintComments;
+D.addEventListener("click", onCardClick, true);   // capture phase: runs before the old card handler
 D.addEventListener("click", function (e) {
   var x = e.target && e.target.closest ? e.target.closest("[data-nx]") : null;
   if (x) { chap = +x.getAttribute("data-nx"); track(); W.render(); W.scrollTo(0, 0); }

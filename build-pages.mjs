@@ -204,5 +204,8 @@ ${books.length ? `<div class="grid">${books.map((b) => `<a href="${b.id}/">${cvH
 write("books/index.html", shell({ depth: 1, title: "Free Fantasy Novels to Read Online – Library | Ui Books", desc: cut(`Browse ${books.length} free fantasy, epic, romance and adventure stories. Read short chapters online at Ui Books.`, 155), canonicalPath: "/books/", image: hasDefaultOg ? `${SITE}/og/default.png` : null, body: libBody,
   json: [crumbLd([["Home", `${SITE}/`], ["Library", `${SITE}/books/`]])] }));
 
+// Tells the website which books have a generated page, so book cards only link to pages that exist.
+write("books/manifest.json", JSON.stringify({ v: 1, built: new Date().toISOString(), books: Object.fromEntries(books.map((b) => [b.id, infoFor[b.id].L.length])) }));
+
 write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `  <url><loc>${esc(u.loc)}</loc>${u.lastmod ? `<lastmod>${esc(u.lastmod)}</lastmod>` : ""}</url>`).join("\n")}\n</urlset>\n`);
 console.log(`Done: ${books.length} book pages, ${urls.length - 3 - books.length} chapter pages, ${urls.length} sitemap entries in ${((Date.now() - startedAt) / 1000).toFixed(1)}s.`);
