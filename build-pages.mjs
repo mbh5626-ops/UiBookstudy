@@ -95,7 +95,7 @@ h1,h2,h3{font-family:Cinzel,serif;font-weight:500}h1{font-size:clamp(26px,5vw,38
 .ft{max-width:900px;margin:0 auto;padding:6px 18px 40px;color:var(--mu);font-size:15px;display:flex;gap:6px 16px;flex-wrap:wrap}
 :focus-visible{outline:2px solid var(--teal);outline-offset:3px}@media(max-width:640px){.book{grid-template-columns:1fr}.book .cv{width:min(210px,100%);margin:0 auto}.chl{columns:1}}`;
 
-function shell({ depth, title, desc, canonicalPath, image, body, json = [] }) {
+function shell({ depth, title, desc, canonicalPath, image, body, json = [], genre = "" }) {
   const R = "../".repeat(depth), url = SITE + canonicalPath;
   return `<!DOCTYPE html>
 <html lang="en">
@@ -118,10 +118,11 @@ ${json.map(ld).join("\n")}
 </head>
 <body>
 <header class="hd"><a class="logo" href="${R}" aria-label="Ui Books home">Ui</a><nav aria-label="Main"><a href="${R}">Home</a><a href="${R}books/">Library</a></nav></header>
-<main class="wrap">
+<main class="wrap"${genre ? ` data-genre="${esc(genre)}"` : ""}>
 ${body}
 </main>
 <footer class="ft"><a href="${R}">Home</a><a href="${R}books/">All books</a><a href="${R}privacy.html">Privacy</a><span>© ${new Date().getFullYear()} Ui Books · Read by lantern light</span></footer>
+<script src="${R}ui-music.js" defer></script>
 </body>
 </html>
 `;
@@ -174,7 +175,7 @@ for (const b of books) {
 ${L.length ? `<section class="gl"><h2>Chapters</h2><ol class="chl" style="list-style:none">${L.map((c) => `<li><span>${esc(c.chapter_number)}</span><a href="chapter-${c.chapter_number}/">${esc(c.title)}</a></li>`).join("")}</ol></section>` : ""}
 ${more.length ? `<section class="gl"><h2>More to read</h2><ul class="more">${more.map((x) => `<li><a href="../${x.id}/">${esc(x.title)}</a><span>${esc(x.author)} · ${esc(x.genre)}</span></li>`).join("")}</ul></section>` : ""}`;
   write(`books/${b.id}/index.html`, shell({
-    depth: 2, title: cut(`${b.title} by ${b.author} – Read Free Online | Ui Books`, 70), desc, canonicalPath: `/books/${b.id}/`, image, body,
+    depth: 2, genre: b.genre, title: cut(`${b.title} by ${b.author} – Read Free Online | Ui Books`, 70), desc, canonicalPath: `/books/${b.id}/`, image, body,
     json: [{ "@context": "https://schema.org", "@type": "Book", name: b.title, author: { "@type": "Person", name: b.author }, genre: b.genre, description: desc, url: bUrl, inLanguage: "en", isAccessibleForFree: true, ...(image ? { image } : {}),
       ...(L.length ? { hasPart: L.map((c) => ({ "@type": "Chapter", name: c.title, position: c.chapter_number, url: `${bUrl}chapter-${c.chapter_number}/` })) } : {}) },
       crumbLd([["Home", `${SITE}/`], ["Library", `${SITE}/books/`], [b.title, bUrl]])],
@@ -190,7 +191,7 @@ ${more.length ? `<section class="gl"><h2>More to read</h2><ul class="more">${mor
 ${paras.map((p) => `<p>${esc(p).replace(/\n/g, "<br>")}</p>`).join("\n")}
 <div class="pn">${prev ? `<a class="btn g" href="../chapter-${prev.chapter_number}/">‹ PREVIOUS</a>` : `<a class="btn g" href="../">‹ BOOK PAGE</a>`}${next ? `<a class="btn" href="../chapter-${next.chapter_number}/">NEXT CHAPTER ›</a>` : `<a class="btn" href="../../../?book=${encodeURIComponent(b.id)}#book">RATE &amp; DISCUSS ›</a>`}</div></article>`;
     write(`books/${b.id}/chapter-${c.chapter_number}/index.html`, shell({
-      depth: 3, title: cut(`${c.title} – ${b.title} by ${b.author} | Ui Books`, 70), desc: first || desc, canonicalPath: `/books/${b.id}/chapter-${c.chapter_number}/`, image, body: cbody,
+      depth: 3, genre: b.genre, title: cut(`${c.title} – ${b.title} by ${b.author} | Ui Books`, 70), desc: first || desc, canonicalPath: `/books/${b.id}/chapter-${c.chapter_number}/`, image, body: cbody,
       json: [{ "@context": "https://schema.org", "@type": "Chapter", name: c.title, position: c.chapter_number, url: cUrl, inLanguage: "en", isAccessibleForFree: true, isPartOf: { "@type": "Book", name: b.title, url: bUrl, author: { "@type": "Person", name: b.author } } },
         crumbLd([["Home", `${SITE}/`], ["Library", `${SITE}/books/`], [b.title, bUrl], [c.title, cUrl]])],
     }));

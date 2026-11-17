@@ -166,6 +166,7 @@ function render() {
   $("rd").innerHTML = readerHTML(b);
   $("pt").textContent = b.t;
   W.paintRating(); W.paintReviews(); W.paintComments(); W.render2(); W.acctUi();
+  if (W.UiMusic) { W.UiMusic.context(location.hash === "#reader" ? { genre: b.g } : null); }
 }
 
 function render2() {
