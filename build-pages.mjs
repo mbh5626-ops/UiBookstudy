@@ -31,6 +31,25 @@ const hash = (s) => { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 
 const PALS = [["#1a2f6e", "#0b1640", "#7fd6ff"], ["#5a0f1c", "#2a0610", "#ff9a5a"], ["#0e4a38", "#052a1f", "#d9f27a"], ["#4c1a58", "#1f0a35", "#ffd6f0"],
   ["#2e2f66", "#10113a", "#b6b8ff"], ["#6b2a0b", "#2a0f05", "#ffb347"], ["#133a5c", "#071a30", "#aef0ff"], ["#2f0f3f", "#12061f", "#ff8fb8"]];
 
+const slugify = (s) => String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 50).replace(/-+$/, "");
+// Groups books by genre or author (case-insensitive) and gives every group a unique, safe web address.
+function groupBy(list, keyFn, prefix) {
+  const groups = new Map();
+  for (const b of list) {
+    const name = String(keyFn(b) || "").trim(); if (!name) continue;
+    const key = name.toLowerCase();
+    if (!groups.has(key)) groups.set(key, { name, books: [] });
+    groups.get(key).books.push(b);
+  }
+  const used = new Set(), out = [];
+  for (const g of [...groups.values()].sort((x, y) => x.name.localeCompare(y.name))) {
+    const base = slugify(g.name) || `${prefix}-${hash(g.name).toString(36)}`; let u = base, i = 2;
+    while (used.has(u)) u = `${base}-${i++}`;
+    used.add(u); g.slug = u; out.push(g);
+  }
+  return out;
+}
+
 async function rest(table, query) {
   let last;
   for (let t = 0; t < 3; t++) {
@@ -93,6 +112,8 @@ h1,h2,h3{font-family:Cinzel,serif;font-weight:500}h1{font-size:clamp(26px,5vw,38
 .pn{display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap;margin-top:26px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:22px}.grid a{display:block}.grid .t{font:500 14px Cinzel,serif;margin-top:10px}.grid .s{color:var(--mu);font-size:14px}
 .ft{max-width:900px;margin:0 auto;padding:6px 18px 40px;color:var(--mu);font-size:15px;display:flex;gap:6px 16px;flex-wrap:wrap}
+.by a,.meta a{border-bottom:1px dotted var(--mu)}.by a:hover,.meta a:hover{color:var(--gold)}.chipl{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 20px}.chipl a{border:1px solid var(--ln);border-radius:99px;padding:6px 14px;font:500 12px Cinzel,serif;color:var(--mu)}.chipl a:hover{color:var(--gold);border-color:var(--gold)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}.tile{display:block;border:1px solid var(--ln);border-radius:14px;padding:16px;background:linear-gradient(135deg,rgba(125,85,215,.3),rgba(63,198,184,.12))}.tile b{display:block;font:500 15px Cinzel,serif}.tile small{color:var(--mu);font-size:15px}.tile:hover{border-color:var(--gold)}
 :focus-visible{outline:2px solid var(--teal);outline-offset:3px}@media(max-width:640px){.book{grid-template-columns:1fr}.book .cv{width:min(210px,100%);margin:0 auto}.chl{columns:1}}`;
 
 function shell({ depth, title, desc, canonicalPath, image, body, json = [], genre = "" }) {
@@ -106,6 +127,8 @@ function shell({ depth, title, desc, canonicalPath, image, body, json = [], genr
 <meta name="description" content="${esc(desc)}">
 <link rel="canonical" href="${esc(url)}">
 <meta name="theme-color" content="#04020d">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="ui-root" content="${R}">
 <meta property="og:type" content="website"><meta property="og:site_name" content="Ui Books">
 <meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${esc(url)}">
 ${image ? `<meta property="og:image" content="${esc(image)}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${esc(image)}">` : '<meta name="twitter:card" content="summary">'}
@@ -121,7 +144,7 @@ ${json.map(ld).join("\n")}
 <main class="wrap"${genre ? ` data-genre="${esc(genre)}"` : ""}>
 ${body}
 </main>
-<footer class="ft"><a href="${R}">Home</a><a href="${R}books/">All books</a><a href="${R}privacy.html">Privacy</a><span>© ${new Date().getFullYear()} Ui Books · Read by lantern light</span></footer>
+<footer class="ft"><a href="${R}">Home</a><a href="${R}books/">All books</a><a href="${R}genres/">Genres</a><a href="${R}authors/">Authors</a><a href="${R}privacy.html">Privacy</a><span>© ${new Date().getFullYear()} Ui Books · Read by lantern light</span></footer>
 <script src="${R}ui-music.js" defer></script>
 </body>
 </html>
@@ -166,13 +189,24 @@ const cvHtml = (b) => {
   return `<div class="cv">${coverOk(b.cover_url) ? `<img src="${esc(b.cover_url)}" alt="Cover of ${esc(b.title)}" loading="lazy" decoding="async">` : scene(i.a, `Artwork for ${b.title}`)}</div>`;
 };
 
+const genreGroups = groupBy(books, (b) => b.genre, "genre"), authorGroups = groupBy(books, (b) => b.author, "author");
+const genreOf = new Map(), authorOf = new Map();
+genreGroups.forEach((g) => g.books.forEach((b) => genreOf.set(b.id, g)));
+authorGroups.forEach((g) => g.books.forEach((b) => authorOf.set(b.id, g)));
+const newest = (bs) => bs.map((b) => day(b.updated_at)).sort().pop() || "";
+const genreChips = (rel) => (genreGroups.length ? `<p class="chipl" aria-label="Genres">${genreGroups.map((g) => `<a href="${rel}genres/${g.slug}/">${esc(g.name)}</a>`).join("")}<a href="${rel}authors/">Authors</a></p>` : "");
+const bookGrid = (bs, rel) => `<div class="grid">${bs.map((b) => `<a href="${rel}books/${b.id}/">${cvHtml(b)}<div class="t">${esc(b.title)}</div><div class="s">${esc(b.author)} · ${esc(b.genre)}</div></a>`).join("")}</div>`;
+const itemList = (bs) => ({ "@type": "ItemList", itemListElement: bs.map((b, i) => ({ "@type": "ListItem", position: i + 1, url: `${SITE}/books/${b.id}/`, name: b.title })) });
+
 for (const b of books) {
   const { a, L, image } = infoFor[b.id], bUrl = `${SITE}/books/${b.id}/`;
   const desc = cut(b.description || `Read “${b.title}” by ${b.author}, a free ${b.genre} story, online at Ui Books.`, 155);
+  const gg = genreOf.get(b.id), ag = authorOf.get(b.id), byAuthor = ag.books.filter((x) => x.id !== b.id);
   const more = books.filter((x) => x.id !== b.id).sort((x, y) => (x.genre === b.genre ? -1 : 0) - (y.genre === b.genre ? -1 : 0)).slice(0, 6);
   const body = `<nav class="crumb" aria-label="Breadcrumb"><a href="../../">Home</a> › <a href="../">Library</a> › ${esc(b.title)}</nav>
-<article class="gl book">${cvHtml(b)}<div><h1>${esc(b.title)}</h1><p class="by">by ${esc(b.author)}</p><p class="meta">${esc(b.genre)} · ${L.length ? L.length + " chapter" + (L.length > 1 ? "s" : "") : "Chapters coming soon"} · Free to read</p><p class="desc">${esc(b.description || "")}</p><div class="acts">${L.length ? `<a class="btn" href="chapter-${L[0].chapter_number}/">START READING</a>` : ""}<a class="btn g" href="../../?book=${encodeURIComponent(b.id)}#book">RATE &amp; DISCUSS</a></div></div></article>
+<article class="gl book">${cvHtml(b)}<div><h1>${esc(b.title)}</h1><p class="by">by <a href="../../authors/${ag.slug}/">${esc(b.author)}</a></p><p class="meta"><a href="../../genres/${gg.slug}/">${esc(b.genre)}</a> · ${L.length ? L.length + " chapter" + (L.length > 1 ? "s" : "") : "Chapters coming soon"} · Free to read</p><p class="desc">${esc(b.description || "")}</p><div class="acts">${L.length ? `<a class="btn" href="chapter-${L[0].chapter_number}/">START READING</a>` : ""}<a class="btn g" href="../../?book=${encodeURIComponent(b.id)}#book">RATE &amp; DISCUSS</a></div></div></article>
 ${L.length ? `<section class="gl"><h2>Chapters</h2><ol class="chl" style="list-style:none">${L.map((c) => `<li><span>${esc(c.chapter_number)}</span><a href="chapter-${c.chapter_number}/">${esc(c.title)}</a></li>`).join("")}</ol></section>` : ""}
+${byAuthor.length ? `<section class="gl"><h2>More by ${esc(b.author)}</h2><ul class="more">${byAuthor.map((x) => `<li><a href="../${x.id}/">${esc(x.title)}</a><span>${esc(x.genre)}</span></li>`).join("")}</ul></section>` : ""}
 ${more.length ? `<section class="gl"><h2>More to read</h2><ul class="more">${more.map((x) => `<li><a href="../${x.id}/">${esc(x.title)}</a><span>${esc(x.author)} · ${esc(x.genre)}</span></li>`).join("")}</ul></section>` : ""}`;
   write(`books/${b.id}/index.html`, shell({
     depth: 2, genre: b.genre, title: cut(`${b.title} by ${b.author} – Read Free Online | Ui Books`, 70), desc, canonicalPath: `/books/${b.id}/`, image, body,
@@ -201,12 +235,54 @@ ${paras.map((p) => `<p>${esc(p).replace(/\n/g, "<br>")}</p>`).join("\n")}
 
 const libBody = `<nav class="crumb" aria-label="Breadcrumb"><a href="../">Home</a> › Library</nav>
 <section class="gl"><h1>The Ui Books Library</h1><p class="meta" style="margin:8px 0 22px">${books.length} free fantasy and adventure stories to read online by lantern light.</p>
+${genreChips("../")}
 ${books.length ? `<div class="grid">${books.map((b) => `<a href="${b.id}/">${cvHtml(b)}<div class="t">${esc(b.title)}</div><div class="s">${esc(b.author)} · ${esc(b.genre)}</div></a>`).join("")}</div>` : "<p>New books are on the way.</p>"}</section>`;
 write("books/index.html", shell({ depth: 1, title: "Free Fantasy Novels to Read Online – Library | Ui Books", desc: cut(`Browse ${books.length} free fantasy, epic, romance and adventure stories. Read short chapters online at Ui Books.`, 155), canonicalPath: "/books/", image: hasDefaultOg ? `${SITE}/og/default.png` : null, body: libBody,
   json: [crumbLd([["Home", `${SITE}/`], ["Library", `${SITE}/books/`]])] }));
+
+/* ---------- genre and author pages (so Google can match searches like "free epic fantasy stories") ---------- */
+urls.push({ loc: `${SITE}/genres/` }, { loc: `${SITE}/authors/` });
+const collection = (kind, name, url, desc, bs, extra = {}) => ({ "@context": "https://schema.org", "@type": "CollectionPage", name, url, description: desc, inLanguage: "en", ...extra, mainEntity: itemList(bs) });
+for (const g of genreGroups) {
+  const n = g.books.length, gUrl = `${SITE}/genres/${g.slug}/`;
+  const desc = cut(`Read ${n} free ${g.name.toLowerCase()} ${n > 1 ? "stories" : "story"} online: ${g.books.slice(0, 3).map((b) => b.title).join(", ")}${n > 3 ? " and more" : ""}. Short chapters, free at Ui Books.`, 155);
+  const body = `<nav class="crumb" aria-label="Breadcrumb"><a href="../../">Home</a> › <a href="../">Genres</a> › ${esc(g.name)}</nav>
+<section class="gl"><h1>Free ${esc(g.name)} Stories</h1><p class="meta" style="margin:8px 0 22px">${n} free ${esc(g.name.toLowerCase())} ${n > 1 ? "stories" : "story"} to read online, chapter by chapter.</p>${bookGrid(g.books, "../../")}</section>
+<section class="gl"><h2>More genres</h2>${genreChips("../../")}</section>`;
+  write(`genres/${g.slug}/index.html`, shell({ depth: 2, genre: g.name, title: cut(`Free ${g.name} Stories to Read Online | Ui Books`, 70), desc, canonicalPath: `/genres/${g.slug}/`, image: hasDefaultOg ? `${SITE}/og/default.png` : null, body,
+    json: [collection("genre", `Free ${g.name} Stories`, gUrl, desc, g.books), crumbLd([["Home", `${SITE}/`], ["Genres", `${SITE}/genres/`], [g.name, gUrl]])] }));
+  urls.push({ loc: gUrl, lastmod: newest(g.books) });
+}
+write("genres/index.html", shell({ depth: 1, title: "Browse Free Stories by Genre | Ui Books", desc: cut(`Browse free stories by genre at Ui Books: ${genreGroups.map((g) => g.name).join(", ")}.`, 155), canonicalPath: "/genres/", image: hasDefaultOg ? `${SITE}/og/default.png` : null,
+  body: `<nav class="crumb" aria-label="Breadcrumb"><a href="../">Home</a> › Genres</nav><section class="gl"><h1>Browse by Genre</h1><p class="meta" style="margin:8px 0 22px">Pick a genre and start reading.</p>${genreGroups.length ? `<div class="tiles">${genreGroups.map((g) => `<a class="tile" href="${g.slug}/"><b>${esc(g.name)}</b><small>${g.books.length} ${g.books.length > 1 ? "books" : "book"}</small></a>`).join("")}</div>` : "<p>New genres are on the way.</p>"}</section>`,
+  json: [crumbLd([["Home", `${SITE}/`], ["Genres", `${SITE}/genres/`]])] }));
+for (const g of authorGroups) {
+  const n = g.books.length, gUrl = `${SITE}/authors/${g.slug}/`;
+  const desc = cut(`Read ${n > 1 ? "all " + n + " free stories" : "the free story"} by ${g.name} online: ${g.books.slice(0, 3).map((b) => b.title).join(", ")}${n > 3 ? " and more" : ""}. At Ui Books.`, 155);
+  const body = `<nav class="crumb" aria-label="Breadcrumb"><a href="../../">Home</a> › <a href="../">Authors</a> › ${esc(g.name)}</nav>
+<section class="gl"><h1>Books by ${esc(g.name)}</h1><p class="meta" style="margin:8px 0 22px">${n} free ${n > 1 ? "stories" : "story"} to read online.</p>${bookGrid(g.books, "../../")}</section>`;
+  write(`authors/${g.slug}/index.html`, shell({ depth: 2, title: cut(`${g.name} – Free Stories to Read Online | Ui Books`, 70), desc, canonicalPath: `/authors/${g.slug}/`, image: hasDefaultOg ? `${SITE}/og/default.png` : null, body,
+    json: [collection("author", `Books by ${g.name}`, gUrl, desc, g.books, { about: { "@type": "Person", name: g.name } }), crumbLd([["Home", `${SITE}/`], ["Authors", `${SITE}/authors/`], [g.name, gUrl]])] }));
+  urls.push({ loc: gUrl, lastmod: newest(g.books) });
+}
+write("authors/index.html", shell({ depth: 1, title: "Authors – Free Stories to Read Online | Ui Books", desc: cut(`Meet the authors at Ui Books: ${authorGroups.map((g) => g.name).join(", ")}.`, 155), canonicalPath: "/authors/", image: hasDefaultOg ? `${SITE}/og/default.png` : null,
+  body: `<nav class="crumb" aria-label="Breadcrumb"><a href="../">Home</a> › Authors</nav><section class="gl"><h1>Authors</h1><p class="meta" style="margin:8px 0 22px">Tap an author to see their books.</p>${authorGroups.length ? `<div class="tiles">${authorGroups.map((g) => `<a class="tile" href="${g.slug}/"><b>${esc(g.name)}</b><small>${g.books.length} ${g.books.length > 1 ? "books" : "book"}</small></a>`).join("")}</div>` : "<p>Authors will appear here.</p>"}</section>`,
+  json: [crumbLd([["Home", `${SITE}/`], ["Authors", `${SITE}/authors/`]])] }));
+
+// Footer links on the home page, so search engines can find every section from the first page.
+{
+  const idx = path.join(OUT, "index.html"), needle = '<a href="privacy.html">Privacy</a></span>';
+  if (fs.existsSync(idx)) {
+    let h = fs.readFileSync(idx, "utf8");
+    if (h.includes(needle) && !h.includes('href="genres/"')) {
+      h = h.replace(needle, '<a href="books/">All books</a><a href="genres/">Genres</a><a href="authors/">Authors</a>' + needle);
+      fs.writeFileSync(idx, h);
+    }
+  }
+}
 
 // Tells the website which books have a generated page, so book cards only link to pages that exist.
 write("books/manifest.json", JSON.stringify({ v: 1, built: new Date().toISOString(), books: Object.fromEntries(books.map((b) => [b.id, infoFor[b.id].L.length])) }));
 
 write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `  <url><loc>${esc(u.loc)}</loc>${u.lastmod ? `<lastmod>${esc(u.lastmod)}</lastmod>` : ""}</url>`).join("\n")}\n</urlset>\n`);
-console.log(`Done: ${books.length} book pages, ${urls.length - 3 - books.length} chapter pages, ${urls.length} sitemap entries in ${((Date.now() - startedAt) / 1000).toFixed(1)}s.`);
+console.log(`Done: ${books.length} book pages, ${genreGroups.length} genre pages, ${authorGroups.length} author pages, ${urls.length} sitemap entries in ${((Date.now() - startedAt) / 1000).toFixed(1)}s.`);

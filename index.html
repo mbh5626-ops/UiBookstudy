@@ -9,6 +9,10 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="Ui Books – Fantasy Novels to Read by Lantern Light">
 <meta property="og:description" content="Free fantasy tales, a study timer and a moonlit reading room.">
+<meta property="og:url" content="https://mbh5626-ops.github.io/UiBookstudy/"><meta property="og:site_name" content="Ui Books">
+<meta property="og:image" content="https://mbh5626-ops.github.io/UiBookstudy/og/default.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://mbh5626-ops.github.io/UiBookstudy/">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Ui Books","url":"https://mbh5626-ops.github.io/UiBookstudy/","description":"Free fantasy tales to read online by lantern light.","inLanguage":"en"}</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2314082e'/%3E%3Ctext x='32' y='43' font-size='30' text-anchor='middle' fill='%23e0b45a' font-family='serif'%3EUi%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
@@ -21,12 +25,12 @@ body{background:#04020d;color:var(--ink);font:17px/1.4 "Crimson Pro",Georgia,ser
 a{color:inherit;text-decoration:none}button{font:inherit;color:inherit;cursor:pointer}
 /* moving abstract background */
 .bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:radial-gradient(ellipse at 50% 130%,#2a0f5c,transparent 60%),#04020d}
-.bg .aur{position:absolute;left:50%;top:50%;width:130vmax;height:130vmax;margin:-65vmax;background:conic-gradient(from 0deg,#7d55d7,#04020d 18%,#3fc6b8 32%,#04020d 48%,#e0b45a 62%,#04020d 76%,#d9546e 88%,#7d55d7);filter:blur(110px);opacity:.5;animation:spin 50s linear infinite}
-.bg i{position:absolute;border-radius:50%;filter:blur(60px);mix-blend-mode:screen;animation:drift 20s ease-in-out infinite alternate}
-.bg i:nth-of-type(1){width:46vmax;height:46vmax;left:-12vmax;top:-10vmax;background:#6a3be0;opacity:.55}
-.bg i:nth-of-type(2){width:38vmax;height:38vmax;right:-8vmax;bottom:-8vmax;background:#d9546e;opacity:.4;animation-duration:26s}
-.bg i:nth-of-type(3){width:26vmax;height:26vmax;right:20%;top:6%;background:#2a8cff;opacity:.4;animation-duration:17s}
-.bg i:nth-of-type(4){width:22vmax;height:22vmax;left:16%;bottom:2%;background:#e0b45a;opacity:.3;animation-duration:23s}
+.bg .aur{position:absolute;left:50%;top:50%;width:130vmax;height:130vmax;margin:-65vmax;background:url(aurora-dark.webp) center/100% 100% no-repeat;opacity:.5;will-change:transform;animation:spin 50s linear infinite}
+.bg i{position:absolute;border-radius:50%;will-change:transform;animation:drift 20s ease-in-out infinite alternate}
+.bg i:nth-of-type(1){width:46vmax;height:46vmax;left:-12vmax;top:-10vmax;background:radial-gradient(circle closest-side,rgba(106,59,224,1) 0,rgba(106,59,224,.62) 45%,rgba(106,59,224,0) 100%);opacity:.55}
+.bg i:nth-of-type(2){width:38vmax;height:38vmax;right:-8vmax;bottom:-8vmax;background:radial-gradient(circle closest-side,rgba(217,84,110,1) 0,rgba(217,84,110,.62) 45%,rgba(217,84,110,0) 100%);opacity:.4;animation-duration:26s}
+.bg i:nth-of-type(3){width:26vmax;height:26vmax;right:20%;top:6%;background:radial-gradient(circle closest-side,rgba(42,140,255,1) 0,rgba(42,140,255,.62) 45%,rgba(42,140,255,0) 100%);opacity:.4;animation-duration:17s}
+.bg i:nth-of-type(4){width:22vmax;height:22vmax;left:16%;bottom:2%;background:radial-gradient(circle closest-side,rgba(224,180,90,1) 0,rgba(224,180,90,.62) 45%,rgba(224,180,90,0) 100%);opacity:.3;animation-duration:23s}
 .bg svg{position:absolute;inset:0;width:100%;height:100%}
 .bg path{fill:none;stroke-width:2;stroke-linecap:round;stroke-dasharray:240 360;animation:flow 12s linear infinite}
 .bg .rg{fill:none;stroke-width:1.2;transform-box:fill-box;transform-origin:center;animation:spin 55s linear infinite}
@@ -144,7 +148,7 @@ h2{font-size:22px;color:var(--gold);margin-bottom:14px;display:flex;justify-cont
 :root[data-theme="light"]{color-scheme:light;--ink:#30233f;--mu:#665c74;--ln:rgba(93,62,122,.22);--gold:#94600d;--em:#ad3554;--teal:#087f78;--gl:rgba(255,250,239,.84)}
 :root[data-theme="light"] body{background:#f4efe6;color:var(--ink)}
 :root[data-theme="light"] .bg{background:radial-gradient(ellipse at 50% 130%,#e4d9f5,transparent 60%),#f4efe6}
-:root[data-theme="light"] .bg .aur{background:conic-gradient(from 0deg,#c9b7f0,#f4efe6 18%,#a9e3dc 32%,#f4efe6 48%,#f1dba5 62%,#f4efe6 76%,#f3bdca 88%,#c9b7f0);opacity:.32}
+:root[data-theme="light"] .bg .aur{background:url(aurora-light.webp) center/100% 100% no-repeat;opacity:.32}
 :root[data-theme="light"] .bg i:nth-of-type(n){opacity:.15}
 :root[data-theme="light"] .bg svg{opacity:.3}
 :root[data-theme="light"] h1{background:linear-gradient(90deg,#443052,#94600d);-webkit-background-clip:text;background-clip:text}
@@ -158,6 +162,8 @@ h2{font-size:22px;color:var(--gold);margin-bottom:14px;display:flex;justify-cont
 .theme-toggle:focus-visible{outline:3px solid var(--teal);outline-offset:3px}
 .ft .theme-toggle{margin-left:auto}
 @media(max-width:860px){.theme-toggle{right:16px;bottom:78px}}
+/* phones: no live backdrop blur over the moving background (looks the same, much lighter) */
+@media(max-width:860px){:root:not([data-theme="light"]){--gl:rgba(12,7,32,.84)}nav,.se,.gl,.theme-toggle{backdrop-filter:none;-webkit-backdrop-filter:none}}
 /* animated logo intro (shown once per visit) */
 #intro{position:fixed;inset:0;z-index:200;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 55%,#2a0f5c,#04020d 72%);animation:inOut .6s ease 2.4s forwards}
 html.no-intro #intro{display:none}

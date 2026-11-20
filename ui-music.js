@@ -393,9 +393,13 @@ function readStatic() {
   var changed = g !== genre; genre = g || null; return changed;
 }
 var navToken = 0;
-function basePath() { var i = location.pathname.indexOf("/books/"); return i < 0 ? null : location.pathname.slice(0, i + 1); }
+var BASE = null;   // path of the site root, taken from the page itself (generated pages only)
+function rootBase() {
+  var m = D.querySelector('meta[name="ui-root"]'); if (!m) { return null; }
+  try { return new URL(m.getAttribute("content") || "./", location.href).pathname; } catch (e) { return null; }
+}
 function eligible(u) {
-  var base = basePath(); return !!base && u.origin === location.origin && u.pathname.indexOf(base + "books/") === 0;
+  return !!BASE && u.origin === location.origin && ["books/", "genres/", "authors/"].some(function (p) { return u.pathname.indexOf(BASE + p) === 0; });
 }
 function swap(doc) {
   var cur = D.body, keep = el;
@@ -451,7 +455,8 @@ W.UiMusic = {
   _test: { engine: function () { return eng; }, Engine: Engine, MOODS: MOODS, DEF: DEF, prefs: function () { return prefs; }, state: function () { return { playing: playing, mood: eng && eng.curId, ctxState: ctx && ctx.state, genre: genre }; } }
 };
 function init() {
-  isStatic = !!D.querySelector("main.wrap") && basePath() !== null;
+  BASE = rootBase();
+  isStatic = !!D.querySelector("main.wrap") && BASE !== null;
   isSpa = !!D.getElementById("v-home");
   if (!isStatic && !isSpa) { return; }
   if (isStatic) { readStatic(); }
