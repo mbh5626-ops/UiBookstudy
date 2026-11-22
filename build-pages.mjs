@@ -88,6 +88,15 @@ async function ogPng(a, file) {
   await sharp(Buffer.from(svg)).png({ compressionLevel: 9 }).toFile(file);
 }
 
+async function ogFromCover(url, file) {
+  const r = await fetch(url); if (!r.ok) throw new Error("cover HTTP " + r.status);
+  const buf = Buffer.from(await r.arrayBuffer());
+  const bg = await sharp(buf).resize(1200, 630, { fit: "cover" }).blur(24).modulate({ brightness: 0.55 }).toBuffer();
+  const fg = await sharp(buf).resize({ width: 420, height: 570, fit: "inside" }).toBuffer();
+  const m = await sharp(fg).metadata();
+  await sharp(bg).composite([{ input: fg, left: Math.round((1200 - m.width) / 2), top: Math.round((630 - m.height) / 2) }]).jpeg({ quality: 84 }).toFile(file);
+}
+
 /* ---------- page shell ---------- */
 const CSS = `:root{color-scheme:dark;--ink:#f4ead2;--mu:#a9a1c8;--ln:rgba(190,160,255,.2);--gold:#e0b45a;--em:#d9546e;--teal:#3fc6b8;--gl:rgba(20,12,44,.82);--bg:#04020d}
 :root[data-theme=light]{color-scheme:light;--ink:#30233f;--mu:#665c74;--ln:rgba(93,62,122,.24);--gold:#94600d;--em:#ad3554;--teal:#087f78;--gl:rgba(255,250,239,.92);--bg:#f4efe6}
@@ -108,12 +117,24 @@ h1,h2,h3{font-family:Cinzel,serif;font-weight:500}h1{font-size:clamp(26px,5vw,38
 .chl{list-style:none;padding:0;columns:2;gap:24px}.chl li{break-inside:avoid;padding:8px 0;border-bottom:1px solid var(--ln)}.chl span{color:var(--gold);font:700 13px Cinzel,serif;margin-right:10px}
 .more{list-style:none;padding:0}.more li{padding:8px 0;border-bottom:1px solid var(--ln)}.more span{color:var(--mu);font-size:15px;margin-left:8px}
 .read{max-width:660px;margin:0 auto}.read .kick{color:var(--mu);font-size:15px;line-height:1.4;margin:0}.read h1{margin:4px 0 22px}
-.read p{font-size:20px;line-height:1.8;margin-bottom:20px}.read h1+p:first-letter{font:700 3.1em/.8 Cinzel,serif;float:left;color:var(--gold);padding:6px 10px 0 0}
+.read p{font-size:var(--rfs,20px);line-height:1.8;margin-bottom:20px}.read .rtools+p:first-letter{font:700 3.1em/.8 Cinzel,serif;float:left;color:var(--gold);padding:6px 10px 0 0}
 .pn{display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap;margin-top:26px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:22px}.grid a{display:block}.grid .t{font:500 14px Cinzel,serif;margin-top:10px}.grid .s{color:var(--mu);font-size:14px}
 .ft{max-width:900px;margin:0 auto;padding:6px 18px 40px;color:var(--mu);font-size:15px;display:flex;gap:6px 16px;flex-wrap:wrap}
 .by a,.meta a{border-bottom:1px dotted var(--mu)}.by a:hover,.meta a:hover{color:var(--gold)}.chipl{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 20px}.chipl a{border:1px solid var(--ln);border-radius:99px;padding:6px 14px;font:500 12px Cinzel,serif;color:var(--mu)}.chipl a:hover{color:var(--gold);border-color:var(--gold)}
 .tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}.tile{display:block;border:1px solid var(--ln);border-radius:14px;padding:16px;background:linear-gradient(135deg,rgba(125,85,215,.3),rgba(63,198,184,.12))}.tile b{display:block;font:500 15px Cinzel,serif}.tile small{color:var(--mu);font-size:15px}.tile:hover{border-color:var(--gold)}
+.rbar{position:fixed;left:0;top:0;width:100%;height:3px;z-index:60;pointer-events:none}.rbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--gold))}
+.rtools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:-8px 0 22px}.rtools .rmin{color:var(--mu);font-size:15px;margin-right:auto}
+.rtools button{display:none;border:1px solid var(--ln);background:rgba(255,255,255,.05);color:var(--ink);border-radius:10px;padding:7px 12px;font:600 12px Cinzel,serif;cursor:pointer}
+.ui-read .rtools button{display:inline-flex}.rtools button:hover{border-color:var(--gold);color:var(--gold)}
+[data-bk]{display:none;cursor:pointer}.ui-read [data-bk]{display:inline-flex}
+#ui-share{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:70;width:min(420px,calc(100vw - 24px));background:rgba(14,8,34,.97);border:1px solid var(--ln);border-radius:20px;padding:16px;box-shadow:0 20px 50px rgba(0,0,0,.5)}
+:root[data-theme=light] #ui-share{background:rgba(255,250,239,.98)}
+#ui-share h3{font-size:16px;color:var(--gold);margin-bottom:10px}.shl{display:flex;flex-wrap:wrap;gap:8px}
+.shl a,.shl button{border:1px solid var(--ln);background:rgba(255,255,255,.06);color:var(--ink);border-radius:99px;padding:8px 16px;font:600 12px Cinzel,serif;cursor:pointer}.shl a:hover,.shl button:hover{border-color:var(--gold);color:var(--gold)}
+.shx{position:absolute;right:12px;top:6px;background:none;border:0;color:var(--mu);font-size:24px;line-height:1;cursor:pointer}
+#ui-rtoast{position:fixed;left:50%;bottom:78px;transform:translateX(-50%);z-index:70;background:rgba(14,8,34,.96);border:1px solid var(--ln);border-radius:14px;padding:10px 16px;font-size:16px;max-width:calc(100vw - 24px)}
+:root[data-theme=light] #ui-rtoast{background:rgba(255,250,239,.98)}#ui-rtoast button{background:none;border:0;color:var(--gold);font:700 12px Cinzel,serif;cursor:pointer;margin-left:6px}
 :focus-visible{outline:2px solid var(--teal);outline-offset:3px}@media(max-width:640px){.book{grid-template-columns:1fr}.book .cv{width:min(210px,100%);margin:0 auto}.chl{columns:1}}`;
 
 function shell({ depth, title, desc, canonicalPath, image, body, json = [], genre = "" }) {
@@ -131,9 +152,9 @@ function shell({ depth, title, desc, canonicalPath, image, body, json = [], genr
 <meta name="ui-root" content="${R}">
 <meta property="og:type" content="website"><meta property="og:site_name" content="Ui Books">
 <meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${esc(url)}">
-${image ? `<meta property="og:image" content="${esc(image)}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${esc(image)}">` : '<meta name="twitter:card" content="summary">'}
+${image ? `<meta property="og:image" content="${esc(image)}">${image.startsWith(SITE + "/og/") ? '<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">' : ""}<meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${esc(image)}">` : '<meta name="twitter:card" content="summary">'}
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2314082e'/%3E%3Ctext x='32' y='43' font-size='30' text-anchor='middle' fill='%23e0b45a' font-family='serif'%3EUi%3C/text%3E%3C/svg%3E">
-<script>try{if(localStorage.getItem("ui-theme")==="light")document.documentElement.setAttribute("data-theme","light")}catch(e){}</script>
+<script>try{if(localStorage.getItem("ui-theme")==="light")document.documentElement.setAttribute("data-theme","light")}catch(e){}try{var f=+localStorage.getItem("uifs");if(f>=16&&f<=30)document.documentElement.style.setProperty("--rfs",f+"px")}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>${CSS}</style>
@@ -144,8 +165,9 @@ ${json.map(ld).join("\n")}
 <main class="wrap"${genre ? ` data-genre="${esc(genre)}"` : ""}>
 ${body}
 </main>
-<footer class="ft"><a href="${R}">Home</a><a href="${R}books/">All books</a><a href="${R}genres/">Genres</a><a href="${R}authors/">Authors</a><a href="${R}privacy.html">Privacy</a><span>© ${new Date().getFullYear()} Ui Books · Read by lantern light</span></footer>
+<footer class="ft"><a href="${R}">Home</a><a href="${R}books/">All books</a><a href="${R}genres/">Genres</a><a href="${R}authors/">Authors</a><a href="${R}apply.html">Write for us</a><a href="${R}privacy.html">Privacy</a><span>© ${new Date().getFullYear()} Ui Books · Read by lantern light</span></footer>
 <script src="${R}ui-music.js" defer></script>
+<script src="${R}ui-read.js" defer></script>
 </body>
 </html>
 `;
@@ -179,6 +201,9 @@ const infoFor = {};
 for (const b of books) {
   const a = artFor(b), L = (chaps[b.id] || []).filter((c) => String(c.content || "").trim());
   let image = coverOk(b.cover_url) ? b.cover_url : null;
+  if (image && sharp) {
+    try { await ogFromCover(image, path.join(OUT, `og/${b.id}.jpg`)); image = `${SITE}/og/${b.id}.jpg`; } catch (e) { console.log(`share picture from cover for ${b.id} failed:`, e.message); image = null; }
+  }
   if (!image && sharp) { try { await ogPng(a, path.join(OUT, `og/${b.id}.png`)); image = `${SITE}/og/${b.id}.png`; } catch (e) { console.log(`share picture for ${b.id} failed:`, e.message); } }
   if (!image && hasDefaultOg) image = `${SITE}/og/default.png`;
   infoFor[b.id] = { a, L, image };
@@ -202,9 +227,10 @@ for (const b of books) {
   const { a, L, image } = infoFor[b.id], bUrl = `${SITE}/books/${b.id}/`;
   const desc = cut(b.description || `Read “${b.title}” by ${b.author}, a free ${b.genre} story, online at Ui Books.`, 155);
   const gg = genreOf.get(b.id), ag = authorOf.get(b.id), byAuthor = ag.books.filter((x) => x.id !== b.id);
+  const bookMins = L.length ? Math.max(1, Math.ceil(L.reduce((n, c) => n + String(c.content).split(/\s+/).filter(Boolean).length, 0) / 200)) : 0;
   const more = books.filter((x) => x.id !== b.id).sort((x, y) => (x.genre === b.genre ? -1 : 0) - (y.genre === b.genre ? -1 : 0)).slice(0, 6);
   const body = `<nav class="crumb" aria-label="Breadcrumb"><a href="../../">Home</a> › <a href="../">Library</a> › ${esc(b.title)}</nav>
-<article class="gl book">${cvHtml(b)}<div><h1>${esc(b.title)}</h1><p class="by">by <a href="../../authors/${ag.slug}/">${esc(b.author)}</a></p><p class="meta"><a href="../../genres/${gg.slug}/">${esc(b.genre)}</a> · ${L.length ? L.length + " chapter" + (L.length > 1 ? "s" : "") : "Chapters coming soon"} · Free to read</p><p class="desc">${esc(b.description || "")}</p><div class="acts">${L.length ? `<a class="btn" href="chapter-${L[0].chapter_number}/">START READING</a>` : ""}<a class="btn g" href="../../?book=${encodeURIComponent(b.id)}#book">RATE &amp; DISCUSS</a></div></div></article>
+<article class="gl book" data-book="${b.id}" data-title="${esc(b.title)}" data-author="${esc(b.author)}">${cvHtml(b)}<div><h1>${esc(b.title)}</h1><p class="by">by <a href="../../authors/${ag.slug}/">${esc(b.author)}</a></p><p class="meta"><a href="../../genres/${gg.slug}/">${esc(b.genre)}</a> · ${L.length ? L.length + " chapter" + (L.length > 1 ? "s" : "") : "Chapters coming soon"}${bookMins ? " · " + bookMins + " min read" : ""} · Free to read</p><p class="desc">${esc(b.description || "")}</p><div class="acts">${L.length ? `<a class="btn" href="chapter-${L[0].chapter_number}/">START READING</a>` : ""}<a class="btn g" href="../../?book=${encodeURIComponent(b.id)}#book">RATE &amp; DISCUSS</a><button type="button" class="btn g" data-bk="save">\u2661 SAVE</button><button type="button" class="btn g" data-bk="share">SHARE</button></div></div></article>
 ${L.length ? `<section class="gl"><h2>Chapters</h2><ol class="chl" style="list-style:none">${L.map((c) => `<li><span>${esc(c.chapter_number)}</span><a href="chapter-${c.chapter_number}/">${esc(c.title)}</a></li>`).join("")}</ol></section>` : ""}
 ${byAuthor.length ? `<section class="gl"><h2>More by ${esc(b.author)}</h2><ul class="more">${byAuthor.map((x) => `<li><a href="../${x.id}/">${esc(x.title)}</a><span>${esc(x.genre)}</span></li>`).join("")}</ul></section>` : ""}
 ${more.length ? `<section class="gl"><h2>More to read</h2><ul class="more">${more.map((x) => `<li><a href="../${x.id}/">${esc(x.title)}</a><span>${esc(x.author)} · ${esc(x.genre)}</span></li>`).join("")}</ul></section>` : ""}`;
@@ -220,8 +246,11 @@ ${more.length ? `<section class="gl"><h2>More to read</h2><ul class="more">${mor
     const prev = L[i - 1], next = L[i + 1], cUrl = `${bUrl}chapter-${c.chapter_number}/`;
     const paras = String(c.content).split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
     const first = cut(paras[0] || "", 140);
+    const mins = Math.max(1, Math.ceil(paras.join(" ").split(/\s+/).filter(Boolean).length / 200));
+    const tools = `<div class="rtools" role="toolbar" aria-label="Reading tools"><span class="rmin">${mins} min read</span><button type="button" data-rt="fs-" aria-label="Smaller text">A\u2212</button><button type="button" data-rt="fs+" aria-label="Larger text">A+</button><button type="button" data-rt="theme" aria-label="Switch light or dark theme">\u263c</button><button type="button" data-rt="share">SHARE</button></div>`;
     const cbody = `<nav class="crumb" aria-label="Breadcrumb"><a href="../../../">Home</a> › <a href="../../">Library</a> › <a href="../">${esc(b.title)}</a> › ${esc(c.title)}</nav>
-<article class="gl read"><p class="kick">${esc(b.title)} · ${esc(b.author)}</p><h1>${esc(c.title)}</h1>
+<article class="gl read" data-book="${b.id}" data-chapter="${c.chapter_number}" data-title="${esc(c.title)}" data-book-title="${esc(b.title)}" data-author="${esc(b.author)}"><p class="kick">${esc(b.title)} · ${esc(b.author)}</p><h1>${esc(c.title)}</h1>
+${tools}
 ${paras.map((p) => `<p>${esc(p).replace(/\n/g, "<br>")}</p>`).join("\n")}
 <div class="pn">${prev ? `<a class="btn g" href="../chapter-${prev.chapter_number}/">‹ PREVIOUS</a>` : `<a class="btn g" href="../">‹ BOOK PAGE</a>`}${next ? `<a class="btn" href="../chapter-${next.chapter_number}/">NEXT CHAPTER ›</a>` : `<a class="btn" href="../../../?book=${encodeURIComponent(b.id)}#book">RATE &amp; DISCUSS ›</a>`}</div></article>`;
     write(`books/${b.id}/chapter-${c.chapter_number}/index.html`, shell({
@@ -242,6 +271,7 @@ write("books/index.html", shell({ depth: 1, title: "Free Fantasy Novels to Read 
 
 /* ---------- genre and author pages (so Google can match searches like "free epic fantasy stories") ---------- */
 urls.push({ loc: `${SITE}/genres/` }, { loc: `${SITE}/authors/` });
+if (fs.existsSync(path.join(SRC, "apply.html"))) urls.push({ loc: `${SITE}/apply.html` });
 const collection = (kind, name, url, desc, bs, extra = {}) => ({ "@context": "https://schema.org", "@type": "CollectionPage", name, url, description: desc, inLanguage: "en", ...extra, mainEntity: itemList(bs) });
 for (const g of genreGroups) {
   const n = g.books.length, gUrl = `${SITE}/genres/${g.slug}/`;
@@ -275,14 +305,14 @@ write("authors/index.html", shell({ depth: 1, title: "Authors – Free Stories t
   if (fs.existsSync(idx)) {
     let h = fs.readFileSync(idx, "utf8");
     if (h.includes(needle) && !h.includes('href="genres/"')) {
-      h = h.replace(needle, '<a href="books/">All books</a><a href="genres/">Genres</a><a href="authors/">Authors</a>' + needle);
+      h = h.replace(needle, '<a href="books/">All books</a><a href="genres/">Genres</a><a href="authors/">Authors</a><a href="apply.html">Write for us</a>' + needle);
       fs.writeFileSync(idx, h);
     }
   }
 }
 
 // Tells the website which books have a generated page, so book cards only link to pages that exist.
-write("books/manifest.json", JSON.stringify({ v: 1, built: new Date().toISOString(), books: Object.fromEntries(books.map((b) => [b.id, infoFor[b.id].L.length])) }));
+write("books/manifest.json", JSON.stringify({ v: 1, built: new Date().toISOString(), books: Object.fromEntries(books.map((b) => [b.id, infoFor[b.id].L.map((c) => c.chapter_number)])) }));
 
 write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `  <url><loc>${esc(u.loc)}</loc>${u.lastmod ? `<lastmod>${esc(u.lastmod)}</lastmod>` : ""}</url>`).join("\n")}\n</urlset>\n`);
 console.log(`Done: ${books.length} book pages, ${genreGroups.length} genre pages, ${authorGroups.length} author pages, ${urls.length} sitemap entries in ${((Date.now() - startedAt) / 1000).toFixed(1)}s.`);

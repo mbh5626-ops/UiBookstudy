@@ -23,7 +23,8 @@ var PALS = [["#1a2f6e", "#0b1640", "#7fd6ff"], ["#5a0f1c", "#2a0610", "#ff9a5a"]
 var FEAT = { comments: true, reviews: true };
 var DBSRC = false;      // true once the owner has confirmed the migration (chapters come only from the database)
 var merged = false;
-var GEN = null;         // book ids that have a generated page (from books/manifest.json)
+var GEN = null;         // book ids that have a generated page, with their chapter numbers (from books/manifest.json)
+var lastApplied = false, wired = false;
 
 /* ---------- small helpers ---------- */
 function art(b, a) {
@@ -161,12 +162,13 @@ function render() {
     ["INFO", "REVIEWS (" + sc(b, "reviews_count") + ")", "DISCUSSION (" + sc(b, "comments_count") + ")", "SIMILAR"].map(function (x, i) {
       return '<button class="' + (i === tab ? 'on' : '') + '" data-t="' + i + '">' + x + "</button>";
     }).join("") + "</div><h1>" + E(b.t) + '</h1><div class="a">' + E(b.a) + "</div>" + W.starsFor(cur) +
-    '<div style="min-height:110px">' + tx + '</div><a class="btn" href="#reader">READ</a> <button class="btn t" data-l="1">♫ LISTEN</button> ' +
+    '<div style="min-height:110px">' + tx + '</div><a class="btn" href="#reader">READ</a> <button class="btn t" data-l="1">♫ LISTEN</button> <button class="btn g" data-share="1">SHARE</button> ' +
     '<button class="btn g" data-s="' + cur + '">' + (saved.indexOf(cur) > -1 ? '♥ SAVED' : '♡ SAVE') + "</button></div>";
   $("rd").innerHTML = readerHTML(b);
   $("pt").textContent = b.t;
   W.paintRating(); W.paintReviews(); W.paintComments(); W.render2(); W.acctUi();
   if (W.UiMusic) { W.UiMusic.context(location.hash === "#reader" ? { genre: b.g } : null); }
+  heroContinue();
 }
 
 function render2() {
@@ -220,8 +222,53 @@ function idsNow() { return saved.map(function (i) { return B[i] && B[i].id; }).f
 function sv() {
   try {
     localStorage.setItem("uibooks", JSON.stringify(saved.filter(function (i) { return i < W.IDS.length; })));
-    if (merged) { localStorage.setItem("uibooks2", JSON.stringify(idsNow())); }
+    if (merged) {
+      var ids = idsNow();
+      if (W.UiRead) { W.UiRead.sync.favsChanged(ids); }   // keeps the reader's account library up to date
+      localStorage.setItem("uibooks2", JSON.stringify(ids));
+    }
   } catch (e) { /* storage unavailable */ }
+}
+/* the account library changed (another device, or first sign-in): refresh saved books and the hero */
+function reloadSaved() {
+  if (!merged) { return; }
+  var ids = []; try { ids = JSON.parse(localStorage.getItem("uibooks2") || "[]"); } catch (e) { ids = []; }
+  var list = [];
+  (Array.isArray(ids) ? ids : []).forEach(function (id) { var k = -1; B.forEach(function (b, i) { if (b.id === id && !b.off) { k = i; } }); if (k > -1 && list.indexOf(k) < 0) { list.push(k); } });
+  saved = list;
+}
+function chapterNums(id) {
+  var g = GEN && Object.prototype.hasOwnProperty.call(GEN, id) ? GEN[id] : null;
+  return Array.isArray(g) ? g : null;
+}
+function heroContinue() {
+  var a = D.querySelector('.hero a.btn[href="#reader"], .hero a.btn[data-cont]'), b = B[cur];
+  if (!a || !b || !W.UiRead) { return; }
+  var pr = W.UiRead.sync.getProgress(b.id), nums = chapterNums(b.id), c = null;
+  if (pr && pr.c > 0 && nums && nums.length && !b.off && !b.draft) {
+    if (pr.p >= 0.96) { c = nums.filter(function (n) { return n > pr.c; })[0] || null; } else { c = nums.indexOf(pr.c) > -1 ? pr.c : (nums.filter(function (n) { return n >= pr.c; })[0] || nums[nums.length - 1]); }
+  }
+  if (c) { a.setAttribute("href", "books/" + b.id + "/chapter-" + c + "/"); a.setAttribute("data-cont", "1"); a.textContent = "CONTINUE \u00b7 CH " + c + " \u2726"; }
+  else if (a.getAttribute("data-cont")) { a.removeAttribute("data-cont"); a.setAttribute("href", "#reader"); a.textContent = "START READING \u2726"; }
+}
+function applyLast() {
+  if (lastApplied || !merged || !W.UiRead) { return; }
+  lastApplied = true;
+  var l = W.UiRead.sync.last(); if (!l) { return; }
+  var k = -1; B.forEach(function (b, i) { if (b.id === l.id && !b.off && !b.draft) { k = i; } });
+  var deep = false; try { var q = new URLSearchParams(location.search); deep = !!(q.get("book") || q.get("preview")); } catch (e) { deep = false; }
+  if (k > -1 && !deep && (location.hash === "" || location.hash === "#home")) { cur = k; chap = 0; tab = 0; W.render(); }
+}
+function wireRead() {
+  if (wired || !W.UiRead) { return; }
+  wired = true;
+  W.UiRead.on(function () { reloadSaved(); W.render(); });
+  applyLast();
+}
+function shareBook() {
+  var b = B[cur]; if (!b || !W.UiRead) { return; }
+  var nums = chapterNums(b.id), url = nums && !b.off && !b.draft ? new URL("books/" + b.id + "/", location.href).href : new URL("?book=" + encodeURIComponent(b.id), location.href.split("#")[0]).href;
+  W.UiRead.share({ title: b.t + " by " + b.a, text: "Read \u201c" + b.t + "\u201d free on Ui Books", url: url });
 }
 
 /* ---------- comments and reviews can be switched off (site-wide or per book) ---------- */
@@ -331,6 +378,7 @@ function load() {
       toast("Preview: this book is not published yet.");
     } else { openParam(); }
     W.render();
+    applyLast();
   }).catch(function () { /* keep the built-in books */ });
 }
 
@@ -356,6 +404,94 @@ function onCardClick(e) {
   if (e.ctrlKey || e.metaKey) { W.open(url, "_blank", "noopener"); } else { W.location.assign(url); }
 }
 
+/* ---------- contact form: messages go to the owner's inbox ---------- */
+function contactMsg(m, bad) { if (W.toast) { W.toast(m, bad); } }
+function wireContact() {
+  var cf = $("cf"); if (!cf) { return; }
+  var hp = D.createElement("input"); hp.type = "text"; hp.name = "website"; hp.tabIndex = -1; hp.setAttribute("autocomplete", "off"); hp.setAttribute("aria-hidden", "true");
+  hp.style.cssText = "position:absolute;left:-9999px;opacity:0;height:0;width:0"; cf.appendChild(hp);
+  cf.onsubmit = function (e) {
+    e.preventDefault();
+    if (hp.value) { contactMsg("Thanks! Your message was sent."); cf.reset(); return; }   // a robot filled the hidden field
+    var name = $("cn").value.trim(), email = $("ce").value.trim(), msg = $("cm").value.trim();
+    if (msg.length < 10) { contactMsg("Please write a little more (at least 10 characters).", true); return; }
+    if (!W.sb) { contactMsg("Messages can\u2019t be sent right now. Please try again later.", true); return; }
+    var btn = cf.querySelector("[type=submit]"); btn.disabled = true;
+    W.sb.from("contact_messages").insert({ name: name, email: email, message: msg }).then(function (r) {
+      btn.disabled = false;
+      if (r.error) {
+        var m = r.error.message || "";
+        contactMsg(m.indexOf("Too many") === 0 || m.indexOf("busy") > -1 ? m : r.error.code === "23514" ? "Please check your email address and message length." : "Your message couldn\u2019t be sent. Please try again later.", true);
+        return;
+      }
+      cf.reset(); contactMsg("Thanks! Your message was sent.");
+    }).catch(function () { btn.disabled = false; contactMsg("Network problem. Please try again.", true); });
+  };
+}
+
+/* ---------- profile picture ---------- */
+function loadImg(file) {
+  return new Promise(function (res, rej) {
+    var u = URL.createObjectURL(file), i = new Image();
+    i.onload = function () { URL.revokeObjectURL(u); res(i); };
+    i.onerror = function () { URL.revokeObjectURL(u); rej({ message: "That file is not a picture we can read." }); };
+    i.src = u;
+  });
+}
+function toAvatar(file) {
+  return loadImg(file).then(function (img) {
+    var w = img.naturalWidth || 1, h = img.naturalHeight || 1, side = Math.min(w, h), c = D.createElement("canvas");
+    c.width = c.height = 256; c.getContext("2d").drawImage(img, (w - side) / 2, (h - side) / 2, side, side, 0, 0, 256, 256);
+    function blob(t, q) { return new Promise(function (r) { c.toBlob(r, t, q); }); }
+    return blob("image/webp", 0.86).then(function (b) {
+      if (b && b.type === "image/webp" && b.size <= 450000) { return b; }
+      return blob("image/jpeg", 0.86).then(function (j) { if (j && j.size <= 450000) { return j; } throw { message: "That picture is too large. Try another one." }; });
+    });
+  });
+}
+function avPath(url) { var p = String(url || "").split("/object/public/avatars/")[1]; return p || null; }
+function avMsg(t, bad) { var m = $("avmsg"); if (m) { m.textContent = t; m.className = "msg" + (bad ? " er" : " ok"); } }
+function setAvatarUrl(url) {
+  var st = W.sb.storage.from("avatars"), old = W.prof && W.prof.avatar_url;
+  return W.sb.from("profiles").update({ avatar_url: url }).eq("id", W.me.id).select("id").then(function (r) {
+    if (r.error || !r.data || !r.data.length) { throw r.error || { message: "Couldn\u2019t save your picture." }; }
+    if (old && avPath(old)) { st.remove([avPath(old)]); }
+    W.prof = Object.assign({}, W.prof, { avatar_url: url }); W.authUi(); W.acctUi();
+  });
+}
+function uploadAvatar(file) {
+  if (!file) { return; }
+  avMsg("Uploading\u2026");
+  toAvatar(file).then(function (blob) {
+    var st = W.sb.storage.from("avatars"), path = W.me.id + "/" + Date.now() + (blob.type === "image/webp" ? ".webp" : ".jpg");
+    return st.upload(path, blob, { contentType: blob.type, cacheControl: "31536000", upsert: false }).then(function (up) {
+      if (up.error) { throw up.error; }
+      return setAvatarUrl(st.getPublicUrl(path).data.publicUrl).catch(function (e) { st.remove([path]); throw e; });
+    });
+  }).then(function () { avMsg("Picture saved.", false); }).catch(function (e) {
+    avMsg(e && e.message && e.message.length < 120 ? e.message : "Couldn\u2019t upload the picture. Please try again.", true);
+  });
+}
+function removeAvatar() {
+  var old = W.prof && W.prof.avatar_url; if (!old) { avMsg("You have no picture to remove."); return; }
+  W.sb.from("profiles").update({ avatar_url: null }).eq("id", W.me.id).select("id").then(function (r) {
+    if (r.error || !r.data || !r.data.length) { throw r.error || { message: "Couldn\u2019t remove the picture." }; }
+    if (avPath(old)) { W.sb.storage.from("avatars").remove([avPath(old)]); }
+    W.prof = Object.assign({}, W.prof, { avatar_url: null }); W.authUi(); W.acctUi(); avMsg("Picture removed.");
+  }).catch(function (e) { avMsg((e && e.message) || "Couldn\u2019t remove the picture.", true); });
+}
+var _acct = W.acctUi;
+function acctUi() {
+  _acct();
+  var a = $("acct"); if (!a || !W.me || !W.sb || a.querySelector("#avbox")) { return; }
+  var box = D.createElement("div"); box.id = "avbox";
+  box.innerHTML = '<h3 style="margin:22px 0 8px">Profile picture</h3><div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap"><span id="avprev"></span><div><label class="btn t" style="cursor:pointer">UPLOAD PICTURE<input type="file" id="avfile" accept="image/jpeg,image/png,image/webp" hidden></label> <button class="btn g" type="button" id="avdel">REMOVE</button></div></div><p class="sub" style="font-size:15px;margin:8px 0">A square picture works best. It is shrunk automatically and shown next to your comments and reviews.</p><div class="msg" id="avmsg" role="status" aria-live="polite"></div><p class="sub" style="font-size:16px">Want to publish your own stories? <a class="lk" href="apply.html">Become an author</a></p>';
+  var f = a.querySelector("#pfm"); if (f) { a.insertBefore(box, f); } else { a.appendChild(box); }
+  try { $("avprev").appendChild(W.avEl(72)); } catch (e) { /* ignore */ }
+  $("avfile").onchange = function () { var file = this.files && this.files[0]; this.value = ""; uploadAvatar(file); };
+  $("avdel").onclick = removeAvatar;
+}
+
 /* ---------- install ---------- */
 B.forEach(function (b, i) { b.seed = true; b.so = i + 1; b.ce = true; b.off = false; });
 var st = D.createElement("style");
@@ -367,10 +503,16 @@ st.textContent =
   ".ui-widget[data-style=teal]{border-color:var(--teal)}.ui-widget[data-style=crimson]{border-color:var(--em)}" +
   "@media(max-width:860px){.ui-widget{left:16px;right:auto}.ui-widget[data-pos=right]{left:auto;right:16px;bottom:130px}}";
 D.head.appendChild(st);
+var ftw = D.querySelector(".ft span");
+if (ftw && !ftw.querySelector('a[href="apply.html"]')) { ftw.insertAdjacentHTML("beforeend", '<a href="apply.html">Write for us</a>'); }
+if (!D.querySelector('script[src="ui-read.js"]')) { var rs = D.createElement("script"); rs.src = "ui-read.js"; D.head.appendChild(rs); }
+D.addEventListener("uiread:ready", wireRead); wireRead();
 var ftl = D.querySelector(".ft span");
 if (ftl && !ftl.querySelector('a[href="books/"]')) { ftl.insertAdjacentHTML("beforeend", '<a href="books/">All books</a>'); }
 W.cover = cvr; W.infoTab = infoTab; W.render = render; W.render2 = render2; W.speak = speak; W.sv = sv;
-W.paintReviews = paintReviews; W.paintComments = paintComments;
+W.paintReviews = paintReviews; W.paintComments = paintComments; W.acctUi = acctUi;
+wireContact();
+D.addEventListener("click", function (e) { var x = e.target && e.target.closest ? e.target.closest("[data-share]") : null; if (x) { shareBook(); } });
 D.addEventListener("click", onCardClick, true);   // capture phase: runs before the old card handler
 D.addEventListener("click", function (e) {
   var x = e.target && e.target.closest ? e.target.closest("[data-nx]") : null;

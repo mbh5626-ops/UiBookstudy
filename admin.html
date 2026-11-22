@@ -69,13 +69,17 @@ input[type=checkbox]{width:20px;height:20px;accent-color:var(--gold)}
 .err{color:#ff8a9a;padding:14px 0}
 .login{max-width:420px;margin:12vh auto 0}.login h1{margin-bottom:6px}.login form{margin:14px 0}.login input{margin-bottom:10px}
 .tabs{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:6;display:flex;gap:4px;padding:6px;background:var(--gl);border:1px solid var(--ln);border-radius:30px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);width:min(520px,calc(100% - 20px));justify-content:space-around}
-.tabs button{flex:1;background:none;border:0;border-radius:24px;padding:10px 6px;font:700 11px Cinzel,serif;letter-spacing:.06em;color:var(--mu)}
+.tabs{overflow-x:auto;scrollbar-width:none}.tabs button{flex:1;white-space:nowrap;background:none;border:0;border-radius:24px;padding:10px 6px;font:700 11px Cinzel,serif;letter-spacing:.06em;color:var(--mu)}
 .tabs button.on{background:linear-gradient(135deg,var(--em),#7a2a9a);color:#fff}
 .mo{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:14px;background:rgba(2,1,8,.78);backdrop-filter:blur(6px)}
 .mo .box{width:min(640px,100%);max-height:94vh;overflow:auto;position:relative;background:#120a2a}
 .mo .x{position:absolute;right:12px;top:8px;background:none;border:0;font-size:26px;line-height:1;color:var(--mu)}
 #toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);z-index:60;max-width:min(92vw,440px);padding:12px 18px;border-radius:14px;font-size:16px}
 .cnt{color:var(--mu);font-size:14px;text-align:right}
+.bdg{display:inline-block;min-width:18px;padding:0 6px;margin-left:4px;border-radius:99px;background:var(--gold);color:#2a1606;font:700 10px Cinzel,serif;line-height:17px}
+.badge.sbm{color:#2a1606;background:var(--gold);border-color:var(--gold)}
+.item a{color:var(--gold);text-decoration:underline;overflow-wrap:anywhere}.item details{margin-top:6px}.item summary{cursor:pointer;color:var(--gold);font:600 12px Cinzel,serif}
+.item .sm2{color:var(--mu);font-size:14px}
 </style>
 </head>
 <body>
@@ -93,7 +97,7 @@ var app=document.getElementById("app"),sb=null;
 try{if(window.supabase)sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{flowType:"pkce",persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}})}catch(e){sb=null}
 
 var BOOKP=["books.create","books.edit","books.publish","books.delete","chapters.create","chapters.edit","chapters.delete","covers.upload"];
-var BCOLS="id,title,author,genre,description,cover_url,cover_path,published,comments_enabled,sort_order,created_at,updated_at";
+var BCOLS="id,title,author,genre,description,cover_url,cover_path,published,comments_enabled,sort_order,created_at,updated_at,owner_id,submitted_at";
 var S={me:null,owner:false,perms:{},tab:"books",books:[],q:"",bookId:null,chapters:[],stats:null,
   cm:{sub:"reports",book:"",status:"",n:30},log:{n:50}};
 
@@ -102,6 +106,14 @@ function $(i){return document.getElementById(i)}
 function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
 function can(p){return S.owner||!!S.perms[p]}
 function canAny(a){return a.some(can)}
+function isAuthor(){return can("author.write")&&!S.owner&&!canAny(BOOKP)}
+function mine(b){return !!b&&!!S.me&&b.owner_id===S.me.id&&can("author.write")}
+function bcan(p,b){
+ if(can(p))return true;
+ if(!mine(b))return false;
+ if(p==="books.delete")return !b.published;
+ return["books.edit","chapters.create","chapters.edit","chapters.delete","covers.upload"].indexOf(p)>-1}
+function linkify(t){return esc(t).replace(/https?:\/\/[^\s<]+/g,function(u){return'<a href="'+u+'" target="_blank" rel="noopener nofollow">'+u+'</a>'})}
 function ck(r){if(r.error)throw r.error;return r.data}
 function one(r){if(r.error)throw r.error;if(!r.data||!r.data.length)throw{message:"That wasn\u2019t allowed, or the item no longer exists.",code:"42501"};return r.data[0]}
 function fe(e){var m=(e&&e.message)||"",c=e&&e.code;
@@ -135,32 +147,48 @@ async function start(){
  if(r.error){app.innerHTML='<div class="login gl"><h1>Setup needed</h1><p class="sub">Couldn\u2019t check your access ('+esc(fe(r.error))+'). The database setup (phase 1 SQL) may not have been run.</p><button class="btn g" data-act="signout" style="margin-top:12px">SIGN OUT</button></div>';return}
  var m=r.data||{};S.owner=!!m.owner;S.perms={};(m.permissions||[]).forEach(function(p){S.perms[p]=1});
  if(m.suspended||(!S.owner&&!(m.permissions||[]).length)){showNoAccess();return}
- var st=await sb.rpc("admin_stats");S.stats=st.error?null:st.data;
+ S.author=isAuthor();S.stats=null;S.counts=null;S.pen="";
+ if(!S.author){var st=await sb.rpc("admin_stats");S.stats=st.error?null:st.data}
+ var cn=await sb.rpc("admin_counts");S.counts=cn.error?null:cn.data;
+ if(S.author){var pa=await sb.from("author_applications").select("pen_name").eq("status","approved").limit(1);S.pen=(pa.data&&pa.data[0]&&pa.data[0].pen_name)||""}
  var t=tabsAvail();if(t.indexOf(S.tab)<0)S.tab=t[0];
  shell();go(S.tab)}
-function tabsAvail(){var t=[];if(canAny(BOOKP))t.push("books");if(can("comments.view"))t.push("comments");if(can("settings.manage"))t.push("settings");if(can("logs.view"))t.push("log");return t}
-var TL={books:"BOOKS",comments:"COMMUNITY",settings:"SETTINGS",log:"ACTIVITY"};
+function tabsAvail(){var t=[];if(canAny(BOOKP)||can("author.write"))t.push("books");if(can("authors.review"))t.push("authors");if(can("messages.view"))t.push("inbox");if(can("comments.view"))t.push("comments");if(can("settings.manage"))t.push("settings");if(can("logs.view"))t.push("log");return t}
+var TL={books:"BOOKS",authors:"AUTHORS",inbox:"INBOX",comments:"COMMUNITY",settings:"SETTINGS",log:"ACTIVITY"};
+function tabLabel(t){var c=S.counts||{},n=t==="authors"?c.applications:t==="inbox"?c.messages:t==="books"&&can("books.publish")?c.submitted:0;return TL[t]+(n?' <span class="bdg">'+esc(n)+'</span>':"")}
+function chromeChips(){
+ var s=S.stats,c=S.counts||{},h=s?[["users","Readers"],["reviews","Reviews"],["comments","Comments"],["open_reports","Open reports"]].map(function(k){return'<span class="chip"><b>'+esc(s[k[0]])+'</b>'+k[1]+'</span>'}).join(""):"";
+ if(c.applications)h+='<button class="chip on" data-act="go" data-tab="authors"><b>'+esc(c.applications)+'</b> new author applications</button>';
+ if(c.messages)h+='<button class="chip on" data-act="go" data-tab="inbox"><b>'+esc(c.messages)+'</b> new messages</button>';
+ if(c.submitted&&can("books.publish"))h+='<button class="chip on" data-act="subfilter"><b>'+esc(c.submitted)+'</b> books waiting for review</button>';
+ return h}
+function paintChrome(){var a=$("chips");if(a)a.innerHTML=chromeChips();tabsAvail().forEach(function(t){var b=$("tab-"+t);if(b)b.innerHTML=tabLabel(t)})}
+async function refreshCounts(){var cn=await sb.rpc("admin_counts");if(!cn.error){S.counts=cn.data;paintChrome()}}
 function shell(){
- var s=S.stats,chips=s?[["users","Readers"],["reviews","Reviews"],["comments","Comments"],["open_reports","Open reports"]].map(function(k){return'<span class="chip"><b>'+esc(s[k[0]])+'</b>'+k[1]+'</span>'}).join(""):"";
- app.innerHTML='<header class="top gl"><div class="brand">Ui<span>ADMIN</span></div><div class="who">'+esc((S.me&&S.me.email)||"")+' \u00b7 '+(S.owner?"Owner":"Staff")+'</div><a class="btn g sm" href="index.html">VIEW SITE</a><button class="btn g sm" data-act="signout">SIGN OUT</button></header><div class="stats">'+chips+'</div><main id="view"></main><nav class="tabs" aria-label="Sections">'+tabsAvail().map(function(t){return'<button data-act="go" data-tab="'+t+'" id="tab-'+t+'">'+TL[t]+'</button>'}).join("")+'</nav>'}
+ app.innerHTML='<header class="top gl"><div class="brand">Ui<span>ADMIN</span></div><div class="who">'+esc((S.me&&S.me.email)||"")+' \u00b7 '+(S.owner?"Owner":S.author?"Author":"Staff")+'</div><a class="btn g sm" href="index.html">VIEW SITE</a><button class="btn g sm" data-act="signout">SIGN OUT</button></header><div class="stats" id="chips">'+chromeChips()+'</div><main id="view"></main><nav class="tabs" aria-label="Sections">'+tabsAvail().map(function(t){return'<button data-act="go" data-tab="'+t+'" id="tab-'+t+'">'+tabLabel(t)+'</button>'}).join("")+'</nav>'}
 function go(t){S.tab=t;S.bookId=null;document.querySelectorAll(".tabs button").forEach(function(b){b.classList.toggle("on",b.dataset.tab===t)});
- ({books:viewBooks,comments:viewComments,settings:viewSettings,log:viewLog})[t]()}
+ ({books:viewBooks,authors:viewApplications,inbox:viewInbox,comments:viewComments,settings:viewSettings,log:viewLog})[t]()}
 
 /* ---------- books: list ---------- */
-async function loadBooks(){S.books=ck(await sb.from("books").select(BCOLS).order("sort_order",{ascending:true}).order("created_at",{ascending:true}))||[]}
+async function loadBooks(){
+ var q=sb.from("books").select(BCOLS);if(S.author)q=q.eq("owner_id",S.me.id);
+ S.books=ck(await q.order("sort_order",{ascending:true}).order("created_at",{ascending:true}))||[];
+ S.owners={};var ids=[];S.books.forEach(function(b){if(b.owner_id&&ids.indexOf(b.owner_id)<0)ids.push(b.owner_id)});
+ if(ids.length&&!S.author){var pr=await sb.from("profiles").select("id,display_name").in("id",ids);(pr.data||[]).forEach(function(p){S.owners[p.id]=p.display_name})}}
 function thumb(b){var u=safeUrl(b.cover_url);return u?'<img src="'+esc(u)+'" alt="">':'<span>'+esc((b.title||"?").trim().charAt(0).toUpperCase())+'</span>'}
 async function viewBooks(){
  var v=$("view");v.innerHTML='<p class="sub">Loading…</p>';
  try{await loadBooks()}catch(e){v.innerHTML=errBox(fe(e));return}
- v.innerHTML='<div class="bar2"><input id="bq" type="search" placeholder="Search books…" aria-label="Search books" dir="auto" value="'+esc(S.q)+'">'+(can("books.create")?'<button class="btn" data-act="newbook">+ NEW</button>':'')+'</div><div id="blist"></div>';
+ v.innerHTML=(S.author?'<p class="sub" style="margin-bottom:10px">Your books. Write your chapters, then submit the book for review. The site owner publishes it.</p>':'')+'<div class="bar2"><input id="bq" type="search" placeholder="Search books…" aria-label="Search books" dir="auto" value="'+esc(S.q)+'">'+(can("books.create")||can("author.write")?'<button class="btn" data-act="newbook">+ NEW</button>':'')+'</div><div id="blist"></div>';
  paintBookList()}
+function statusOf(b){return b.published?["PUBLISHED","pub"]:b.submitted_at?["SUBMITTED FOR REVIEW","sbm"]:["DRAFT",""]}
 function paintBookList(){
- var q=S.q.trim().toLowerCase(),l=S.books.filter(function(b){return!q||(b.title+" "+b.author+" "+b.genre).toLowerCase().indexOf(q)>-1});
- $("blist").innerHTML=l.length?l.map(function(b){return'<button class="card" data-act="openbook" data-id="'+esc(b.id)+'"><div class="th">'+thumb(b)+'</div><div class="t"><b>'+esc(b.title)+'</b><span class="sub">'+esc(b.author)+' \u00b7 '+esc(b.genre)+'</span><br><span class="badge '+(b.published?'pub':'')+'">'+(b.published?"PUBLISHED":"DRAFT")+'</span>'+(b.comments_enabled?'':' <span class="badge hid">COMMENTS CLOSED</span>')+'</div></button>'}).join(""):'<p class="sub">No books found.</p>'}
+ var q=S.q.trim().toLowerCase(),l=S.books.filter(function(b){return(!q||(b.title+" "+b.author+" "+b.genre).toLowerCase().indexOf(q)>-1)&&(!S.fSub||(b.submitted_at&&!b.published))});
+ $("blist").innerHTML=l.length?l.map(function(b){var st=statusOf(b),ow=S.owners&&S.owners[b.owner_id];return'<button class="card" data-act="openbook" data-id="'+esc(b.id)+'"><div class="th">'+thumb(b)+'</div><div class="t"><b>'+esc(b.title)+'</b><span class="sub">'+esc(b.author)+' \u00b7 '+esc(b.genre)+(b.owner_id&&!S.author?' \u00b7 account: '+esc(ow||"author"):"")+'</span><br><span class="badge '+st[1]+'">'+st[0]+'</span>'+(b.comments_enabled?'':' <span class="badge hid">COMMENTS CLOSED</span>')+'</div></button>'}).join(""):'<p class="sub">'+(S.fSub?"No books are waiting for review.":"No books found.")+'</p>'}
 
 /* ---------- books: create ---------- */
 function openNew(){
- openModal('<h2>New book</h2><p class="sub" style="margin-bottom:6px">It starts as a draft. Nobody sees it until you publish it.</p><form id="nbf"><label class="l" for="nt">Title</label><input id="nt" maxlength="120" dir="auto" required><label class="l" for="na">Author</label><input id="na" maxlength="80" dir="auto" required><label class="l" for="ng">Genre</label><input id="ng" maxlength="40" dir="auto" list="gl1" required><datalist id="gl1">'+genres().map(function(g){return'<option value="'+esc(g)+'">'}).join("")+'</datalist><label class="l" for="nd">Description</label><textarea id="nd" maxlength="4000" dir="auto"></textarea><label class="l" for="ni">Web ID (letters, numbers, dashes; can\u2019t be changed later)</label><input id="ni" maxlength="60" pattern="[a-z0-9\\-]{3,60}" placeholder="auto"><div class="msg er" id="nm" role="status"></div><button class="btn" type="submit" style="width:100%">CREATE DRAFT</button></form>');
+ openModal('<h2>New book</h2><p class="sub" style="margin-bottom:6px">It starts as a draft. Nobody sees it until you publish it.</p><form id="nbf"><label class="l" for="nt">Title</label><input id="nt" maxlength="120" dir="auto" required><label class="l" for="na">Author name'+(S.author?' (your pen name)':'')+'</label><input id="na" maxlength="80" dir="auto" value="'+esc(S.pen)+'" required><label class="l" for="ng">Genre</label><input id="ng" maxlength="40" dir="auto" list="gl1" required><datalist id="gl1">'+genres().map(function(g){return'<option value="'+esc(g)+'">'}).join("")+'</datalist><label class="l" for="nd">Description</label><textarea id="nd" maxlength="4000" dir="auto"></textarea><label class="l" for="ni">Web ID (letters, numbers, dashes; can\u2019t be changed later)</label><input id="ni" maxlength="60" pattern="[a-z0-9\\-]{3,60}" placeholder="auto"><div class="msg er" id="nm" role="status"></div><button class="btn" type="submit" style="width:100%">CREATE DRAFT</button></form>');
  var touched=false;$("ni").oninput=function(){touched=true};$("nt").oninput=function(){if(!touched)$("ni").value=slug($("nt").value)};$("nt").focus()}
 function genres(){var g={};S.books.forEach(function(b){g[b.genre]=1});return Object.keys(g)}
 async function createBook(f){
@@ -178,19 +206,22 @@ async function openBook(id){
  if(!bookById(id)){v.innerHTML=errBox("That book no longer exists.");return}
  paintEditor()}
 function paintEditor(){
- var b=bookById(S.bookId),ed=can("books.edit"),cu=safeUrl(b.cover_url),n=S.chapters.length,v=$("view");
+ var b=bookById(S.bookId),ed=bcan("books.edit",b),cu=safeUrl(b.cover_url),n=S.chapters.length,v=$("view"),st=statusOf(b),ow=S.owners&&S.owners[b.owner_id],staff=can("books.edit");
+ var act=can("books.publish")?'<button class="btn '+(b.published?'g':'t')+'" data-act="publish">'+(b.published?"UNPUBLISH":"PUBLISH")+'</button>':(mine(b)&&!b.published?'<button class="btn t" data-act="submit"'+(b.submitted_at?' disabled':'')+'>'+(b.submitted_at?"SUBMITTED \u2713":"SUBMIT FOR REVIEW")+'</button>':'');
  v.innerHTML='<button class="btn g sm" data-act="back" style="margin-bottom:12px">\u2039 ALL BOOKS</button>'+
- '<div class="gl sec"><h2>'+esc(b.title)+'</h2><span class="badge '+(b.published?'pub':'')+'">'+(b.published?"PUBLISHED":"DRAFT")+'</span> <span class="sub" style="font-size:14px">ID: '+esc(b.id)+'</span>'+
-  '<div class="acts">'+(can("books.publish")?'<button class="btn '+(b.published?'g':'t')+'" data-act="publish">'+(b.published?"UNPUBLISH":"PUBLISH")+'</button>':'')+'<a class="btn g" target="_blank" rel="noopener" href="index.html?preview='+encodeURIComponent(b.id)+'">PREVIEW</a></div>'+
-  '<div class="sw"><span>Comments on this book</span><input type="checkbox" id="cmt-on" data-act-change="bookcomments" '+(b.comments_enabled?'checked ':'')+(can("comments.moderate")?'':'disabled ')+'aria-label="Comments open"></div></div>'+
- '<form class="gl sec" id="bf"><h2>Details</h2><label class="l" for="f-t">Title</label><input id="f-t" maxlength="120" dir="auto" value="'+esc(b.title)+'" '+(ed?'':'disabled ')+'required><div class="row2"><div><label class="l" for="f-a">Author</label><input id="f-a" maxlength="80" dir="auto" value="'+esc(b.author)+'" '+(ed?'':'disabled ')+'required></div><div><label class="l" for="f-g">Genre</label><input id="f-g" maxlength="40" dir="auto" list="gl2" value="'+esc(b.genre)+'" '+(ed?'':'disabled ')+'required><datalist id="gl2">'+genres().map(function(g){return'<option value="'+esc(g)+'">'}).join("")+'</datalist></div></div><label class="l" for="f-d">Description</label><textarea id="f-d" maxlength="4000" dir="auto" '+(ed?'':'disabled')+'>'+esc(b.description)+'</textarea><label class="l" for="f-o">Position in the library (smaller = earlier)</label><input id="f-o" type="number" step="1" value="'+esc(b.sort_order)+'" '+(ed?'':'disabled ')+'>'+(ed?'<div class="acts"><button class="btn" type="submit">SAVE DETAILS</button></div>':'')+'</form>'+
- '<div class="gl sec"><h2>Cover</h2><div class="cvrow"><div class="cov">'+(cu?'<img src="'+esc(cu)+'" alt="Cover of '+esc(b.title)+'">':'No cover<br>(artwork is used)')+'</div>'+(can("covers.upload")?'<div class="acts" style="margin:0"><label class="btn t" style="cursor:pointer">'+(cu?"REPLACE COVER":"UPLOAD COVER")+'<input type="file" accept="image/jpeg,image/png,image/webp" data-cover="1" hidden></label>'+(cu?'<button class="btn g" data-act="coverdel">REMOVE</button>':'')+'</div>':'')+'</div><p class="sub" style="font-size:14px;margin-top:8px">Best: a portrait picture (about 3:4). Large pictures are shrunk automatically.</p></div>'+
- '<div class="gl sec"><h2>Chapters ('+n+')</h2>'+(n?S.chapters.map(function(c,i){return'<div class="chr"><span class="n">'+esc(c.chapter_number)+'</span><span class="tt" dir="auto">'+esc(c.title)+'</span>'+(can("chapters.edit")?'<button class="ib" data-act="chup" data-id="'+esc(c.id)+'" aria-label="Move up"'+(i===0?' disabled':'')+'>\u2191</button><button class="ib" data-act="chdn" data-id="'+esc(c.id)+'" aria-label="Move down"'+(i===n-1?' disabled':'')+'>\u2193</button><button class="ib" data-act="chedit" data-id="'+esc(c.id)+'" aria-label="Edit">\u270e</button>':'')+(can("chapters.delete")?'<button class="ib" data-act="chdel" data-id="'+esc(c.id)+'" aria-label="Delete">\u2715</button>':'')+'</div>'}).join(""):'<p class="sub">No chapters yet.</p>')+(can("chapters.create")?'<div class="acts"><button class="btn" data-act="chadd">+ ADD CHAPTER</button></div>':'')+'</div>'+
- (can("books.delete")?'<div class="gl sec"><h2 style="color:var(--em)">Danger zone</h2><p class="sub">Deleting removes the book with its chapters, comments, reviews and ratings. It cannot be undone.</p><div class="acts"><button class="btn dg" data-act="bookdel">DELETE THIS BOOK</button></div></div>':'')}
+ '<div class="gl sec"><h2>'+esc(b.title)+'</h2><span class="badge '+st[1]+'">'+st[0]+'</span> <span class="sub" style="font-size:14px">ID: '+esc(b.id)+(b.owner_id&&!S.author?' \u00b7 author account: '+esc(ow||"author"):"")+'</span>'+
+  '<div class="acts">'+act+'<a class="btn g" target="_blank" rel="noopener" href="index.html?preview='+encodeURIComponent(b.id)+'">PREVIEW</a></div>'+
+  (S.author&&!b.published?'<p class="sub" style="font-size:14px;margin-top:8px">'+(b.submitted_at?"Your book is waiting for review. You can keep editing it.":"When your book is ready, submit it for review. The site owner publishes it after checking.")+'</p>':'')+
+  (S.author?'':'<div class="sw"><span>Comments on this book</span><input type="checkbox" id="cmt-on" data-act-change="bookcomments" '+(b.comments_enabled?'checked ':'')+(can("comments.moderate")?'':'disabled ')+'aria-label="Comments open"></div>')+'</div>'+
+ '<form class="gl sec" id="bf"><h2>Details</h2><label class="l" for="f-t">Title</label><input id="f-t" maxlength="120" dir="auto" value="'+esc(b.title)+'" '+(ed?'':'disabled ')+'required><div class="row2"><div><label class="l" for="f-a">Author name</label><input id="f-a" maxlength="80" dir="auto" value="'+esc(b.author)+'" '+(ed?'':'disabled ')+'required></div><div><label class="l" for="f-g">Genre</label><input id="f-g" maxlength="40" dir="auto" list="gl2" value="'+esc(b.genre)+'" '+(ed?'':'disabled ')+'required><datalist id="gl2">'+genres().map(function(g){return'<option value="'+esc(g)+'">'}).join("")+'</datalist></div></div><label class="l" for="f-d">Description</label><textarea id="f-d" maxlength="4000" dir="auto" '+(ed?'':'disabled')+'>'+esc(b.description)+'</textarea>'+
+  (staff?'<label class="l" for="f-o">Position in the library (smaller = earlier)</label><input id="f-o" type="number" step="1" value="'+esc(b.sort_order)+'">':'')+(ed?'<div class="acts"><button class="btn" type="submit">SAVE DETAILS</button></div>':'')+'</form>'+
+ '<div class="gl sec"><h2>Cover</h2><div class="cvrow"><div class="cov">'+(cu?'<img src="'+esc(cu)+'" alt="Cover of '+esc(b.title)+'">':'No cover<br>(artwork is used)')+'</div>'+(bcan("covers.upload",b)?'<div class="acts" style="margin:0"><label class="btn t" style="cursor:pointer">'+(cu?"REPLACE COVER":"UPLOAD COVER")+'<input type="file" accept="image/jpeg,image/png,image/webp" data-cover="1" hidden></label>'+(cu?'<button class="btn g" data-act="coverdel">REMOVE</button>':'')+'</div>':'')+'</div><p class="sub" style="font-size:14px;margin-top:8px">Best: a portrait picture (about 3:4). Large pictures are shrunk automatically.</p></div>'+
+ '<div class="gl sec"><h2>Chapters ('+n+')</h2>'+(n?S.chapters.map(function(c,i){return'<div class="chr"><span class="n">'+esc(c.chapter_number)+'</span><span class="tt" dir="auto">'+esc(c.title)+'</span>'+(bcan("chapters.edit",b)?'<button class="ib" data-act="chup" data-id="'+esc(c.id)+'" aria-label="Move up"'+(i===0?' disabled':'')+'>\u2191</button><button class="ib" data-act="chdn" data-id="'+esc(c.id)+'" aria-label="Move down"'+(i===n-1?' disabled':'')+'>\u2193</button><button class="ib" data-act="chedit" data-id="'+esc(c.id)+'" aria-label="Edit">\u270e</button>':'')+(bcan("chapters.delete",b)?'<button class="ib" data-act="chdel" data-id="'+esc(c.id)+'" aria-label="Delete">\u2715</button>':'')+'</div>'}).join(""):'<p class="sub">No chapters yet.</p>')+(bcan("chapters.create",b)?'<div class="acts"><button class="btn" data-act="chadd">+ ADD CHAPTER</button></div>':'')+'</div>'+
+ (bcan("books.delete",b)?'<div class="gl sec"><h2 style="color:var(--em)">Danger zone</h2><p class="sub">Deleting removes the book with its chapters'+(b.published?', comments, reviews and ratings':'')+'. It cannot be undone.</p><div class="acts"><button class="btn dg" data-act="bookdel">DELETE '+(b.published?'THIS BOOK':'THIS DRAFT')+'</button></div></div>':'')}
 async function saveDetails(f){
- var b=bookById(S.bookId),btn=f.querySelector("[type=submit]"),p={},t=$("f-t").value.trim(),a=$("f-a").value.trim(),g=$("f-g").value.trim(),d=$("f-d").value.trim(),o=parseInt($("f-o").value,10);
+ var b=bookById(S.bookId),btn=f.querySelector("[type=submit]"),p={},t=$("f-t").value.trim(),a=$("f-a").value.trim(),g=$("f-g").value.trim(),d=$("f-d").value.trim(),o=$("f-o")?parseInt($("f-o").value,10):NaN;
  if(!t||!a||!g){toast("Title, author and genre are required.",true);return}
- if(t!==b.title)p.title=t;if(a!==b.author)p.author=a;if(g!==b.genre)p.genre=g;if(d!==b.description)p.description=d;if(isFinite(o)&&o!==b.sort_order)p.sort_order=o;
+ if(t!==b.title)p.title=t;if(a!==b.author)p.author=a;if(g!==b.genre)p.genre=g;if(d!==b.description)p.description=d;if(S.owner||can("books.edit")){if(isFinite(o)&&o!==b.sort_order)p.sort_order=o}
  if(!Object.keys(p).length){toast("Nothing changed.");return}
  var r=await run(btn,async function(){return one(await sb.from("books").update(p).eq("id",b.id).select(BCOLS))},"Saved.");
  if(r){Object.assign(b,r);paintEditor()}}
@@ -340,6 +371,38 @@ async function viewLog(){
  v.innerHTML=rows.length?rows.map(function(r){var d=r.details||{},what=d.title||(r.target_type==="book"?bTitle(r.target_id):"")||(d.book_id?bTitle(d.book_id):"")||r.target_id||"",ex=Array.isArray(d.changed)&&d.changed.length?" ("+d.changed.join(", ")+")":"";
   return'<div class="item"><div class="meta"><b>'+esc(AL[r.action]||r.action)+'</b> <span class="sub">\u00b7 '+esc(dt(r.at))+'</span></div><p>'+esc(what)+esc(ex)+'</p><span class="sub" style="font-size:14px">by '+esc(r.actor_name||(r.actor_id?String(r.actor_id).slice(0,8):"system"))+'</span></div>'}).join("")+(rows.length>=S.log.n?'<button class="btn g" data-act="logmore" style="width:100%">LOAD MORE</button>':''):'<p class="sub">No activity recorded yet.</p>'}
 
+/* ---------- authors: submit a book, review applications ---------- */
+async function submitBook(btn){
+ var b=bookById(S.bookId);if(!confirm("Submit this book for review? The site owner will check it before publishing."))return;
+ var r=await run(btn,async function(){var x=await sb.rpc("submit_book",{p_book:b.id});if(x.error)throw x.error;return true},"Submitted. You will see it published once it is approved.");
+ if(r){b.submitted_at=new Date().toISOString();paintEditor();refreshCounts()}}
+async function viewApplications(){
+ var v=$("view"),st=S.apSt||"pending";v.innerHTML='<p class="sub">Loading…</p>';
+ var rows;try{var x=await sb.rpc("admin_list_applications",{p_status:st});if(x.error)throw x.error;rows=x.data||[]}catch(e){v.innerHTML=errBox(fe(e));return}
+ v.innerHTML='<div class="sub2">'+[["pending","Waiting"],["approved","Approved"],["rejected","Declined"],["revoked","Removed"]].map(function(s){return'<button class="chip'+(st===s[0]?' on':'')+'" data-act="apst" data-st="'+s[0]+'">'+s[1]+'</button>'}).join("")+'</div>'+
+ (rows.length?rows.map(function(a){return'<div class="item"><div class="meta"><b dir="auto">'+esc(a.pen_name)+'</b> <span class="sub">\u00b7 '+esc(dt(a.created_at))+'</span></div>'+
+  '<p class="sm2">Account: '+esc(a.display_name||"reader")+' \u00b7 '+(a.email?'<a href="mailto:'+esc(a.email)+'">'+esc(a.email)+'</a>':"no email")+(a.books_count?' \u00b7 '+esc(a.books_count)+' book(s)':'')+'</p>'+
+  (a.genres?'<p class="sm2">Writes: '+esc(a.genres)+'</p>':'')+'<p class="bd" dir="auto">'+esc(a.bio)+'</p>'+(a.links?'<p class="sm2">Links: '+linkify(a.links)+'</p>':'')+
+  '<details><summary>READ THE WRITING SAMPLE</summary><p class="bd" dir="auto" style="margin-top:6px">'+esc(a.sample)+'</p></details>'+
+  (a.note?'<p class="sm2" style="margin-top:6px">Your note: '+esc(a.note)+'</p>':'')+
+  '<div class="acts">'+(a.status==="pending"?'<button class="btn t sm" data-act="aprev" data-do="approve" data-id="'+esc(a.id)+'" data-name="'+esc(a.pen_name)+'">APPROVE</button><button class="btn g sm" data-act="aprev" data-do="reject" data-id="'+esc(a.id)+'" data-name="'+esc(a.pen_name)+'">DECLINE</button>':'')+(a.status==="approved"?'<button class="btn dg sm" data-act="aprev" data-do="revoke" data-id="'+esc(a.user_id)+'" data-name="'+esc(a.pen_name)+'">REMOVE AUTHOR ACCESS</button>':'')+'</div></div>'}).join(""):'<p class="sub">Nothing here.</p>')}
+function reviewModal(d){
+ var t={approve:["Approve "+d.name,"APPROVE","t","Optional welcome note for the author"],reject:["Decline "+d.name,"DECLINE","g","Optional reason (the applicant can read it)"],revoke:["Remove author access for "+d.name,"REMOVE ACCESS","dg","Optional reason (the author can read it)"]}[d["do"]];
+ openModal('<h2>'+esc(t[0])+'</h2>'+(d["do"]==="approve"?'<p class="sub">They will be able to create books and chapters of their own, and submit them to you. They cannot publish or touch anyone else\u2019s books.</p>':d["do"]==="revoke"?'<p class="sub">They lose access to the author tools. Their books stay on the site until you change them.</p>':'')+'<form id="apf" data-do="'+esc(d["do"])+'" data-id="'+esc(d.id)+'"><label class="l" for="apn">'+esc(t[3])+'</label><textarea id="apn" maxlength="500" dir="auto"></textarea><div class="acts"><button class="btn '+t[2]+'" type="submit">'+t[1]+'</button><button class="btn g" type="button" data-act="mclose">CANCEL</button></div></form>')}
+async function reviewDo(f){
+ var d=f.dataset,btn=f.querySelector("[type=submit]"),note=$("apn").value.trim();
+ var r=await run(btn,async function(){var x=d["do"]==="revoke"?await sb.rpc("revoke_author",{p_user:d.id,p_note:note}):await sb.rpc("review_application",{p_id:d.id,p_decision:d["do"],p_note:note});if(x.error)throw x.error;return true},d["do"]==="approve"?"Approved. They now have author access.":d["do"]==="reject"?"Application declined.":"Author access removed.");
+ if(r){closeModal();await viewApplications();refreshCounts()}}
+async function viewInbox(){
+ var v=$("view"),st=S.msSt||"new";v.innerHTML='<p class="sub">Loading…</p>';
+ var rows;try{var q=sb.from("contact_messages").select("id,name,email,message,status,created_at").order("created_at",{ascending:false}).limit(100);if(st!=="all")q=q.eq("status",st);rows=ck(await q)||[]}catch(e){v.innerHTML=errBox(fe(e));return}
+ v.innerHTML='<div class="sub2">'+[["new","New"],["read","Read"],["archived","Archived"],["all","All"]].map(function(s){return'<button class="chip'+(st===s[0]?' on':'')+'" data-act="msst" data-st="'+s[0]+'">'+s[1]+'</button>'}).join("")+'</div>'+
+ (rows.length?rows.map(function(m){return'<div class="item"><div class="meta"><b dir="auto">'+esc(m.name)+'</b> <span class="sub">\u00b7 <a href="mailto:'+esc(m.email)+'">'+esc(m.email)+'</a> \u00b7 '+esc(dt(m.created_at))+'</span> '+(m.status==="new"?'<span class="badge sbm">NEW</span>':'')+'</div><p class="bd" dir="auto">'+esc(m.message)+'</p><div class="acts">'+(m.status!=="read"?'<button class="btn g sm" data-act="msact" data-do="read" data-id="'+esc(m.id)+'">MARK READ</button>':'<button class="btn g sm" data-act="msact" data-do="new" data-id="'+esc(m.id)+'">MARK NEW</button>')+(m.status!=="archived"?'<button class="btn g sm" data-act="msact" data-do="archived" data-id="'+esc(m.id)+'">ARCHIVE</button>':'')+'<button class="btn dg sm" data-act="msact" data-do="delete" data-id="'+esc(m.id)+'">DELETE</button></div></div>'}).join(""):'<p class="sub">No messages here.</p>')}
+async function messageDo(btn){
+ var d=btn.dataset;if(d["do"]==="delete"&&!confirm("Delete this message permanently?"))return;
+ var r=await run(btn,async function(){var x=d["do"]==="delete"?await sb.from("contact_messages").delete().eq("id",d.id).select("id"):await sb.from("contact_messages").update({status:d["do"]}).eq("id",d.id).select("id");return one(x)});
+ if(r){await viewInbox();refreshCounts()}}
+
 /* ---------- events ---------- */
 document.addEventListener("click",function(e){
  var x=e.target.closest&&e.target.closest("[data-act]");if(!x)return;var a=x.dataset.act;
@@ -350,6 +413,12 @@ document.addEventListener("click",function(e){
  else if(a==="openbook")openBook(x.dataset.id);
  else if(a==="back")viewBooks();
  else if(a==="publish")setPublished(x);
+ else if(a==="submit")submitBook(x);
+ else if(a==="subfilter"){S.fSub=!S.fSub;if(S.tab!=="books")go("books");else if(!S.bookId)paintBookList();else viewBooks()}
+ else if(a==="apst"){S.apSt=x.dataset.st;viewApplications()}
+ else if(a==="aprev")reviewModal(x.dataset);
+ else if(a==="msst"){S.msSt=x.dataset.st;viewInbox()}
+ else if(a==="msact")messageDo(x);
  else if(a==="coverdel")removeCover(x);
  else if(a==="chadd")chapModal({title:"Chapter "+(S.chapters.reduce(function(m,c){return Math.max(m,c.chapter_number)},0)+1),content:""},true);
  else if(a==="chedit")openChapter(x.dataset.id);
@@ -373,7 +442,8 @@ document.addEventListener("submit",function(e){var f=e.target;
   sb.auth.signInWithPassword({email:$("le").value.trim(),password:$("lp").value}).then(function(r){b.disabled=false;if(r.error)$("lm").textContent=/invalid/i.test(r.error.message||"")?"Wrong email or password.":fe(r.error)}).catch(function(){b.disabled=false;$("lm").textContent="Network problem. Please try again."})}
  else if(f.id==="nbf"){e.preventDefault();createBook(f)}
  else if(f.id==="bf"){e.preventDefault();saveDetails(f)}
- else if(f.id==="cf"){e.preventDefault();saveChapter(f)}});
+ else if(f.id==="cf"){e.preventDefault();saveChapter(f)}
+ else if(f.id==="apf"){e.preventDefault();reviewDo(f)}});
 document.addEventListener("change",function(e){var t=e.target;
  if(t.dataset&&t.dataset.cover){var f=t.files&&t.files[0];t.value="";uploadCover(f)}
  else if(t.dataset&&t.dataset.actChange==="bookcomments")setBookComments(t);
