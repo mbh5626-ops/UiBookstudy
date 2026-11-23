@@ -129,9 +129,9 @@ async function load(){
  if(!sb){panel.innerHTML='<p class="sub">The page could not connect. Please check your connection and refresh.</p>';return}
  if(!me){paintAuth("in");return}
  panel.innerHTML='<p class="sub">Loading…</p>';
- var r=await sb.from("author_applications").select("id,status,note,pen_name,created_at").order("created_at",{ascending:false}).limit(1);
+ var r=await sb.from("author_applications").select("id,user_id,status,note,pen_name,created_at").eq("user_id",me.id).order("created_at",{ascending:false}).limit(1);
  if(r.error){panel.innerHTML='<p class="msg er">'+esc(/relation|does not exist|schema cache/i.test(r.error.message||"")?"Applications are not open yet. Please check back soon.":fe(r.error))+'</p>';return}
- var a=r.data&&r.data[0];
+ var a=(r.data||[]).filter(function(x){return x.user_id===me.id})[0];   // only ever MY application
  if(a&&(a.status==="pending"||a.status==="approved")){panel.innerHTML=statusBox(a)+'<p style="margin-top:12px"><button class="lk" id="so" type="button">Sign out</button></p>';$("so").onclick=function(){sb.auth.signOut()};return}
  var pf=await sb.from("profiles").select("display_name").eq("id",me.id).maybeSingle();
  paintForm((pf.data&&pf.data.display_name)||"",a?statusBox(a):"")}

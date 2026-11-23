@@ -150,7 +150,7 @@ async function start(){
  S.author=isAuthor();S.stats=null;S.counts=null;S.pen="";
  if(!S.author){var st=await sb.rpc("admin_stats");S.stats=st.error?null:st.data}
  var cn=await sb.rpc("admin_counts");S.counts=cn.error?null:cn.data;
- if(S.author){var pa=await sb.from("author_applications").select("pen_name").eq("status","approved").limit(1);S.pen=(pa.data&&pa.data[0]&&pa.data[0].pen_name)||""}
+ if(S.author){var pa=await sb.from("author_applications").select("pen_name,user_id").eq("user_id",S.me.id).eq("status","approved").limit(1);S.pen=((pa.data||[]).filter(function(x){return x.user_id===S.me.id})[0]||{}).pen_name||""}
  var t=tabsAvail();if(t.indexOf(S.tab)<0)S.tab=t[0];
  shell();go(S.tab)}
 function tabsAvail(){var t=[];if(canAny(BOOKP)||can("author.write"))t.push("books");if(can("authors.review"))t.push("authors");if(can("messages.view"))t.push("inbox");if(can("comments.view"))t.push("comments");if(can("settings.manage"))t.push("settings");if(can("logs.view"))t.push("log");return t}
