@@ -1,0 +1,49 @@
+diff --git a/index.html b/index.html
+index 6ca15ab..afd730f 100644
+--- a/index.html
++++ b/index.html
+@@ -351,13 +351,14 @@ $("ts").onclick=function(){if(tI){clearInterval(tI);tI=null;this.textContent="RE
+ $("tr").onclick=function(){clearInterval(tI);tI=null;tL=1500;fm();$("ts").textContent="START FOCUS"};
+ // ===== Accounts (Supabase Auth). The key below is the PUBLIC publishable key; security is enforced by database policies. =====
+ var SB_URL="https://cqamtbmrlkkerwpnypdh.supabase.co",SB_KEY="sb_publishable_KGq6gw1-ItPA-VBDXgKoNA_cv2LWxil";
+-var sb=null,me=null,prof=null,REDIR=location.origin+location.pathname,hadCode=/[?&]code=/.test(location.search);
++var sb=null,me=null,prof=null,profReq=0,REDIR=location.origin+location.pathname,hadCode=/[?&]code=/.test(location.search);
+ try{if(window.supabase)sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{flowType:"pkce",persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})}catch(e){sb=null}
+ function toast(m,bad){var t=$("toast");t.textContent=m;t.style.borderColor=bad?"#ff8a9a":"";t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(function(){t.hidden=true},4500)}
+ function meta(k){return me&&me.user_metadata&&me.user_metadata[k]}
+-function uname(){return(prof&&prof.display_name)||meta("full_name")||meta("name")||(me&&me.email&&me.email.split("@")[0])||"Reader"}
++function myProf(){return prof&&me&&prof.id===me.id?prof:null}
++function uname(){var p=myProf();return(p&&p.display_name)||meta("full_name")||meta("name")||(me&&me.email&&me.email.split("@")[0])||"Reader"}
+ function avEl(sz){var d=document.createElement("div");d.className="av";if(sz){d.style.width=d.style.height=sz+"px";d.style.fontSize=Math.round(sz/3)+"px"}
+- var u=(prof&&prof.avatar_url)||meta("avatar_url")||meta("picture");
++ var p=myProf(),u=(p&&p.avatar_url)||meta("avatar_url")||meta("picture");
+  if(typeof u==="string"&&/^https:\/\//.test(u)){var i=document.createElement("img");i.alt="";i.referrerPolicy="no-referrer";i.src=u;d.appendChild(i)}else d.textContent=ini(uname()).slice(0,2).toUpperCase();return d}
+ function authUi(){
+  var u=$("us");u.textContent="";u.onclick=null;u.style.cursor="";
+@@ -365,13 +366,13 @@ function authUi(){
+  else{var b=document.createElement("button");b.className="btn";b.textContent="SIGN IN";b.onclick=function(){openAuth("signin")};u.appendChild(b)}
+  $("hh").textContent="Happy reading, "+(me?uname():"reader");
+  var pa=$("pav");pa.textContent="";pa.appendChild(avEl(60));$("pnm").textContent=me?uname():"Reader";
+- $("psub").textContent=me&&prof&&prof.created_at?"Member since "+new Date(prof.created_at).toLocaleDateString():(me?"Signed in":"Not signed in")}
++ var mp=myProf();$("psub").textContent=me&&mp&&mp.created_at?"Member since "+new Date(mp.created_at).toLocaleDateString():(me?"Signed in":"Not signed in")}
+ function acctUi(){var a=$("acct");if(!a)return;
+  if(!me){a.innerHTML='<h3 style="margin:22px 0 8px">Account</h3><p class="sub">Sign in to rate books, join the discussion and keep your library on every device.</p><button class="btn" id="ai">SIGN IN</button>';$("ai").onclick=function(){openAuth("signin")};return}
+  a.innerHTML='<h3 style="margin:22px 0 8px">Account</h3><form class="fm" id="pfm" style="max-width:420px"><label class="sub" for="dn">Display name (public)</label><input id="dn" maxlength="40" required><p class="sub" style="font-size:15px;margin-bottom:12px">Your email is private and is never shown to other readers.</p><button class="btn" type="submit">SAVE NAME</button> <button class="btn g" type="button" id="so">SIGN OUT</button> <button class="btn g" type="button" id="da">DELETE ACCOUNT</button></form><p class="sub" style="margin-top:12px;font-size:15px">Deleting your account removes your ratings and library. Your reviews and comments stay but show as \u201cDeleted reader\u201d.</p>';
+  $("dn").value=uname();
+  $("pfm").onsubmit=function(e){e.preventDefault();var v=$("dn").value.trim();if(v.length<2||v.length>40){toast("Name must be 2 to 40 characters.",true);return}
+-  sb.from("profiles").update({display_name:v}).eq("id",me.id).then(function(r){if(r.error){toast("Couldn\u2019t save your name. Please try again.",true);return}if(prof)prof.display_name=v;else prof={display_name:v};authUi();toast("Name saved.")}).catch(function(){toast("Network problem. Please try again.",true)})};
++  var uid=me.id;sb.from("profiles").update({display_name:v}).eq("id",uid).then(function(r){if(r.error){toast("Couldn\u2019t save your name. Please try again.",true);return}if(me&&me.id===uid){if(prof&&prof.id===uid)prof.display_name=v;else prof={id:uid,display_name:v}}authUi();toast("Name saved.")}).catch(function(){toast("Network problem. Please try again.",true)})};
+  $("so").onclick=function(){sb.auth.signOut()};
+  $("da").onclick=function(){if(!confirm("Delete your account? This cannot be undone."))return;sb.rpc("delete_my_account").then(function(r){if(r.error){toast("Couldn\u2019t delete the account. Please try again.",true);return}sb.auth.signOut();toast("Your account was deleted.")}).catch(function(){toast("Network problem. Please try again.",true)})}}
+ function setMsg(t,c){var e=$("am");if(e){e.textContent=t;e.className="msg "+(c||"")}}
+@@ -410,8 +411,8 @@ function submitAuth(mode){
+  else if(mode==="signup")call(sb.auth.signUp({email:em,password:pw,options:{data:{full_name:$("an2").value.trim()},emailRedirectTo:REDIR}}),function(r){if(r.data&&r.data.session){closeAuth();toast("Account created!")}else setMsg("Check your email to confirm your account.","ok")});
+  else if(mode==="forgot")call(sb.auth.resetPasswordForEmail(em,{redirectTo:REDIR}),function(){setMsg("If that email has an account, a reset link is on its way.","ok")});
+  else call(sb.auth.updateUser({password:pw}),function(){closeAuth();toast("Password updated.")})}
+-function loadProf(){MINE={};if(!me){RV={};CM={}}if(!sb||!me){prof=null;authUi();acctUi();paintRating();paintReviews();paintComments();return}loadMine();if(isBook()){if(tab===1)loadReviews();if(tab===2)loadComments()}
+- sb.from("profiles").select("display_name,avatar_url,created_at").eq("id",me.id).maybeSingle().then(function(r){prof=r.data||null;authUi();acctUi()}).catch(function(){prof=null;authUi();acctUi()})}
++function loadProf(){var t=++profReq,uid=me&&me.id;if(prof&&prof.id!==uid)prof=null;MINE={};if(!me){RV={};CM={}}if(!sb||!me){prof=null;authUi();acctUi();paintRating();paintReviews();paintComments();return}loadMine();if(isBook()){if(tab===1)loadReviews();if(tab===2)loadComments()}
++ sb.from("profiles").select("id,display_name,avatar_url,created_at").eq("id",uid).maybeSingle().then(function(r){if(t!==profReq||!me||me.id!==uid)return;prof=r.data||null;authUi();acctUi()}).catch(function(){if(t!==profReq)return;prof=null;authUi();acctUi()})}
+ (function(){var q=new URLSearchParams(location.search),h2=new URLSearchParams(location.hash.replace(/^#/,"")),e=q.get("error_description")||h2.get("error_description");
+  if(e){var den=q.get("error")==="access_denied"||h2.get("error")==="access_denied";toast(den?"Sign-in was canceled.":"Sign-in problem: "+e.replace(/\+/g," ").slice(0,120),true);history.replaceState(null,"",REDIR)}})();
+ document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!$("mo").hidden)closeAuth()});
