@@ -37,7 +37,7 @@ input{width:100%;background:rgba(255,255,255,.06);border:1px solid var(--ln);bor
 .st{border:1px solid var(--ln);border-radius:14px;padding:12px 14px;background:rgba(255,255,255,.03)}
 .st b{display:block;font:500 28px/1.1 Cinzel,serif;color:var(--ink)}.st span{color:var(--mu);font-size:15px}
 .chart{width:100%;height:150px;display:block}.chart rect{fill:var(--teal)}.chart rect.z{fill:var(--ln)}.chart text{fill:var(--mu);font:12px "Crimson Pro",serif}
-.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:640px}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:760px}
 th,td{padding:10px 8px;border-bottom:1px solid var(--ln);text-align:right;white-space:nowrap}th:first-child,td:first-child{text-align:left;white-space:normal}
 th{font:500 12px Cinzel,serif;color:var(--mu);letter-spacing:.04em}td a{color:var(--gold);text-decoration:underline}
 .ft{max-width:980px;margin:0 auto;padding:6px 18px 40px;color:var(--mu);font-size:15px;display:flex;gap:6px 16px;flex-wrap:wrap}.ft a:hover{color:var(--gold)}
@@ -69,31 +69,31 @@ function paintLogin(msg){
    if(r.error){$("lm").textContent=/Invalid login/i.test(r.error.message||"")?"Wrong email or password.":"Could not sign in. Please try again.";$("lm").className="msg er"}
   }).catch(function(){b.disabled=false;$("lm").textContent="Network problem. Please try again.";$("lm").className="msg er"})}}
 
-function chart(days){
+function chart(days,label){
  days=(days||[]).slice(-30);if(!days.length)return"";
  var max=1;days.forEach(function(d){max=Math.max(max,num(d.count))});
- var W=600,H=120,bw=W/days.length,s='<svg class="chart" viewBox="0 0 '+W+' 150" role="img" aria-label="New followers per day, last 30 days" preserveAspectRatio="none">';
+ var W=600,H=120,bw=W/days.length,s='<svg class="chart" viewBox="0 0 '+W+' 150" role="img" aria-label="'+esc(label)+'" preserveAspectRatio="none">';
  days.forEach(function(d,i){var c=num(d.count),h=c?Math.max(4,Math.round(c/max*H)):2;
-  s+='<rect class="'+(c?'':'z')+'" x="'+(i*bw+2).toFixed(1)+'" y="'+(H-h)+'" width="'+(bw-4).toFixed(1)+'" height="'+h+'" rx="2"><title>'+esc(d.day)+': '+c+' new</title></rect>'});
+  s+='<rect class="'+(c?'':'z')+'" x="'+(i*bw+2).toFixed(1)+'" y="'+(H-h)+'" width="'+(bw-4).toFixed(1)+'" height="'+h+'" rx="2"><title>'+esc(d.day)+': '+c+'</title></rect>'});
  s+='<text x="0" y="145">'+esc(days[0].day)+'</text><text x="'+W+'" y="145" text-anchor="end">'+esc(days[days.length-1].day)+'</text></svg>';
  return s}
 
 function render(d){
- var f=d.followers||{},books=d.books||[];
+ var f=d.followers||{},vw=d.views||{},books=d.books||[];
  var pub=books.filter(function(b){return b.published}).length,ch=0,rv=0,cm=0,sv=0,bk=0,rd=0,rc=0,rs=0;
  books.forEach(function(b){ch+=num(b.chapters);rv+=num(b.reviews);cm+=num(b.comments);sv+=num(b.saves);bk+=num(b.bookmarks);rd+=num(b.readers);rc+=num(b.ratings_count);rs+=num(b.average)*num(b.ratings_count)});
  var avg=rc?(rs/rc).toFixed(1):"–";
  function st(n,l){return'<div class="st"><b>'+esc(n)+'</b><span>'+esc(l)+'</span></div>'}
- var h='<div class="top"><div><h1>Author dashboard</h1><p class="sub" style="margin:0" dir="auto">'+(d.pen_name?'Writing as <b>'+esc(d.pen_name)+'</b>':'Your books and readers')+'</p></div><div><a class="btn" href="admin.html">EDIT MY BOOKS</a> <button class="btn g" id="so" type="button">SIGN OUT</button></div></div>'+
- '<div class="stats">'+st(fmt(f.total),"Followers")+st("+"+fmt(f.last7),"New this week")+st("+"+fmt(f.last30),"New in 30 days")+st(fmt(pub)+" / "+fmt(books.length),"Published books")+st(fmt(ch),"Chapters")+st(avg,"Average rating")+st(fmt(rv),"Reviews")+st(fmt(cm),"Comments")+st(fmt(sv),"Saved by readers")+st(fmt(bk),"Bookmarks")+'</div>';
+ var h='<div class="top"><div><h1>Author dashboard</h1><p class="sub" style="margin:0" dir="auto">'+(d.scope==='all'?'Site owner view: every book on Ui Books':d.pen_name?'Writing as <b>'+esc(d.pen_name)+'</b>':'Your books and readers')+'</p></div><div><a class="btn" href="admin.html">EDIT MY BOOKS</a> <button class="btn g" id="so" type="button">SIGN OUT</button></div></div>'+
+ '<div class="stats">'+st(fmt(vw.total),"Page views")+st("+"+fmt(vw.last7),"Views this week")+st("+"+fmt(vw.last30),"Views in 30 days")+st(fmt(f.total),"Followers")+st("+"+fmt(f.last7),"New this week")+st("+"+fmt(f.last30),"New in 30 days")+st(fmt(pub)+" / "+fmt(books.length),"Published books")+st(fmt(ch),"Chapters")+st(avg,"Average rating")+st(fmt(rv),"Reviews")+st(fmt(cm),"Comments")+st(fmt(sv),"Saved by readers")+st(fmt(bk),"Bookmarks")+'</div>';
  panel.innerHTML=h;
  var g=document.createElement("section");g.className="gl";
- g.innerHTML='<h2>New followers, last 30 days</h2>'+chart(f.by_day)+'<p class="sub" style="margin:8px 0 0;font-size:15px">Readers are counted once per author name. We never show who follows you.</p>';
+ g.innerHTML='<h2>Page views, last 30 days</h2>'+chart(vw.by_day,'Page views per day, last 30 days')+'<p class="sub" style="margin:8px 0 18px;font-size:15px">Counts opens of book and chapter pages, once per visitor session. Numbers are approximate and never show who visited.</p><h2>New followers, last 30 days</h2>'+chart(f.by_day,'New followers per day, last 30 days')+'<p class="sub" style="margin:8px 0 0;font-size:15px">Readers are counted once per author name. We never show who follows you.</p>';
  var t=document.createElement("section");t.className="gl";
  if(!books.length){t.innerHTML='<h2>Your books</h2><p class="sub">You have no books yet. <a class="lk" href="admin.html">Add your first book</a> and it will show up here.</p>'}
- else{t.innerHTML='<h2>Your books</h2><div class="tw"><table><thead><tr><th scope="col">Book</th><th scope="col">Status</th><th scope="col">Chapters</th><th scope="col">Rating</th><th scope="col">Reviews</th><th scope="col">Comments</th><th scope="col">Saved</th><th scope="col">Bookmarks</th><th scope="col">Readers</th></tr></thead><tbody>'+
+ else{t.innerHTML='<h2>Your books</h2><div class="tw"><table><thead><tr><th scope="col">Book</th><th scope="col">Status</th><th scope="col">Views</th><th scope="col">Views 30d</th><th scope="col">Chapters</th><th scope="col">Rating</th><th scope="col">Reviews</th><th scope="col">Comments</th><th scope="col">Saved</th><th scope="col">Bookmarks</th><th scope="col">Readers</th></tr></thead><tbody>'+
   books.map(function(b){var id=encodeURIComponent(b.id);
-   return'<tr><td dir="auto">'+(b.published?'<a href="books/'+id+'/">'+esc(b.title)+'</a>':esc(b.title))+'</td><td>'+(b.published?'<span class="badge ok">LIVE</span>':'<span class="badge wait">DRAFT</span>')+'</td><td>'+fmt(b.chapters)+'</td><td>'+(num(b.ratings_count)?num(b.average).toFixed(1)+' ('+fmt(b.ratings_count)+')':'–')+'</td><td>'+fmt(b.reviews)+'</td><td>'+fmt(b.comments)+'</td><td>'+fmt(b.saves)+'</td><td>'+fmt(b.bookmarks)+'</td><td>'+fmt(b.readers)+'</td></tr>'}).join("")+
+   return'<tr><td dir="auto">'+(b.published?'<a href="books/'+id+'/">'+esc(b.title)+'</a>':esc(b.title))+'</td><td>'+(b.published?'<span class="badge ok">LIVE</span>':'<span class="badge wait">DRAFT</span>')+'</td><td>'+fmt(b.views)+'</td><td>'+fmt(b.views30)+'</td><td>'+fmt(b.chapters)+'</td><td>'+(num(b.ratings_count)?num(b.average).toFixed(1)+' ('+fmt(b.ratings_count)+')':'–')+'</td><td>'+fmt(b.reviews)+'</td><td>'+fmt(b.comments)+'</td><td>'+fmt(b.saves)+'</td><td>'+fmt(b.bookmarks)+'</td><td>'+fmt(b.readers)+'</td></tr>'}).join("")+
   '</tbody></table></div><p class="sub" style="margin:10px 0 0;font-size:15px">Saved, bookmarks and readers count signed-in readers only. Readers means people who started the book.</p>'}
  panel.parentNode.appendChild(g);panel.parentNode.appendChild(t);
  $("so").onclick=function(){sb.auth.signOut()}}

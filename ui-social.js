@@ -287,6 +287,11 @@ function checkAuthor() {
   sb.from("author_applications").select("status").eq("user_id", uid).eq("status", "approved").limit(1).then(function (r) {
     isAuthor = !!(r.data && r.data.length); if (panelOpen) { paintPanel(); }
   }).catch(noop);
+  /* the site owner and staff get the link too */
+  sb.rpc("admin_me").then(function (r) {
+    var m = r && r.data;
+    if (m && !m.suspended && (m.owner || (m.permissions && m.permissions.length))) { isAuthor = true; if (panelOpen) { paintPanel(); } }
+  }).catch(noop);
 }
 function loadManifest() {
   if (manifest || mfLoading) { return; }
@@ -388,6 +393,22 @@ function closePanel() {
   var p = D.getElementById("uiPanel"); if (p) { p.remove(); }
 }
 
+/* ---------- traffic: count a view of a book page or a chapter page ----------
+   One count per visitor session per page. Sends only the book id and chapter number, nothing about the visitor. */
+var viewsOff = false;
+function trackView() {
+  if (viewsOff || navigator.webdriver) { return; }
+  var el = D.querySelector("article.read[data-book][data-chapter]") || D.querySelector("article.book[data-book]");
+  if (!el) { return; }
+  var book = el.getAttribute("data-book"), ch = +el.getAttribute("data-chapter") || 0, k = "uiv:" + book + ":" + ch;
+  try { if (sessionStorage.getItem(k)) { return; } sessionStorage.setItem(k, "1"); } catch (e) { /* no storage: count once per page load */ }
+  fetch(SB_URL + "/rest/v1/rpc/track_view", {
+    method: "POST", keepalive: true,
+    headers: { apikey: SB_KEY, Authorization: "Bearer " + SB_KEY, "Content-Type": "application/json" },
+    body: JSON.stringify({ p_book: book, p_chapter: ch })
+  }).then(function (r) { if (r.status === 404) { viewsOff = true; } }).catch(noop);
+}
+
 /* ---------- page wiring ---------- */
 function hideAll() {
   D.querySelectorAll(".uifo-row,.uibm").forEach(function (n) { n.remove(); });
@@ -396,6 +417,7 @@ function hideAll() {
 }
 function decorate() {
   try {
+    trackView();
     if (off) { hideAll(); return; }
     decorateFollow(); decorateChapter(); ensureBell(); paintFollow(); paintBell();
   } catch (e) { /* never break the page */ }

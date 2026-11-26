@@ -165,7 +165,7 @@ function chromeChips(){
 function paintChrome(){var a=$("chips");if(a)a.innerHTML=chromeChips();tabsAvail().forEach(function(t){var b=$("tab-"+t);if(b)b.innerHTML=tabLabel(t)})}
 async function refreshCounts(){var cn=await sb.rpc("admin_counts");if(!cn.error){S.counts=cn.data;paintChrome()}}
 function shell(){
- app.innerHTML='<header class="top gl"><div class="brand">Ui<span>ADMIN</span></div><div class="who">'+esc((S.me&&S.me.email)||"")+' \u00b7 '+(S.owner?"Owner":S.author?"Author":"Staff")+'</div><a class="btn g sm" href="index.html">VIEW SITE</a><button class="btn g sm" data-act="signout">SIGN OUT</button></header><div class="stats" id="chips">'+chromeChips()+'</div><main id="view"></main><nav class="tabs" aria-label="Sections">'+tabsAvail().map(function(t){return'<button data-act="go" data-tab="'+t+'" id="tab-'+t+'">'+tabLabel(t)+'</button>'}).join("")+'</nav>'}
+ app.innerHTML='<header class="top gl"><div class="brand">Ui<span>ADMIN</span></div><div class="who">'+esc((S.me&&S.me.email)||"")+' \u00b7 '+(S.owner?"Owner":S.author?"Author":"Staff")+'</div><a class="btn t sm" href="author.html">MY STATS</a><a class="btn g sm" href="index.html">VIEW SITE</a><button class="btn g sm" data-act="signout">SIGN OUT</button></header><div class="stats" id="chips">'+chromeChips()+'</div><main id="view"></main><nav class="tabs" aria-label="Sections">'+tabsAvail().map(function(t){return'<button data-act="go" data-tab="'+t+'" id="tab-'+t+'">'+tabLabel(t)+'</button>'}).join("")+'</nav>'}
 function go(t){S.tab=t;S.bookId=null;document.querySelectorAll(".tabs button").forEach(function(b){b.classList.toggle("on",b.dataset.tab===t)});
  ({books:viewBooks,authors:viewApplications,inbox:viewInbox,comments:viewComments,settings:viewSettings,log:viewLog})[t]()}
 
