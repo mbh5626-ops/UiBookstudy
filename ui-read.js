@@ -2,6 +2,7 @@
    * Saved books and reading progress, kept on this device and synced to the reader's account.
    * Reading tools on chapter pages: progress bar, text size, light/dark switch, resume where you stopped.
    * A share menu for books and chapters.
+   * Loads ui-social.js (follow authors, alerts, bookmarks) and shares its account connection with it.
    Works on the generated pages and (for syncing and sharing) on the main page. */
 (function () {
 "use strict";
@@ -10,6 +11,7 @@ var W = window, D = document;
 var SB_URL = "https://cqamtbmrlkkerwpnypdh.supabase.co", SB_KEY = "sb_publishable_KGq6gw1-ItPA-VBDXgKoNA_cv2LWxil";
 var KP = "uiprog", KF = "uibooks2", KT = "uilibts", KFS = "uifs", KTH = "ui-theme";
 var isSpa = !!D.getElementById("v-home");
+var SELF = D.currentScript && D.currentScript.src ? D.currentScript.src.split("?")[0].replace(/[^\/]*$/, "") : "";
 
 function jget(k, d) { try { var v = JSON.parse(localStorage.getItem(k) || "null"); return v == null ? d : v; } catch (e) { return d; } }
 function jset(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* storage unavailable */ } }
@@ -18,7 +20,7 @@ var handlers = [];
 function emit() { handlers.forEach(function (f) { try { f(); } catch (e) { /* ignore */ } }); }
 
 /* ================= library sync ================= */
-var client = null, uid = null, queued = {}, timer = null;
+var client = null, uid = null, queued = {}, timer = null, waiting = [], booting = false;
 function favs() { var f = jget(KF, []); return Array.isArray(f) ? f : []; }
 function prog() { var p = jget(KP, {}); return p && typeof p === "object" ? p : {}; }
 function stamps() { var t = jget(KT, {}); return t && typeof t === "object" ? t : {}; }
@@ -68,9 +70,14 @@ function pull() {
   }).catch(function () { /* offline: local data is kept */ });
 }
 function setUser(u) { var id = u ? u.id : null; if (id === uid) { return; } uid = id; if (uid) { setTimeout(pull, 0); } }
+function flushWaiting(c) {
+  var w = waiting; waiting = [];
+  w.forEach(function (f) { try { f(c); } catch (e) { /* ignore */ } });
+}
 function attach(c) {
   if (!c || !c.auth || client === c) { return; }
   client = c;
+  flushWaiting(c);
   c.auth.getSession().then(function (r) { setUser(r.data && r.data.session ? r.data.session.user : null); }).catch(function () { /* ignore */ });
   c.auth.onAuthStateChange(function (ev, s) { setUser(s ? s.user : null); });
 }
@@ -80,13 +87,22 @@ function hasSession() {
 }
 function boot() {
   if (W.sb && W.sb.auth) { attach(W.sb); return; }
-  if (isSpa || !hasSession()) { return; }     // visitors who are not signed in never load the account library
+  if (isSpa || !hasSession() || booting) { return; }     // visitors who are not signed in never load the account library
+  booting = true;
   var s = D.createElement("script");
   s.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js";
   s.onload = function () {
-    try { attach(W.supabase.createClient(SB_URL, SB_KEY, { auth: { flowType: "pkce", persistSession: true, autoRefreshToken: true, detectSessionInUrl: false } })); } catch (e) { /* ignore */ }
+    try { attach(W.supabase.createClient(SB_URL, SB_KEY, { auth: { flowType: "pkce", persistSession: true, autoRefreshToken: true, detectSessionInUrl: false } })); } catch (e) { flushWaiting(null); }
   };
+  s.onerror = function () { booting = false; flushWaiting(null); };
   D.head.appendChild(s);
+}
+/* hands the one shared account connection to other scripts; gives null when nobody is signed in */
+function getClient(cb) {
+  if (W.sb && W.sb.auth) { cb(W.sb); return; }
+  if (client) { cb(client); return; }
+  if (isSpa || !hasSession()) { cb(null); return; }
+  waiting.push(cb); boot();
 }
 var Sync = {
   getProgress: function (id) { var p = prog()[id]; return p ? { c: p.c, p: p.p, t: p.t } : null; },
@@ -256,7 +272,7 @@ W.addEventListener("pagehide", function () { if (art) { recordProgress(progressN
 D.addEventListener("visibilitychange", function () { if (D.hidden) { if (art) { recordProgress(progressNow()); } Sync.flushNow(); } });
 handlers.push(paintBook);
 
-W.UiRead = { sync: Sync, share: share, on: function (f) { handlers.push(f); } };
+W.UiRead = { sync: Sync, share: share, on: function (f) { handlers.push(f); }, client: getClient };
 
 applyFs();
 if (!isSpa) {
@@ -266,4 +282,10 @@ if (!isSpa) {
 }
 setTimeout(boot, isSpa ? 0 : 1200);
 D.dispatchEvent(new Event("uiread:ready"));
+
+/* the social layer (follow authors, alerts, bookmarks) lives in the same folder as this file */
+if (!D.querySelector('script[src$="ui-social.js"]')) {
+  var soc = D.createElement("script");
+  soc.src = SELF + "ui-social.js"; soc.defer = true; D.head.appendChild(soc);
+}
 })();

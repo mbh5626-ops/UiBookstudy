@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Author dashboard – Ui Books</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#04020d">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2314082e'/%3E%3Ctext x='32' y='43' font-size='30' text-anchor='middle' fill='%23e0b45a' font-family='serif'%3EUi%3C/text%3E%3C/svg%3E">
+<script>try{if(localStorage.getItem("ui-theme")==="light")document.documentElement.setAttribute("data-theme","light")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--ink:#f4ead2;--mu:#a9a1c8;--ln:rgba(190,160,255,.2);--gold:#e0b45a;--em:#d9546e;--teal:#3fc6b8;--gl:rgba(20,12,44,.82);--bg:#04020d}
+:root[data-theme=light]{color-scheme:light;--ink:#30233f;--mu:#665c74;--ln:rgba(93,62,122,.24);--gold:#94600d;--em:#ad3554;--teal:#087f78;--gl:rgba(255,250,239,.92);--bg:#f4efe6}
+*{box-sizing:border-box;margin:0}[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:18px/1.5 "Crimson Pro",Georgia,serif;min-height:100vh}
+body:before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(ellipse at 50% 120%,#2a0f5c,transparent 62%),radial-gradient(ellipse at 90% -10%,rgba(63,198,184,.18),transparent 50%)}
+:root[data-theme=light] body:before{background:radial-gradient(ellipse at 50% 120%,#e4d9f5,transparent 62%)}
+a{color:inherit;text-decoration:none}
+.hd{display:flex;align-items:center;gap:18px;max-width:980px;margin:0 auto;padding:16px 18px}.logo{font:700 22px Cinzel,serif;color:var(--gold)}
+.hd nav{display:flex;gap:16px;margin-left:auto;font:500 13px Cinzel,serif;letter-spacing:.06em}.hd nav a:hover{color:var(--gold)}
+.wrap{max-width:980px;margin:0 auto;padding:0 18px 60px}
+.gl{background:var(--gl);border:1px solid var(--ln);border-radius:20px;padding:22px;margin-bottom:18px}
+h1,h2,h3{font-family:Cinzel,serif;font-weight:500}h1{font-size:clamp(26px,5vw,36px);line-height:1.15;color:var(--gold);margin-bottom:8px}h2{font-size:19px;color:var(--gold);margin-bottom:10px}
+.sub{color:var(--mu)}p{margin-bottom:10px}
+.btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:10px;padding:12px 22px;font:700 12px Cinzel,serif;letter-spacing:.08em;background:linear-gradient(135deg,var(--gold),#b9822f);color:#2a1606;cursor:pointer}
+.btn.g{background:rgba(255,255,255,.06);color:var(--ink);border:1px solid var(--ln)}.btn:disabled{opacity:.5;cursor:default}
+.lk{background:none;border:0;color:var(--gold);text-decoration:underline;font:inherit;padding:0;cursor:pointer}
+label.l{display:block;color:var(--mu);font-size:15px;margin:12px 0 4px}
+input{width:100%;background:rgba(255,255,255,.06);border:1px solid var(--ln);border-radius:10px;padding:10px 14px;color:var(--ink);font:inherit;font-size:16px}
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.msg{min-height:22px;font-size:15px;margin:6px 0;color:var(--mu)}.msg.er{color:#ff8a9a}
+.badge{display:inline-block;border-radius:99px;padding:3px 12px;font:700 11px Cinzel,serif;letter-spacing:.08em;border:1px solid var(--ln)}.badge.ok{background:var(--teal);color:#04201e;border-color:var(--teal)}.badge.wait{background:var(--gold);color:#2a1606;border-color:var(--gold)}
+.top{display:flex;gap:12px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;margin-bottom:14px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px}
+.st{border:1px solid var(--ln);border-radius:14px;padding:12px 14px;background:rgba(255,255,255,.03)}
+.st b{display:block;font:500 28px/1.1 Cinzel,serif;color:var(--ink)}.st span{color:var(--mu);font-size:15px}
+.chart{width:100%;height:150px;display:block}.chart rect{fill:var(--teal)}.chart rect.z{fill:var(--ln)}.chart text{fill:var(--mu);font:12px "Crimson Pro",serif}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:640px}
+th,td{padding:10px 8px;border-bottom:1px solid var(--ln);text-align:right;white-space:nowrap}th:first-child,td:first-child{text-align:left;white-space:normal}
+th{font:500 12px Cinzel,serif;color:var(--mu);letter-spacing:.04em}td a{color:var(--gold);text-decoration:underline}
+.ft{max-width:980px;margin:0 auto;padding:6px 18px 40px;color:var(--mu);font-size:15px;display:flex;gap:6px 16px;flex-wrap:wrap}.ft a:hover{color:var(--gold)}
+</style>
+</head>
+<body>
+<header class="hd"><a class="logo" href="./" aria-label="Ui Books home">Ui</a><nav aria-label="Main"><a href="./">Home</a><a href="books/">Library</a><a href="admin.html">Write</a></nav></header>
+<main class="wrap" id="main"><section class="gl" id="panel"><p class="sub">Loading…</p></section></main>
+<footer class="ft"><a href="./">Home</a><a href="admin.html">Edit my books</a><a href="privacy.html">Privacy</a></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+(function(){
+"use strict";
+var SB_URL="https://cqamtbmrlkkerwpnypdh.supabase.co",SB_KEY="sb_publishable_KGq6gw1-ItPA-VBDXgKoNA_cv2LWxil";
+var sb=null,me=null,panel=document.getElementById("panel");
+try{if(window.supabase)sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{flowType:"pkce",persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}})}catch(e){sb=null}
+function $(i){return document.getElementById(i)}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function num(n){n=Number(n);return isFinite(n)?n:0}
+function fmt(n){return num(n).toLocaleString()}
+
+function paintLogin(msg){
+ panel.innerHTML='<h1>Author dashboard</h1><p class="sub">Sign in with the account you use as an author.</p>'+
+ '<form id="lf"><label class="l" for="le">Email</label><input id="le" type="email" required autocomplete="email"><label class="l" for="lp">Password</label><input id="lp" type="password" required autocomplete="current-password">'+
+ '<div class="msg'+(msg?' er':'')+'" id="lm" role="status" aria-live="polite">'+esc(msg||"")+'</div><button class="btn" type="submit" style="width:100%">SIGN IN</button></form>'+
+ '<p class="sub" style="margin-top:12px;font-size:16px">Signed in with Google or Facebook on the main site? <a class="lk" href="./">Open the site</a>, check you are signed in, then refresh this page.</p>';
+ $("lf").onsubmit=function(e){e.preventDefault();var b=this.querySelector("[type=submit]");b.disabled=true;$("lm").textContent="Please wait…";$("lm").className="msg";
+  sb.auth.signInWithPassword({email:$("le").value.trim(),password:$("lp").value}).then(function(r){b.disabled=false;
+   if(r.error){$("lm").textContent=/Invalid login/i.test(r.error.message||"")?"Wrong email or password.":"Could not sign in. Please try again.";$("lm").className="msg er"}
+  }).catch(function(){b.disabled=false;$("lm").textContent="Network problem. Please try again.";$("lm").className="msg er"})}}
+
+function chart(days){
+ days=(days||[]).slice(-30);if(!days.length)return"";
+ var max=1;days.forEach(function(d){max=Math.max(max,num(d.count))});
+ var W=600,H=120,bw=W/days.length,s='<svg class="chart" viewBox="0 0 '+W+' 150" role="img" aria-label="New followers per day, last 30 days" preserveAspectRatio="none">';
+ days.forEach(function(d,i){var c=num(d.count),h=c?Math.max(4,Math.round(c/max*H)):2;
+  s+='<rect class="'+(c?'':'z')+'" x="'+(i*bw+2).toFixed(1)+'" y="'+(H-h)+'" width="'+(bw-4).toFixed(1)+'" height="'+h+'" rx="2"><title>'+esc(d.day)+': '+c+' new</title></rect>'});
+ s+='<text x="0" y="145">'+esc(days[0].day)+'</text><text x="'+W+'" y="145" text-anchor="end">'+esc(days[days.length-1].day)+'</text></svg>';
+ return s}
+
+function render(d){
+ var f=d.followers||{},books=d.books||[];
+ var pub=books.filter(function(b){return b.published}).length,ch=0,rv=0,cm=0,sv=0,bk=0,rd=0,rc=0,rs=0;
+ books.forEach(function(b){ch+=num(b.chapters);rv+=num(b.reviews);cm+=num(b.comments);sv+=num(b.saves);bk+=num(b.bookmarks);rd+=num(b.readers);rc+=num(b.ratings_count);rs+=num(b.average)*num(b.ratings_count)});
+ var avg=rc?(rs/rc).toFixed(1):"–";
+ function st(n,l){return'<div class="st"><b>'+esc(n)+'</b><span>'+esc(l)+'</span></div>'}
+ var h='<div class="top"><div><h1>Author dashboard</h1><p class="sub" style="margin:0" dir="auto">'+(d.pen_name?'Writing as <b>'+esc(d.pen_name)+'</b>':'Your books and readers')+'</p></div><div><a class="btn" href="admin.html">EDIT MY BOOKS</a> <button class="btn g" id="so" type="button">SIGN OUT</button></div></div>'+
+ '<div class="stats">'+st(fmt(f.total),"Followers")+st("+"+fmt(f.last7),"New this week")+st("+"+fmt(f.last30),"New in 30 days")+st(fmt(pub)+" / "+fmt(books.length),"Published books")+st(fmt(ch),"Chapters")+st(avg,"Average rating")+st(fmt(rv),"Reviews")+st(fmt(cm),"Comments")+st(fmt(sv),"Saved by readers")+st(fmt(bk),"Bookmarks")+'</div>';
+ panel.innerHTML=h;
+ var g=document.createElement("section");g.className="gl";
+ g.innerHTML='<h2>New followers, last 30 days</h2>'+chart(f.by_day)+'<p class="sub" style="margin:8px 0 0;font-size:15px">Readers are counted once per author name. We never show who follows you.</p>';
+ var t=document.createElement("section");t.className="gl";
+ if(!books.length){t.innerHTML='<h2>Your books</h2><p class="sub">You have no books yet. <a class="lk" href="admin.html">Add your first book</a> and it will show up here.</p>'}
+ else{t.innerHTML='<h2>Your books</h2><div class="tw"><table><thead><tr><th scope="col">Book</th><th scope="col">Status</th><th scope="col">Chapters</th><th scope="col">Rating</th><th scope="col">Reviews</th><th scope="col">Comments</th><th scope="col">Saved</th><th scope="col">Bookmarks</th><th scope="col">Readers</th></tr></thead><tbody>'+
+  books.map(function(b){var id=encodeURIComponent(b.id);
+   return'<tr><td dir="auto">'+(b.published?'<a href="books/'+id+'/">'+esc(b.title)+'</a>':esc(b.title))+'</td><td>'+(b.published?'<span class="badge ok">LIVE</span>':'<span class="badge wait">DRAFT</span>')+'</td><td>'+fmt(b.chapters)+'</td><td>'+(num(b.ratings_count)?num(b.average).toFixed(1)+' ('+fmt(b.ratings_count)+')':'–')+'</td><td>'+fmt(b.reviews)+'</td><td>'+fmt(b.comments)+'</td><td>'+fmt(b.saves)+'</td><td>'+fmt(b.bookmarks)+'</td><td>'+fmt(b.readers)+'</td></tr>'}).join("")+
+  '</tbody></table></div><p class="sub" style="margin:10px 0 0;font-size:15px">Saved, bookmarks and readers count signed-in readers only. Readers means people who started the book.</p>'}
+ panel.parentNode.appendChild(g);panel.parentNode.appendChild(t);
+ $("so").onclick=function(){sb.auth.signOut()}}
+
+function clear(){var m=$("main");while(m.children.length>1)m.removeChild(m.lastChild)}
+async function load(){
+ clear();
+ if(!sb){panel.innerHTML='<p class="sub">The page could not connect. Please check your connection and refresh.</p>';return}
+ if(!me){paintLogin();return}
+ panel.innerHTML='<p class="sub">Loading…</p>';
+ var r=await sb.rpc("author_dashboard");
+ if(r.error){
+  var m=r.error.message||"";
+  panel.innerHTML='<h1>Author dashboard</h1><p class="sub">'+esc(/function|schema cache|does not exist/i.test(m)?"The dashboard is not switched on yet. Please check back soon.":"We could not load your numbers. Please refresh and try again.")+'</p><p class="sub">Not an author yet? <a class="lk" href="apply.html">Apply here</a>.</p><p><button class="btn g" id="so" type="button">SIGN OUT</button></p>';
+  $("so").onclick=function(){sb.auth.signOut()};return}
+ render(r.data||{})}
+
+(async function(){
+ if(sb){try{var g=await sb.auth.getSession();me=g.data&&g.data.session?g.data.session.user:null}catch(e){me=null}
+  sb.auth.onAuthStateChange(function(ev,s){var u=s?s.user:null;if((u&&u.id)!==(me&&me.id)){me=u;setTimeout(load,0)}})}
+ load()})();
+})();
+</script>
+</body>
+</html>

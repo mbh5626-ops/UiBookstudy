@@ -1,25 +1,33 @@
 # Ui Books
 
-A free fantasy-reading website on GitHub Pages with accounts, ratings, reviews and comments (Supabase).
+A free fantasy-reading website on GitHub Pages with accounts, ratings, reviews, comments, followed authors, alerts, bookmarks and an author workflow (Supabase).
 
 - Live site: https://mbh5626-ops.github.io/UiBookstudy/
-- Stack: one static `index.html` (inline CSS and JavaScript, no build step) + `privacy.html` + `404.html`.
-- Routing: hash routes (`#home`, `#library`, `#book`, `#reader`, ...), so deep links survive a refresh on GitHub Pages.
-- Backend: Supabase (Postgres + Auth + row-level security). The page contains only the project URL and the **publishable** key, which is public by design. Security comes from the database policies in `supabase-schema.sql`.
+- Stack: a static site. `index.html` is the main app (inline CSS and JavaScript). A build step (`build-pages.mjs`, run by `.github/workflows/deploy.yml`) generates the book, chapter, genre and author pages, the sitemap and the share images from the database.
+- Routing: hash routes on the main page (`#home`, `#library`, `#book`, `#reader`, ...) and real pages for books and chapters (`books/<id>/chapter-<n>/`).
+- Backend: Supabase (Postgres + Auth + Storage + row-level security). The pages contain only the project URL and the **publishable** key, which is public by design. Security comes from the database policies.
 - Never commit a `service_role` / secret key, a Google client secret or a Facebook app secret. Those go only into the Supabase dashboard.
 
 ## Files
 
 | File | Purpose |
 |---|---|
-| `index.html` | The whole site |
-| `privacy.html` | Privacy policy (also used for Facebook login) |
-| `404.html`, `robots.txt`, `sitemap.xml` | GitHub Pages basics |
-| `supabase-schema.sql` | Tables, security policies, rate limits, functions, book catalog |
+| `index.html` | The main app: home, library, book, reader, study, saved, authors, profile |
+| `ui-live.js` | Loads books, chapters, covers and settings from Supabase; contact form; feature switches |
+| `ui-read.js` | Saved books and reading progress synced to the account, reading tools, share menu. Also loads `ui-social.js` |
+| `ui-social.js` | Follow authors, alerts for new books and chapters, chapter bookmarks |
+| `ui-music.js` | Ambient reading music and soft page navigation |
+| `author.html` | Author dashboard: followers, reach and per-book numbers |
+| `admin.html` | Staff and author tools: books, chapters, covers, moderation, settings |
+| `apply.html` | Author applications |
+| `build-pages.mjs`, `.github/workflows/deploy.yml` | Builds and deploys the generated pages every push and every 6 hours |
+| `privacy.html`, `404.html`, `robots.txt`, `sitemap.xml` | Site basics |
+| `supabase-schema.sql` | Original tables, policies, rate limits and functions |
+| `supabase-social.sql` | Follows, alerts, bookmarks and the author dashboard function |
 
 ## One-time setup
 
-1. **Database.** Supabase → SQL Editor → New query → paste `supabase-schema.sql` → Run. If it shows an error, fix that before continuing.
+1. **Database.** Supabase → SQL Editor → New query → paste `supabase-schema.sql` → Run. Then do the same with `supabase-social.sql`. Both are safe to run again.
 2. **Auth URLs.** Supabase → Authentication → URL Configuration:
    - Site URL: `https://mbh5626-ops.github.io/UiBookstudy/`
    - Redirect URLs: add `https://mbh5626-ops.github.io/UiBookstudy/**`
@@ -39,15 +47,25 @@ A free fantasy-reading website on GitHub Pages with accounts, ratings, reviews a
    ```
    Admin rights can only be granted this way.
 
+## Following, alerts and bookmarks
+
+- **Follow** buttons appear on author pages, book pages and in the main app. Readers are matched to authors by author name, ignoring upper and lower case.
+- **Alerts** (the bell next to the account button) are created by database triggers: when a followed author's book is published, and when a chapter is added to a published book (to followers and to readers who saved the book). One chapter alert per reader per book per hour.
+- **Bookmarks** save a paragraph. Tap the star at the end of a paragraph on a chapter page. They are listed under the bell and open at the saved paragraph.
+- **Author dashboard** (`author.html`) shows the signed-in author's followers, 30-day follower chart and per-book numbers. It never shows who follows.
+- If `supabase-social.sql` has not been run, these features hide themselves and the rest of the site works as before.
+- New chapter pages exist after the next build (up to 6 hours, or run the workflow by hand). Until then, alert links open the book in the main app.
+
 ## Security model (summary)
 
 - Row-level security is on for every table; anonymous visitors can only read public data.
 - One rating per user per book (primary key). Ratings are written only through `rate_book()`; averages and distributions are computed from stored ratings by the `book_stats` view, so nobody can fake them.
 - Users can only edit or delete their own reviews and comments (column-level grants + policies). They cannot change `user_id` or `status`.
+- Follows, bookmarks and alerts are readable and removable only by their owner. Alerts are created only by database triggers, never by the browser.
 - Admin actions (hide/delete content, close reports, stats) are functions that check the `admins` table on the server.
-- Spam limits: 5 comments/minute, 3 reviews/10 minutes, 10 reports/10 minutes, 20 rating changes/minute per user.
+- Spam limits: 5 comments/minute, 3 reviews/10 minutes, 10 reports/10 minutes, 20 rating changes/minute, 20 follows/minute (300 total), 500 bookmarks per user.
 - All user text is escaped before display and rendered as text, never as HTML.
-- Deleting an account removes the user's ratings and library; reviews and comments stay and show as "Deleted reader".
+- Deleting an account removes the user's ratings, library, follows, bookmarks and alerts; reviews and comments stay and show as "Deleted reader".
 
 ## Backups and recovery
 
@@ -55,23 +73,20 @@ Supabase free projects have no automatic downloadable backups that you control. 
 
 ## Rollback
 
-- Website: GitHub → open `index.html` → History → pick the earlier version → Restore it.
-- Database (removes everything created by the schema; this deletes all user content):
-  ```sql
-  drop view if exists public.book_stats, public.review_feed;
-  drop table if exists public.reports, public.library, public.comments, public.reviews,
-                       public.ratings, public.books, public.admins, public.profiles cascade;
-  drop trigger if exists on_auth_user_created on auth.users;
-  ```
+- Website: GitHub → open the file → History → pick the earlier version → Restore it. To undo the social features, restore `ui-read.js`, `privacy.html` and `README.md` and delete `ui-social.js` and `author.html`.
+- Social database objects: the last lines of `supabase-social.sql` hold commented-out `drop` statements that remove only what that file created.
 
 ## Status
 
 | Feature | Status |
 |---|---|
-| Reading, search, filters, study timer, local saves | Implemented and verified |
-| Email, Google, Facebook login UI | Implemented, awaiting external configuration (steps 1-5) |
-| Profiles (name edit, sign out, delete account) | Implemented, awaiting database setup |
-| Ratings, reviews, comments, replies, reports | Implemented, awaiting database setup |
-| Synced favorites, reading list and progress | Not implemented (tables exist) |
-| Admin moderation screen | Not implemented (server functions exist) |
-| Search by description, sorting by rating/reviews | Partially implemented |
+| Reading, search, filters, study timer, light/dark | Implemented |
+| Email, Google, Facebook login | Implemented; needs the provider setup in steps 4-5 |
+| Profiles (name edit, avatar, sign out, delete account) | Implemented |
+| Ratings, reviews, comments, replies, reports | Implemented |
+| Synced saved books and reading progress | Implemented (`ui-read.js`) |
+| Author applications, author tools, moderation, audit log | Implemented (`apply.html`, `admin.html`) |
+| Generated book, chapter, genre and author pages | Implemented (`build-pages.mjs`) |
+| Follow authors, alerts, bookmarks, author dashboard | Implemented; needs `supabase-social.sql` |
+| Email or push alerts | Not implemented (alerts show in the site only) |
+| Search by description | Partially implemented |
