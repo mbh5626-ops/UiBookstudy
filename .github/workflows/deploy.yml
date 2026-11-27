@@ -1,18 +1,28 @@
 name: Build and publish site
 
 # Rebuilds the book pages from your database and publishes the whole site.
-# It runs when you upload files, every 6 hours, and when you press "Run workflow".
+# It runs when you upload files, every 30 minutes, and when you press "Run workflow".
+# On the automatic runs it only publishes when something actually changed (a new book,
+# a new chapter, an edit), so a book you publish appears on the site within about 30 minutes.
+# Before publishing, check-build.mjs stops the run if the build looks broken
+# (for example 0 books), so the live site is never replaced by an empty one.
 on:
   push:
     branches: [main]
   schedule:
-    - cron: "23 */6 * * *"
+    - cron: "7,37 * * * *"
   workflow_dispatch:
+    inputs:
+      force:
+        description: "Publish even if the book count dropped"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
   pages: write
   id-token: write
+  actions: write
 
 concurrency:
   group: pages
@@ -34,9 +44,26 @@ jobs:
         run: npm install --no-save --no-package-lock sharp@0.33.5
       - name: Build book pages
         run: node build-pages.mjs
+      - name: Check the build
+        id: check
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          FORCE: ${{ github.event.inputs.force }}
+        run: node .github/workflows/check-build.mjs
       - uses: actions/configure-pages@v5
+        if: steps.check.outputs.changed == 'true'
       - uses: actions/upload-pages-artifact@v3
+        if: steps.check.outputs.changed == 'true'
         with:
           path: dist
       - id: deployment
+        if: steps.check.outputs.changed == 'true'
         uses: actions/deploy-pages@v4
+      # GitHub switches off scheduled runs after 60 days without changes to the repository.
+      # Re-enabling the workflow on every run resets that timer, so the schedule never stops.
+      - name: Keep the schedule alive
+        if: always()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/deploy.yml/enable"
