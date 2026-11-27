@@ -21,7 +21,8 @@ A free fantasy-reading website on GitHub Pages with accounts, ratings, reviews, 
 | `admin.html` | Staff and author tools: books, chapters, covers, moderation, settings |
 | `apply.html` | Author applications |
 | `build-pages.mjs`, `.github/workflows/deploy.yml` | Builds and deploys the generated pages every push and every 6 hours |
-| `privacy.html`, `404.html`, `robots.txt`, `sitemap.xml` | Site basics |
+| `privacy.html`, `terms.html`, `copyright.html` | Privacy Policy, Terms of Use, and Copyright Policy (how to report copied work and how counter-notices work). Contact: mbh5626@gmail.com |
+| `404.html`, `robots.txt`, `sitemap.xml` | Site basics |
 | `supabase-schema.sql` | Original tables, policies, rate limits and functions |
 | `supabase-social.sql` | Follows, alerts, bookmarks and the first author dashboard function |
 | `supabase-traffic.sql` | Page-view counts and the upgraded author dashboard function (run after `supabase-social.sql`) |

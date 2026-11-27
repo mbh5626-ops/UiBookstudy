@@ -34,7 +34,7 @@ h1,h2,h3{font-family:Cinzel,serif;font-weight:500}h1{font-size:clamp(26px,5vw,36
 label.l{display:block;color:var(--mu);font-size:15px;margin:12px 0 4px}
 input,textarea{width:100%;background:rgba(255,255,255,.06);border:1px solid var(--ln);border-radius:10px;padding:10px 14px;color:var(--ink);font:inherit;font-size:16px}
 textarea{resize:vertical;min-height:110px}input[type=checkbox]{width:20px;height:20px;accent-color:var(--gold);flex:none;margin-top:3px}
-.ck{display:flex;gap:10px;align-items:flex-start;margin:14px 0}.ck span{font-size:16px}
+.ck{display:flex;gap:10px;align-items:flex-start;margin:14px 0}.ck span{font-size:16px}.ck a{color:var(--gold);text-decoration:underline}
 :focus-visible{outline:2px solid var(--teal);outline-offset:2px}
 .msg{min-height:22px;font-size:15px;margin:6px 0;color:var(--mu)}.msg.er{color:#ff8a9a}.msg.ok{color:var(--teal)}
 .cnt{color:var(--mu);font-size:14px;text-align:right}
@@ -58,11 +58,11 @@ textarea{resize:vertical;min-height:110px}input[type=checkbox]{width:20px;height
   <li><b>Submit</b> a finished book. After a quick check, it is published with its own page, a place in the library and your author page.</li>
  </ol>
  <h2>What we ask</h2>
- <ul><li>Only original work that you own the rights to.</li><li>No hateful, violent-extremist or sexually explicit content.</li><li>We may remove content that breaks these rules.</li></ul>
+ <ul><li>Only original work that you own the rights to. You keep the copyright; you let us show it on Ui Books.</li><li>No hateful, violent-extremist or sexually explicit content.</li><li>We may remove content that breaks these rules. Please read the <a href="terms.html" style="color:var(--gold);text-decoration:underline">Terms of Use</a> and the <a href="copyright.html" style="color:var(--gold);text-decoration:underline">Copyright Policy</a> before you apply.</li></ul>
 </section>
 <section class="gl" id="panel"><p class="sub">Loading…</p></section>
 </main>
-<footer class="ft"><a href="./">Home</a><a href="books/">All books</a><a href="genres/">Genres</a><a href="authors/">Authors</a><a href="privacy.html">Privacy</a></footer>
+<footer class="ft"><a href="./">Home</a><a href="books/">All books</a><a href="genres/">Genres</a><a href="authors/">Authors</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="copyright.html">Copyright</a></footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
 (function(){
@@ -99,7 +99,7 @@ function paintAuth(mode){
 function statusBox(a){
  var h="";
  if(a.status==="pending")h='<h2>Your application</h2><p><span class="badge wait">UNDER REVIEW</span></p><p>Thank you, <b dir="auto">'+esc(a.pen_name)+'</b>! We received your application on '+esc(new Date(a.created_at).toLocaleDateString())+'. We will review it soon. Come back to this page to see the result.</p>';
- else if(a.status==="approved")h='<h2>You are an author!</h2><p><span class="badge ok">APPROVED</span></p><p>Welcome, <b dir="auto">'+esc(a.pen_name)+'</b>. Open your author dashboard to add your first book.</p>'+(a.note?'<p class="sub" dir="auto">Note from the team: '+esc(a.note)+'</p>':'')+'<p><a class="btn" href="admin.html">OPEN AUTHOR DASHBOARD</a></p>';
+ else if(a.status==="approved")h='<h2>You are an author!</h2><p><span class="badge ok">APPROVED</span></p><p>Welcome, <b dir="auto">'+esc(a.pen_name)+'</b>. Open your author dashboard to add your first book.</p>'+(a.note?'<p class="sub" dir="auto">Note from the team: '+esc(a.note)+'</p>':'')+'<p><a class="btn" href="admin.html">OPEN AUTHOR DASHBOARD</a> <a class="btn g" href="author.html">MY STATS</a></p>';
  else h='<h2>Your last application</h2><p><span class="badge no">'+(a.status==="revoked"?"ACCESS REMOVED":"NOT APPROVED")+'</span></p>'+(a.note?'<p dir="auto">'+esc(a.note)+'</p>':'<p class="sub">We could not approve this application.</p>')+'<p class="sub">You are welcome to apply again with an updated sample.</p>';
  return h}
 
@@ -109,7 +109,7 @@ function paintForm(prefill,lastBox){
  '<label class="l" for="bi">About you (20 to 1500 characters)</label><textarea id="bi" maxlength="1500" minlength="20" required dir="auto" placeholder="Who are you, and what do you like to write?"></textarea><div class="cnt" id="bic">0 / 1500</div>'+
  '<label class="l" for="lk">Links to your other writing (optional)</label><input id="lk" maxlength="500" dir="auto" placeholder="https://…">'+
  '<label class="l" for="sm">Writing sample (200 to 8000 characters): the opening of a story you wrote</label><textarea id="sm" maxlength="8000" minlength="200" required dir="auto" style="min-height:220px"></textarea><div class="cnt" id="smc">0 / 8000</div>'+
- '<label class="ck"><input type="checkbox" id="rt" required><span>This is my own original work, I own the rights to it, and I understand Ui Books may remove content that breaks the rules.</span></label>'+
+ '<label class="ck"><input type="checkbox" id="rt" required><span>This is my own original work and I own the rights to it. I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms of Use</a> and the <a href="copyright.html" target="_blank" rel="noopener">Copyright Policy</a>, and I understand Ui Books may remove content that breaks the rules.</span></label>'+
  '<div class="msg" id="fm" role="status" aria-live="polite"></div><button class="btn" type="submit" style="width:100%">SEND APPLICATION</button></form>'+
  '<p style="margin-top:12px"><button class="lk" id="so" type="button">Sign out</button></p>';
  function cnt(a,b,m){$(a).oninput=function(){$(b).textContent=this.value.length+" / "+m};}
@@ -119,7 +119,7 @@ function paintForm(prefill,lastBox){
   var row={pen_name:$("pn").value.trim(),bio:$("bi").value.trim(),genres:$("gn").value.trim(),links:$("lk").value.trim(),sample:$("sm").value.trim(),rights_ok:$("rt").checked};
   if(row.bio.length<20){setMsg("fm","Please tell us a little more about you (at least 20 characters).","er");return}
   if(row.sample.length<200){setMsg("fm","The writing sample needs at least 200 characters.","er");return}
-  if(!row.rights_ok){setMsg("fm","Please confirm the rights statement.","er");return}
+  if(!row.rights_ok){setMsg("fm","Please confirm the rights statement and the terms.","er");return}
   btn.disabled=true;setMsg("fm","Sending…");
   sb.from("author_applications").insert(row).then(function(r){btn.disabled=false;
    if(r.error){setMsg("fm",fe(r.error),"er");return}

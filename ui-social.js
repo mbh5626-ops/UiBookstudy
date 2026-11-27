@@ -461,7 +461,7 @@ function hideAll() {
 }
 function decorate() {
   try {
-    trackView();
+    trackView(); footerLinks();
     if (off) { hideAll(); return; }
     decorateFollow(); decorateChapter(); ensureBell(); paintFollow(); paintBell();
   } catch (e) { /* never break the page */ }
@@ -500,6 +500,18 @@ D.addEventListener("keydown", function (e) {
   if (e.key === "Escape" && panelOpen) { closePanel(); var b = D.getElementById("uiBell"); if (b) { b.focus(); } }
 });
 D.addEventListener("visibilitychange", function () { if (!D.hidden && uid && sb) { loadNotifs(); } });
+
+/* ---------- footer: add the Terms and Copyright links next to Privacy on every page ---------- */
+function footerLinks() {
+  D.querySelectorAll('footer a[href$="privacy.html"]').forEach(function (a) {
+    var next = a.nextElementSibling;
+    if (next && next.getAttribute("data-legal")) { return; }
+    var base = a.getAttribute("href").replace(/privacy\.html$/, "");
+    var t = D.createElement("a"); t.href = base + "terms.html"; t.textContent = "Terms"; t.setAttribute("data-legal", "1");
+    var c = D.createElement("a"); c.href = base + "copyright.html"; c.textContent = "Copyright"; c.setAttribute("data-legal", "1");
+    a.parentNode.insertBefore(t, a.nextSibling); a.parentNode.insertBefore(c, t.nextSibling);
+  });
+}
 
 W.UiSocial = { refresh: decorate };
 wrapStats();
