@@ -393,6 +393,50 @@ function closePanel() {
   var p = D.getElementById("uiPanel"); if (p) { p.remove(); }
 }
 
+/* ---------- profile stats: count reading done on the chapter pages too ----------
+   The main page only counted chapters opened inside the app. This merges in the reading log from
+   the generated chapter pages (ui-read.js), so books started, chapters read, streak, badges and the
+   current-book pages all reflect everything the reader has done. Same layout as before. */
+function lsJson(k, d) { try { var v = JSON.parse(localStorage.getItem(k) || "null"); return v == null ? d : v; } catch (e) { return d; } }
+function bookOf(key2) { return key2.slice(0, key2.lastIndexOf(":")); }
+function patchStats() {
+  var pf = D.getElementById("pf"), B = W.B;
+  if (!pf || !Array.isArray(B) || typeof W.goal === "undefined") { return; }
+  var hist = Array.isArray(W.hist) ? W.hist : lsJson("uihist", []), days = Array.isArray(W.days) ? W.days : lsJson("uidays", []);
+  var L = W.UiRead && W.UiRead.readLog ? W.UiRead.readLog() : { c: [], d: [] };
+  var chs = {}, bks = {}, dset = {}, sv = {};
+  hist.forEach(function (k) { var p = String(k).split(":"), b = B[+p[0]]; if (b && b.id) { chs[b.id + ":" + ((+p[1] || 0) + 1)] = 1; bks[b.id] = 1; } });
+  L.c.forEach(function (k) { chs[k] = 1; bks[bookOf(k)] = 1; });
+  var prog = lsJson("uiprog", {}); Object.keys(prog).forEach(function (id) { bks[id] = 1; });
+  days.concat(L.d).forEach(function (x) { dset[x] = 1; });
+  (W.saved || []).forEach(function (i) { if (B[i] && B[i].id) { sv[B[i].id] = 1; } });
+  lsJson("uibooks2", []).forEach(function (id) { sv[id] = 1; });
+  var nBooks = Object.keys(bks).length, nCh = Object.keys(chs).length, nSaved = Object.keys(sv).length, streak = 0, d = new Date();
+  while (dset[d.toISOString().slice(0, 10)]) { streak++; d.setDate(d.getDate() - 1); }
+  var epic = Object.keys(chs).some(function (k) { var id = bookOf(k); return B.some(function (b) { return b.id === id && b.g === "Epic"; }); });
+  var goal = W.goal;
+  function badge(n, on) { return '<span class="chip' + (on ? " on" : "") + '">' + n + "</span>"; }
+  pf.innerHTML = '<div class="stats">' + [[nBooks, "Books started"], [nCh, "Chapters read"], [streak, "Day streak"], [nSaved, "Saved"]].map(function (s) {
+    return '<div class="stat"><b>' + s[0] + "</b>" + s[1] + "</div>";
+  }).join("") + '</div><h3 style="margin:22px 0 8px">Goal: ' + goal + ' books this year</h3><div class="bar"><i style="width:' + Math.min(100, nBooks * 100 / goal) + '%"></i></div><p class="sub">' + nBooks + " of " + goal +
+    ' done. <button class="chip" data-gl="-1">\u2212</button> <button class="chip" data-gl="1">+</button></p><h3 style="margin:22px 0 10px">Badges</h3><div class="ch">' +
+    badge("\uD83D\uDC09 Dragon Slayer", epic) + badge("\uD83C\uDF19 Night Owl", streak >= 3) + badge("\uD83D\uDCDA Bookworm", nBooks >= 3) + badge("\u2B50 Early Reader", nCh > 0) + "</div>";
+  /* the "pages read" card on the home page */
+  var cb = B[W.cur], cp = D.getElementById("cp"), bar = D.getElementById("cb");
+  if (cb && cp) {
+    var n = Object.keys(chs).filter(function (k) { return bookOf(k) === cb.id; }).length, pages = n * 150;
+    setText(cp, pages <= 300 ? pages + " / 300" : String(pages));
+    if (bar) { bar.style.width = Math.min(100, pages / 3) + "%"; }
+  }
+}
+function wrapStats() {
+  if (!isSpa || typeof W.render2 !== "function" || W.render2.__social) { return; }
+  var old = W.render2;
+  var f = function () { var r = old.apply(this, arguments); try { patchStats(); } catch (e) { /* keep the page working */ } return r; };
+  f.__social = true; W.render2 = f;
+  try { patchStats(); } catch (e) { /* ignore */ }
+}
+
 /* ---------- traffic: count a view of a book page or a chapter page ----------
    One count per visitor session per page. Sends only the book id and chapter number, nothing about the visitor. */
 var viewsOff = false;
@@ -458,6 +502,7 @@ D.addEventListener("keydown", function (e) {
 D.addEventListener("visibilitychange", function () { if (!D.hidden && uid && sb) { loadNotifs(); } });
 
 W.UiSocial = { refresh: decorate };
+wrapStats();
 decorate();
 new MutationObserver(schedule).observe(D.body, { childList: true, subtree: true });
 getSb(function (c) {

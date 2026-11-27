@@ -23,11 +23,12 @@ A free fantasy-reading website on GitHub Pages with accounts, ratings, reviews, 
 | `build-pages.mjs`, `.github/workflows/deploy.yml` | Builds and deploys the generated pages every push and every 6 hours |
 | `privacy.html`, `404.html`, `robots.txt`, `sitemap.xml` | Site basics |
 | `supabase-schema.sql` | Original tables, policies, rate limits and functions |
-| `supabase-social.sql` | Follows, alerts, bookmarks and the author dashboard function |
+| `supabase-social.sql` | Follows, alerts, bookmarks and the first author dashboard function |
+| `supabase-traffic.sql` | Page-view counts and the upgraded author dashboard function (run after `supabase-social.sql`) |
 
 ## One-time setup
 
-1. **Database.** Supabase → SQL Editor → New query → paste `supabase-schema.sql` → Run. Then do the same with `supabase-social.sql`. Both are safe to run again.
+1. **Database.** Supabase → SQL Editor → New query → paste `supabase-schema.sql` → Run. Then do the same with `supabase-social.sql` and `supabase-traffic.sql`, in that order. All are safe to run again.
 2. **Auth URLs.** Supabase → Authentication → URL Configuration:
    - Site URL: `https://mbh5626-ops.github.io/UiBookstudy/`
    - Redirect URLs: add `https://mbh5626-ops.github.io/UiBookstudy/**`
@@ -52,7 +53,8 @@ A free fantasy-reading website on GitHub Pages with accounts, ratings, reviews, 
 - **Follow** buttons appear on author pages, book pages and in the main app. Readers are matched to authors by author name, ignoring upper and lower case.
 - **Alerts** (the bell next to the account button) are created by database triggers: when a followed author's book is published, and when a chapter is added to a published book (to followers and to readers who saved the book). One chapter alert per reader per book per hour.
 - **Bookmarks** save a paragraph. Tap the star at the end of a paragraph on a chapter page. They are listed under the bell and open at the saved paragraph.
-- **Author dashboard** (`author.html`) shows the signed-in author's followers, 30-day follower chart and per-book numbers. It never shows who follows.
+- **Author dashboard** (`author.html`, linked as MY STATS in `admin.html` and from the bell) shows page views, followers, 30-day charts and per-book numbers. Authors see their own books; the site owner sees every book. It never shows who follows or who visited.
+- **Traffic** is counted by `ui-social.js` on generated book and chapter pages: one count per visitor session per page, stored only as a number per book, chapter and day (`book_views`). Counts are approximate.
 - If `supabase-social.sql` has not been run, these features hide themselves and the rest of the site works as before.
 - New chapter pages exist after the next build (up to 6 hours, or run the workflow by hand). Until then, alert links open the book in the main app.
 
@@ -87,6 +89,7 @@ Supabase free projects have no automatic downloadable backups that you control. 
 | Synced saved books and reading progress | Implemented (`ui-read.js`) |
 | Author applications, author tools, moderation, audit log | Implemented (`apply.html`, `admin.html`) |
 | Generated book, chapter, genre and author pages | Implemented (`build-pages.mjs`) |
-| Follow authors, alerts, bookmarks, author dashboard | Implemented; needs `supabase-social.sql` |
+| Profile stats (books started, chapters read, streak, badges) count reading on the chapter pages too | Implemented (`ui-read.js` keeps a reading log, `ui-social.js` merges it) |
+| Follow authors, alerts, bookmarks, author dashboard, page-view traffic | Implemented; needs `supabase-social.sql` and `supabase-traffic.sql` |
 | Email or push alerts | Not implemented (alerts show in the site only) |
 | Search by description | Partially implemented |

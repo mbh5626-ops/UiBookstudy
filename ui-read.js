@@ -206,9 +206,25 @@ function onScroll() {
     clearTimeout(saveT); saveT = setTimeout(function () { recordProgress(p); }, 700);
   });
 }
+/* Reading log: which days you read and which chapters you got through (60% or more of the chapter).
+   The profile page uses it, so reading on the chapter pages counts towards streaks, badges and chapter totals. */
+var KL = "uireadlog";
+function readLog() {
+  var L = jget(KL, null);
+  if (!L || !Array.isArray(L.c) || !Array.isArray(L.d)) { L = { c: [], d: [] }; }
+  return L;
+}
+function logRead(id, c, p) {
+  if (p < 0.02) { return; }
+  var L = readLog(), t = new Date().toISOString().slice(0, 10), k = id + ":" + c, changed = false;
+  if (L.d.indexOf(t) < 0) { L.d.push(t); L.d = L.d.slice(-400); changed = true; }
+  if (p >= 0.6 && L.c.indexOf(k) < 0) { L.c.push(k); L.c = L.c.slice(-5000); changed = true; }
+  if (changed) { jset(KL, L); }
+}
 function recordProgress(p) {
   if (!art) { return; }
   var id = art.getAttribute("data-book"), c = +art.getAttribute("data-chapter") || 0, saved = Sync.getProgress(id);
+  logRead(id, c, p);
   if (saved && c < saved.c && p < 0.05) { return; }                 // opening an earlier chapter must not erase later progress
   if (saved && saved.c === c && p < saved.p - 0.02 && p < 0.9) { return; }   // do not move backwards within a chapter by accident
   if (!saved && p < 0.02) { return; }
@@ -272,7 +288,7 @@ W.addEventListener("pagehide", function () { if (art) { recordProgress(progressN
 D.addEventListener("visibilitychange", function () { if (D.hidden) { if (art) { recordProgress(progressNow()); } Sync.flushNow(); } });
 handlers.push(paintBook);
 
-W.UiRead = { sync: Sync, share: share, on: function (f) { handlers.push(f); }, client: getClient };
+W.UiRead = { sync: Sync, share: share, on: function (f) { handlers.push(f); }, client: getClient, readLog: readLog };
 
 applyFs();
 if (!isSpa) {
