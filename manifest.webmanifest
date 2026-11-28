@@ -1,0 +1,22 @@
+{
+  "name": "Ui Books",
+  "short_name": "Ui Books",
+  "description": "Free fantasy stories to read by lantern light. Short chapters, saved places, and a calm reading room.",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#04020d",
+  "theme_color": "#04020d",
+  "lang": "en",
+  "categories": ["books", "entertainment", "education"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Library", "url": "books/", "icons": [{ "src": "icon-192.png", "sizes": "192x192", "type": "image/png" }] }
+  ]
+}
