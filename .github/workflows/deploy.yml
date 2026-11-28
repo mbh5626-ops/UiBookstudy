@@ -7,6 +7,9 @@ name: Build and publish site
 # build-extras.mjs adds the home page text for search engines and the RSS feed.
 # Before publishing, check-build.mjs stops the run if the build looks broken
 # (for example 0 books), so the live site is never replaced by an empty one.
+#
+# Publishing is a separate job with a short wait and retries. GitHub sometimes cannot find a
+# file it uploaded a split second earlier (actions/deploy-pages issue 451); this works around it.
 on:
   push:
     branches: [main]
@@ -21,20 +24,20 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
-  actions: write
 
 concurrency:
   group: pages
   cancel-in-progress: false
 
 jobs:
-  publish:
+  build:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      contents: read
+      pages: write
+      actions: write
+    outputs:
+      changed: ${{ steps.check.outputs.changed }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -59,9 +62,6 @@ jobs:
         if: steps.check.outputs.changed == 'true'
         with:
           path: dist
-      - id: deployment
-        if: steps.check.outputs.changed == 'true'
-        uses: actions/deploy-pages@v4
       # GitHub switches off scheduled runs after 60 days without changes to the repository.
       # Re-enabling the workflow on every run resets that timer, so the schedule never stops.
       - name: Keep the schedule alive
@@ -70,3 +70,37 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/deploy.yml/enable"
+
+  deploy:
+    needs: build
+    if: needs.build.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+      actions: read
+    environment:
+      name: github-pages
+      url: ${{ steps.d1.outputs.page_url || steps.d2.outputs.page_url || steps.d3.outputs.page_url }}
+    steps:
+      - name: Give GitHub a moment to register the upload
+        run: sleep 20
+      - name: Publish
+        id: d1
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+      - name: Wait, then try again
+        if: steps.d1.outcome == 'failure'
+        run: sleep 45
+      - name: Publish (second try)
+        id: d2
+        if: steps.d1.outcome == 'failure'
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+      - name: Wait, then try once more
+        if: steps.d1.outcome == 'failure' && steps.d2.outcome == 'failure'
+        run: sleep 90
+      - name: Publish (last try)
+        id: d3
+        if: steps.d1.outcome == 'failure' && steps.d2.outcome == 'failure'
+        uses: actions/deploy-pages@v4
