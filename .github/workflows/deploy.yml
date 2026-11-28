@@ -4,6 +4,7 @@ name: Build and publish site
 # It runs when you upload files, every 30 minutes, and when you press "Run workflow".
 # On the automatic runs it only publishes when something actually changed (a new book,
 # a new chapter, an edit), so a book you publish appears on the site within about 30 minutes.
+# build-extras.mjs adds the home page text for search engines and the RSS feed.
 # Before publishing, check-build.mjs stops the run if the build looks broken
 # (for example 0 books), so the live site is never replaced by an empty one.
 on:
@@ -44,6 +45,8 @@ jobs:
         run: npm install --no-save --no-package-lock sharp@0.33.5
       - name: Build book pages
         run: node build-pages.mjs
+      - name: Add home page text, RSS feed and sitemap entries
+        run: node .github/workflows/build-extras.mjs
       - name: Check the build
         id: check
         env:
