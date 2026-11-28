@@ -461,7 +461,7 @@ function hideAll() {
 }
 function decorate() {
   try {
-    trackView(); footerLinks();
+    trackView(); footerLinks(); ensureCalmButton();
     if (off) { hideAll(); return; }
     decorateFollow(); decorateChapter(); ensureBell(); paintFollow(); paintBell();
   } catch (e) { /* never break the page */ }
@@ -485,6 +485,7 @@ D.addEventListener("click", function (e) {
   var x;
   if ((x = t.closest("[data-fo]"))) { e.preventDefault(); e.stopPropagation(); toggleFollow(x.getAttribute("data-fo")); return; }
   if ((x = t.closest("[data-bm]"))) { e.preventDefault(); e.stopPropagation(); toggleBm(+x.getAttribute("data-bm")); return; }
+  if (t.closest("#uiCalm")) { e.preventDefault(); var turnOff = calmOn(); try { localStorage.setItem(CALM_KEY, turnOff ? "off" : "on"); } catch (er) { /* ignore */ } applyCalm(); return; }
   if (t.closest("#uiBell")) { e.preventDefault(); e.stopPropagation(); if (panelOpen) { closePanel(); } else { openPanel(); } return; }
   if ((x = t.closest("[data-uitab]"))) { tabSel = x.getAttribute("data-uitab"); paintPanel(); if (tabSel === "n") { scheduleSeen(); } return; }
   if ((x = t.closest("[data-bmdel]"))) { delBm(x.getAttribute("data-bmdel")); return; }
@@ -501,6 +502,47 @@ D.addEventListener("keydown", function (e) {
 });
 D.addEventListener("visibilitychange", function () { if (!D.hidden && uid && sb) { loadNotifs(); } });
 
+/* ---------- calm background ----------
+   The moving background is pretty but heavy on older phones. It switches itself to a still, soft
+   background on devices that look slow (few processor cores or little memory), when "reduce motion" or
+   data saver is on, and readers can switch it themselves with the button in the footer. */
+var CALM_KEY = "ui-calm";
+function calmAuto() {
+  try {
+    var n = navigator, c = n.hardwareConcurrency || 8, m = n.deviceMemory || 8, sd = n.connection && n.connection.saveData;
+    var rm = W.matchMedia && W.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var touch = W.matchMedia && W.matchMedia("(pointer: coarse)").matches;
+    return !!(sd || rm || c <= 4 || m <= 2 || (touch && c <= 6));
+  } catch (e) { return false; }
+}
+function calmOn() {
+  var v = null; try { v = localStorage.getItem(CALM_KEY); } catch (e) { /* ignore */ }
+  return v === "on" ? true : v === "off" ? false : calmAuto();
+}
+function applyCalm() {
+  var on = calmOn();
+  D.documentElement.classList.toggle("ui-lite", on);
+  var b = D.getElementById("uiCalm");
+  if (b) { setText(b, on ? "\u2726 Calm background: on" : "\u2726 Calm background: off"); b.setAttribute("aria-pressed", on ? "true" : "false"); }
+}
+function ensureCalmButton() {
+  if (!isSpa || D.getElementById("uiCalm")) { return; }
+  var host = D.querySelector("footer.ft > span");
+  if (!host) { return; }
+  var b = D.createElement("button"); b.type = "button"; b.id = "uiCalm"; b.className = "chip";
+  host.appendChild(b); applyCalm();
+}
+(function () {
+  var st = D.createElement("style");
+  st.textContent =
+    "html.ui-lite .bg .aur,html.ui-lite .bg i,html.ui-lite .bg svg{display:none}" +
+    "html.ui-lite .bg{background:radial-gradient(ellipse at 50% 120%,#2a0f5c,transparent 62%),radial-gradient(ellipse at 85% -10%,rgba(63,198,184,.16),transparent 50%),#04020d}" +
+    "html[data-theme=light].ui-lite .bg{background:radial-gradient(ellipse at 50% 120%,#e4d9f5,transparent 62%),#f4efe6}" +
+    "html.ui-lite .ob,html.ui-lite .dl .cv{animation:none;transform:none}html.ui-lite #intro{animation-duration:.3s;animation-delay:1.2s}" +
+    "#uiCalm{cursor:pointer;margin:0}";
+  D.head.appendChild(st);
+})();
+
 /* ---------- footer: add the Terms and Copyright links next to Privacy on every page ---------- */
 function footerLinks() {
   D.querySelectorAll('footer a[href$="privacy.html"]').forEach(function (a) {
@@ -514,6 +556,7 @@ function footerLinks() {
 }
 
 W.UiSocial = { refresh: decorate };
+applyCalm();
 wrapStats();
 decorate();
 new MutationObserver(schedule).observe(D.body, { childList: true, subtree: true });
