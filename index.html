@@ -6,6 +6,8 @@
 <title>Ui Books – Fantasy Novels to Read by Lantern Light</title>
 <meta name="description" content="Ui Books is a free home for fantasy tales. Read short chapters, listen aloud, save favourites and stay focused with a study timer.">
 <meta name="theme-color" content="#04020d">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Ui Books – Fantasy Novels to Read by Lantern Light">
 <meta property="og:description" content="Free fantasy tales, a study timer and a moonlit reading room.">
@@ -527,5 +529,6 @@ nq();fm();route();
 </script>
 <script src="ui-music.js"></script>
 <script src="ui-live.js"></script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}</script>
 </body>
 </html>
